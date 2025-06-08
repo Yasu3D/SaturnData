@@ -11,17 +11,17 @@ public class TimeSignatureChangeEvent : Event, ITimeable
     public Timestamp Timestamp { get; set; }
 
     /// <summary>
-    /// The upper (numerator) in the time signature.
+    /// The upper (numerator) in the time signature to change to.
     /// </summary>
     public int Upper { get; set; }
 
     /// <summary>
-    /// The lower (denominator) in the time signature.
+    /// The lower (denominator) in the time signature to change to.
     /// </summary>
     public int Lower { get; set; }
 
     /// <summary>
-    /// The time signature ratio.
+    /// The time signature ratio to change to.
     /// </summary>
     public float Ratio => (float)Upper / Lower;
 }

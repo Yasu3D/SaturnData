@@ -16,7 +16,7 @@ public class HoldPointNote : Note, ITimeable, IPositionable, ILayerable
         Layer = source.Layer;
     }
     
-    public HoldPointNote(Timestamp timestamp, int position, int size, int layer, BonusType bonusType, bool isJudgeable)
+    public HoldPointNote(Timestamp timestamp, int position, int size, int layer)
     {
         Timestamp = timestamp;
         Position = position;

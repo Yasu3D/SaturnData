@@ -4,7 +4,7 @@ using SaturnData.Notation.Interfaces;
 namespace SaturnData.Notation.Notes;
 
 /// <summary>
-/// A note that makes the tunnel lanes it occupies visible once it reaches the judgement line.
+/// A note that shows the tunnel lanes it occupies once it reaches the judgement line.
 /// </summary>
 public class MaskAddNote : Note, ITimeable, IPositionable
 {

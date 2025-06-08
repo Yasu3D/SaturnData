@@ -26,6 +26,8 @@ public class StopEffectEvent : Event, ITimeable, ILayerable
         }
     }
 
+    public int Layer { get; set; }
+
     /// <summary>
     /// Sub-events that define specific sections of the stop effect.<br/>
     /// </summary>
@@ -34,6 +36,4 @@ public class StopEffectEvent : Event, ITimeable, ILayerable
     /// [1] = Stop Effect End
     /// </code>
     public readonly EffectSubEvent[] SubEvents = new EffectSubEvent[2];
-
-    public int Layer { get; set; }
 }

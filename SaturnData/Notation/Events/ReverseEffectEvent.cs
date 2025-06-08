@@ -26,6 +26,8 @@ public class ReverseEffectEvent : Event, ITimeable, ILayerable
         }
     }
 
+    public int Layer { get; set; }
+
     /// <summary>
     /// Sub-events that define specific sections of the reverse effect.<br/>
     /// </summary>
@@ -35,6 +37,4 @@ public class ReverseEffectEvent : Event, ITimeable, ILayerable
     /// [2] = Reverse Note Capture End
     /// </code>
     public readonly EffectSubEvent[] SubEvents = new EffectSubEvent[3];
-
-    public int Layer { get; set; }
 }

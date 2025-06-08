@@ -4,7 +4,7 @@ using SaturnData.Notation.Interfaces;
 namespace SaturnData.Notation.Notes;
 
 /// <summary>
-/// A measure line that normally appears every measure.
+/// A measure line to help keep time.
 /// </summary>
 public class MeasureLineNote : Note, ITimeable
 {

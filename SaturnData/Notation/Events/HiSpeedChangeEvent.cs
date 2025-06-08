@@ -10,10 +10,12 @@ public class HiSpeedChangeEvent : Event, ITimeable, ILayerable
 {
     public Timestamp Timestamp { get; set; }
     
+    public int Layer { get; set; }
+    
     /// <summary>
-    /// TODO: Docs
+    /// The speed multiplier to set the scroll speed to.<br/>
+    /// Default: <c>1.0</c><br/>
+    /// Range: <c>Single.MinValue / Single.MaxValue</c>
     /// </summary>
     public float HiSpeed { get; set; }
-
-    public int Layer { get; set; }
 }

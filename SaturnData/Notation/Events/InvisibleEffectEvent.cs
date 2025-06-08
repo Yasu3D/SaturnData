@@ -10,10 +10,10 @@ public class InvisibleEffectEvent : Event, ITimeable, ILayerable
 {
     public Timestamp Timestamp { get; set; }
     
-    /// <summary>
-    /// TODO: Docs
-    /// </summary>
-    public bool IsActive { get; set; }
-
     public int Layer { get; set; }
+
+    /// <summary>
+    /// The new visibility value this event changes to.
+    /// </summary>
+    public bool Visible { get; set; }
 }

@@ -6,6 +6,10 @@ namespace SaturnData.Notation.Core;
 [Serializable]
 public struct Timestamp : IEquatable<Timestamp>
 {
+    /// <summary>
+    /// Creates a timestamp from a <c>Measure</c> and <c>Tick</c> value.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown when <c>measure</c> or <c>tick</c> are negative.</exception>
     public Timestamp(int measure, int tick)
     {
         if (measure < 0) throw new ArgumentException("Measure cannot be negative.");
@@ -20,6 +24,10 @@ public struct Timestamp : IEquatable<Timestamp>
         ScaledTime = -1;
     }
 
+    /// <summary>
+    /// Creates a timestamp from a <c>FullTick</c> value.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown when <c>fullTick</c> is negative.</exception>
     public Timestamp(int fullTick)
     {
         if (fullTick < 0) throw new ArgumentException("Timestamp cannot be negative.");
@@ -33,6 +41,9 @@ public struct Timestamp : IEquatable<Timestamp>
         ScaledTime = -1;
     }
     
+    /// <summary>
+    /// The earliest possible timestamp.
+    /// </summary>
     public static Timestamp Zero = new()
     {
         Measure = 0,

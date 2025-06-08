@@ -9,4 +9,9 @@ namespace SaturnData.Notation.Events;
 public class BpmChangeEvent : Event, ITimeable
 {
     public Timestamp Timestamp { get; set; }
+    
+    /// <summary>
+    /// The new bpm value this event changes to.
+    /// </summary>
+    public float Bpm { get; set; }
 }
