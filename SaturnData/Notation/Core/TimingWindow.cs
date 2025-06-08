@@ -1,3 +1,5 @@
+using System;
+
 namespace SaturnData.Notation.Core;
 
 /// <summary>
