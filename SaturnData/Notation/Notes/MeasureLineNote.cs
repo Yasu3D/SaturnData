@@ -8,9 +8,9 @@ namespace SaturnData.Notation.Notes;
 /// </summary>
 public class MeasureLineNote : Note, ITimeable
 {
-    public MeasureLineNote(MeasureLineNote source)
+    public MeasureLineNote(MeasureLineNote cloneSource)
     {
-        Timestamp = source.Timestamp;
+        Timestamp = cloneSource.Timestamp;
     }
     
     public MeasureLineNote(Timestamp timestamp)

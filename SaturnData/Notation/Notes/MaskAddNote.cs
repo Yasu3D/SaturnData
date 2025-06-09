@@ -8,11 +8,11 @@ namespace SaturnData.Notation.Notes;
 /// </summary>
 public class MaskAddNote : Note, ITimeable, IPositionable
 {
-    public MaskAddNote(MaskAddNote source)
+    public MaskAddNote(MaskAddNote cloneSource)
     {
-        Timestamp = source.Timestamp;
-        Position = source.Position;
-        Size = source.Size;
+        Timestamp = cloneSource.Timestamp;
+        Position = cloneSource.Position;
+        Size = cloneSource.Size;
     }
     
     public MaskAddNote(Timestamp timestamp, int position, int size)

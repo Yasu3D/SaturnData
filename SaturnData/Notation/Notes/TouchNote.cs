@@ -6,25 +6,23 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by tapping within its area at the right time.
 /// </summary>
-public class TouchNote : Note, ITimeable, IPositionable, ILayerable, IPlayable
+public class TouchNote : Note, ITimeable, IPositionable, IPlayable
 {
-    public TouchNote(TouchNote source)
+    public TouchNote(TouchNote cloneSource)
     {
-        Timestamp = source.Timestamp;
-        Position = source.Position;
-        Size = source.Size;
-        Layer = source.Layer;
-        BonusType = source.BonusType;
-        IsJudgeable = source.IsJudgeable;
-        TimingWindow = source.TimingWindow;
+        Timestamp = cloneSource.Timestamp;
+        Position = cloneSource.Position;
+        Size = cloneSource.Size;
+        BonusType = cloneSource.BonusType;
+        IsJudgeable = cloneSource.IsJudgeable;
+        TimingWindow = cloneSource.TimingWindow;
     }
     
-    public TouchNote(Timestamp timestamp, int position, int size, int layer, BonusType bonusType, bool isJudgeable)
+    public TouchNote(Timestamp timestamp, int position, int size, BonusType bonusType, bool isJudgeable)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
-        Layer = layer;
         BonusType = bonusType;
         IsJudgeable = isJudgeable;
         TimingWindow = new(-6, -5, -3, -1, 1, 3, 5, 6);
@@ -35,8 +33,6 @@ public class TouchNote : Note, ITimeable, IPositionable, ILayerable, IPlayable
     public int Position { get; set; }
     
     public int Size { get; set; }
-    
-    public int Layer { get; set; }
 
     public TimingWindow TimingWindow { get; set; }
     

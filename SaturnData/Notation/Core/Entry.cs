@@ -3,6 +3,18 @@ using System.IO;
 namespace SaturnData.Notation.Core;
 
 /// <summary>
+/// The file format type and version. Dictates how a chart file is treated.
+/// </summary>
+public enum FormatVersion
+{
+    Unknown = -1,
+    Mer = 0,
+    SatV1 = 1,
+    SatV2 = 2,
+    SatV3 = 3,
+}
+
+/// <summary>
 /// The "difficulty category" of a chart.
 /// </summary>
 /// <remarks>
@@ -16,18 +28,6 @@ public enum Difficulty
     Expert = 2,
     Inferno = 3,
     WorldsEnd = 4,
-}
-
-/// <summary>
-/// The file format type and version. Dictates how a chart file is treated.
-/// </summary>
-public enum FormatVersion
-{
-    Unknown = -1,
-    Mer = 0,
-    SatV1 = 1,
-    SatV2 = 2,
-    SatV3 = 3,
 }
 
 /// <summary>
@@ -112,10 +112,10 @@ public class Entry
     public float PreviewBegin = 0;
 
     /// <summary>
-    /// The timestamp the chart preview ends at <b>in milliseconds</b>
+    /// The duration of the chart preview <b>in milliseconds</b>
     /// </summary>
-    public float PreviewEnd = 10;
-
+    public float PreviewDuration = 10;
+    
     /// <summary>
     /// Audio offset <b>in milliseconds</b>
     /// </summary>

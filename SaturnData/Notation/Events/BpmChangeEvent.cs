@@ -8,6 +8,18 @@ namespace SaturnData.Notation.Events;
 /// </summary>
 public class BpmChangeEvent : Event, ITimeable
 {
+    public BpmChangeEvent(BpmChangeEvent cloneSource)
+    {
+        Timestamp = cloneSource.Timestamp;
+        Bpm = cloneSource.Bpm;
+    }
+    
+    public BpmChangeEvent(Timestamp timestamp, float bpm)
+    {
+        Timestamp = timestamp;
+        Bpm = bpm;
+    }
+    
     public Timestamp Timestamp { get; set; }
     
     /// <summary>

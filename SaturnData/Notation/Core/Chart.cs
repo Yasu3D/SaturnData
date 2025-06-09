@@ -13,22 +13,27 @@ public class Chart
     public Entry Entry = new();
     
     /// <summary>
-    /// All notes (except mask notes), grouped by layer.
+    /// All global events that aren't bound to layers.
     /// </summary>
-    public Dictionary<int, List<Note>> NoteLayers = new();
-
-    /// <summary>
-    /// All mask notes.
-    /// </summary>
-    public List<Note> Masks = [];
+    public readonly List<Event> GlobalEvents = [];
     
     /// <summary>
     /// All events that are bound to layers, grouped by layer.
     /// </summary>
-    public Dictionary<int, List<Event>> EventLayers = new();
+    public readonly Dictionary<int, Layer<Event>> EventLayers = new();
+    
+    /// <summary>
+    /// All notes (except mask notes), grouped by layer.
+    /// </summary>
+    public readonly Dictionary<int, Layer<Note>> NoteLayers = new();
 
     /// <summary>
-    /// All global events that aren't bound to layers.
+    /// All mask notes.
     /// </summary>
-    public List<Event> GlobalEvents = [];
+    public readonly List<Note> Masks = [];
+
+    /// <summary>
+    /// The Chart End timestamp, where playback stops and the gameplay result is shown.
+    /// </summary>
+    public Timestamp? ChartEnd = null;
 }

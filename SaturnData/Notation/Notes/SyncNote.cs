@@ -6,16 +6,16 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A connector that appears between simultaneous notes.
 /// </summary>
-public class SyncNote : Note, ITimeable, IPositionable, ILayerable
+public class SyncNote : Note, ITimeable, IPositionable
 {
-    public SyncNote(SyncNote source)
+    public SyncNote(SyncNote cloneSource)
     {
-        Timestamp = source.Timestamp;
-        Position = source.Position;
-        Size = source.Size;
+        Timestamp = cloneSource.Timestamp;
+        Position = cloneSource.Position;
+        Size = cloneSource.Size;
     }
     
-    public SyncNote(Timestamp timestamp, int position, int size, int layer)
+    public SyncNote(Timestamp timestamp, int position, int size)
     {
         Timestamp = timestamp;
         Position = position;
@@ -27,6 +27,4 @@ public class SyncNote : Note, ITimeable, IPositionable, ILayerable
     public int Position { get; set; }
     
     public int Size { get; set; }
-    
-    public int Layer { get; set; }
 }

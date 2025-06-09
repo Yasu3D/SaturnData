@@ -9,29 +9,24 @@ namespace SaturnData.Notation.Notes;
 /// </summary>
 public class HoldNote : Note, ITimeable, IPlayable
 { 
-    public HoldNote(HoldNote source)
+    public HoldNote(HoldNote cloneSource)
     {
-        Timestamp = source.Timestamp;
-        BonusType = source.BonusType;
-        IsJudgeable = source.IsJudgeable;
-        TimingWindow = source.TimingWindow;
+        Timestamp = cloneSource.Timestamp;
+        BonusType = cloneSource.BonusType;
+        IsJudgeable = cloneSource.IsJudgeable;
+        TimingWindow = cloneSource.TimingWindow;
 
-        foreach (HoldPointNote point in source.Points)
+        foreach (HoldPointNote point in cloneSource.Points)
         {
-            Points.Add(new(point));
+            Points.Add(new(point.Timestamp, point.Position, point.Size, this));
         }
     }
     
-    public HoldNote(List<HoldPointNote> points, BonusType bonusType, bool isJudgeable)
+    public HoldNote(BonusType bonusType, bool isJudgeable)
     {
-        if (points.Count == 0) return;
-        
-        Timestamp = points[0].Timestamp;
         BonusType = bonusType;
         IsJudgeable = isJudgeable;
         TimingWindow = new(-6, -5, -3, -1, 1, 3, 5, 6);
-        
-        Points = points;
     }
     
     /// <summary>

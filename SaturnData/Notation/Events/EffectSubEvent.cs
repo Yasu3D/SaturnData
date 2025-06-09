@@ -10,5 +10,13 @@ namespace SaturnData.Notation.Events;
 /// </summary>
 public class EffectSubEvent : Event, ITimeable
 {
+    public EffectSubEvent(Timestamp timestamp, Event parent)
+    {
+        Timestamp = timestamp;
+        Parent = parent;
+    }
+    
     public Timestamp Timestamp { get; set; }
+    
+    public Event Parent { get; }
 }

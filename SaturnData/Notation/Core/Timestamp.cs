@@ -54,21 +54,52 @@ public struct Timestamp : IEquatable<Timestamp>
         Time = 0,
         ScaledTime = 0,
     };
-        
+
     /// <summary>
     /// The Measure this timestamp is on.
     /// </summary>
-    public int Measure;
-        
+    public int Measure
+    {
+        readonly get => measure;
+        set
+        {
+            measure = value;
+            fullTick = measure * 1920 + Tick;
+        }
+    }
+
+    private int measure;
+
     /// <summary>
     /// The exact subdivision of a measure this timestamp is on.
     /// </summary>
-    public int Tick;
+    public int Tick
+    {
+        readonly get => tick;
+        set
+        {
+            tick = value;
+            fullTick = measure * 1920 + tick;
+        }
+    }
+
+    private int tick;
 
     /// <summary>
     /// Total Ticks up to this timestamp.
     /// </summary>
-    public int FullTick;
+    public int FullTick
+    {
+        get => fullTick;
+        set
+        {
+            fullTick = value;
+            measure = fullTick / 1920;
+            tick = fullTick - measure * 1920;
+        }
+    }
+
+    private int fullTick;
         
     /// <summary>
     /// Timestamp in milliseconds.
@@ -79,7 +110,7 @@ public struct Timestamp : IEquatable<Timestamp>
     /// Pseudo-Timestamp in milliseconds, scaled by scroll speed events.
     /// </summary>
     public float ScaledTime;
-        
+
     /// <summary>
     /// Returns the larger Timestamp.
     /// </summary>

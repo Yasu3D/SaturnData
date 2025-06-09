@@ -8,6 +8,20 @@ namespace SaturnData.Notation.Events;
 /// </summary>
 public class TimeSignatureChangeEvent : Event, ITimeable
 {
+    public TimeSignatureChangeEvent(TimeSignatureChangeEvent cloneSource)
+    {
+        Timestamp = cloneSource.Timestamp;
+        Upper = cloneSource.Upper;
+        Lower = cloneSource.Lower;
+    }
+
+    public TimeSignatureChangeEvent(Timestamp timestamp, int upper, int lower)
+    {
+        Timestamp = timestamp;
+        Upper = upper;
+        Lower = lower;
+    }
+    
     public Timestamp Timestamp { get; set; }
 
     /// <summary>

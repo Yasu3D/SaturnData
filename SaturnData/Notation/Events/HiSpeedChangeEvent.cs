@@ -6,11 +6,21 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current scroll speed of a layer.
 /// </summary>
-public class HiSpeedChangeEvent : Event, ITimeable, ILayerable
+public class HiSpeedChangeEvent : Event, ITimeable
 {
-    public Timestamp Timestamp { get; set; }
+    public HiSpeedChangeEvent(HiSpeedChangeEvent cloneSource)
+    {
+        Timestamp = cloneSource.Timestamp;
+        HiSpeed = cloneSource.HiSpeed;
+    }
+
+    public HiSpeedChangeEvent(Timestamp timestamp, float hiSpeed)
+    {
+        Timestamp = timestamp;
+        HiSpeed = hiSpeed;
+    }
     
-    public int Layer { get; set; }
+    public Timestamp Timestamp { get; set; }
     
     /// <summary>
     /// The speed multiplier to set the scroll speed to.<br/>

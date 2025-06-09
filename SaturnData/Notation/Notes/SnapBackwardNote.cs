@@ -6,25 +6,23 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by sliding backwards within its area at the right time.
 /// </summary>
-public class SnapBackwardNote : Note, ITimeable, IPositionable, ILayerable, IPlayable
+public class SnapBackwardNote : Note, ITimeable, IPositionable, IPlayable
 {
-    public SnapBackwardNote(SnapBackwardNote source)
+    public SnapBackwardNote(SnapBackwardNote cloneSource)
     {
-        Timestamp = source.Timestamp;
-        Position = source.Position;
-        Size = source.Size;
-        Layer = source.Layer;
-        BonusType = source.BonusType;
-        IsJudgeable = source.IsJudgeable;
-        TimingWindow = source.TimingWindow;
+        Timestamp = cloneSource.Timestamp;
+        Position = cloneSource.Position;
+        Size = cloneSource.Size;
+        BonusType = cloneSource.BonusType;
+        IsJudgeable = cloneSource.IsJudgeable;
+        TimingWindow = cloneSource.TimingWindow;
     }
     
-    public SnapBackwardNote(Timestamp timestamp, int position, int size, int layer, BonusType bonusType, bool isJudgeable)
+    public SnapBackwardNote(Timestamp timestamp, int position, int size, BonusType bonusType, bool isJudgeable)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
-        Layer = layer;
         BonusType = bonusType;
         IsJudgeable = isJudgeable;
         TimingWindow = new(-10, 10, -7, -1, 1, 5, 8, 10);
@@ -35,8 +33,6 @@ public class SnapBackwardNote : Note, ITimeable, IPositionable, ILayerable, IPla
     public int Position { get; set; }
     
     public int Size { get; set; }
-    
-    public int Layer { get; set; }
 
     public TimingWindow TimingWindow { get; set; }
     

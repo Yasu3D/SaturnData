@@ -6,25 +6,23 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by sliding clockwise within its area at the right time.
 /// </summary>
-public class SlideClockwiseNote : Note, ITimeable, IPositionable, ILayerable, IPlayable
+public class SlideClockwiseNote : Note, ITimeable, IPositionable, IPlayable
 {
-    public SlideClockwiseNote(SlideClockwiseNote source)
+    public SlideClockwiseNote(SlideClockwiseNote cloneSource)
     {
-        Timestamp = source.Timestamp;
-        Position = source.Position;
-        Size = source.Size;
-        Layer = source.Layer;
-        BonusType = source.BonusType;
-        IsJudgeable = source.IsJudgeable;
-        TimingWindow = source.TimingWindow;
+        Timestamp = cloneSource.Timestamp;
+        Position = cloneSource.Position;
+        Size = cloneSource.Size;
+        BonusType = cloneSource.BonusType;
+        IsJudgeable = cloneSource.IsJudgeable;
+        TimingWindow = cloneSource.TimingWindow;
     }
     
-    public SlideClockwiseNote(Timestamp timestamp, int position, int size, int layer, BonusType bonusType, bool isJudgeable)
+    public SlideClockwiseNote(Timestamp timestamp, int position, int size, BonusType bonusType, bool isJudgeable)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
-        Layer = layer;
         BonusType = bonusType;
         IsJudgeable = isJudgeable;
         TimingWindow = new(-10, -8, -5, -1, 1, 7, 10, 10);
@@ -35,8 +33,6 @@ public class SlideClockwiseNote : Note, ITimeable, IPositionable, ILayerable, IP
     public int Position { get; set; }
     
     public int Size { get; set; }
-    
-    public int Layer { get; set; }
 
     public TimingWindow TimingWindow { get; set; }
     

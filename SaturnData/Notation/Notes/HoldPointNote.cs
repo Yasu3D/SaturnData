@@ -6,22 +6,14 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A point defining the shape and path of a hold note.
 /// </summary>
-public class HoldPointNote : Note, ITimeable, IPositionable, ILayerable
+public class HoldPointNote : Note, ITimeable, IPositionable
 {
-     public HoldPointNote(HoldPointNote source)
-    {
-        Timestamp = source.Timestamp;
-        Position = source.Position;
-        Size = source.Size;
-        Layer = source.Layer;
-    }
-    
-    public HoldPointNote(Timestamp timestamp, int position, int size, int layer)
+    public HoldPointNote(Timestamp timestamp, int position, int size, HoldNote parent)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
-        Layer = layer;
+        Parent = parent;
     }
     
     public Timestamp Timestamp { get; set; }
@@ -30,5 +22,5 @@ public class HoldPointNote : Note, ITimeable, IPositionable, ILayerable
     
     public int Size { get; set; }
     
-    public int Layer { get; set; }
+    public HoldNote Parent { get; }
 }

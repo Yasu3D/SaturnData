@@ -6,25 +6,23 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by holding down within its area at any time.
 /// </summary>
-public class ChainNote : Note, ITimeable, IPositionable, ILayerable, IPlayable
+public class ChainNote : Note, ITimeable, IPositionable, IPlayable
 {
-    public ChainNote(ChainNote source)
+    public ChainNote(ChainNote cloneSource)
     {
-        Timestamp = source.Timestamp;
-        Position = source.Position;
-        Size = source.Size;
-        Layer = source.Layer;
-        BonusType = source.BonusType;
-        IsJudgeable = source.IsJudgeable;
-        TimingWindow = source.TimingWindow;
+        Timestamp = cloneSource.Timestamp;
+        Position = cloneSource.Position;
+        Size = cloneSource.Size;
+        BonusType = cloneSource.BonusType;
+        IsJudgeable = cloneSource.IsJudgeable;
+        TimingWindow = cloneSource.TimingWindow;
     }
     
-    public ChainNote(Timestamp timestamp, int position, int size, int layer, BonusType bonusType, bool isJudgeable)
+    public ChainNote(Timestamp timestamp, int position, int size, BonusType bonusType, bool isJudgeable)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
-        Layer = layer;
         BonusType = bonusType;
         IsJudgeable = isJudgeable;
         TimingWindow = new(-4, -4, -4, -4, 4, 4, 4, 4);
@@ -35,8 +33,6 @@ public class ChainNote : Note, ITimeable, IPositionable, ILayerable, IPlayable
     public int Position { get; set; }
     
     public int Size { get; set; }
-    
-    public int Layer { get; set; }
 
     public TimingWindow TimingWindow { get; set; }
     
