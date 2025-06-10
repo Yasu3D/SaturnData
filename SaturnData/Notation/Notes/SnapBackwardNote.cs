@@ -25,7 +25,7 @@ public class SnapBackwardNote : Note, ITimeable, IPositionable, IPlayable
         Size = size;
         BonusType = bonusType;
         IsJudgeable = isJudgeable;
-        TimingWindow = new(-10, 10, -7, -1, 1, 5, 8, 10);
+        TimingWindow = new(-10, -10, -7, -1, 1, 5, 8, 10);
     }
     
     public Timestamp Timestamp { get; set; }

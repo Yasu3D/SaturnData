@@ -8,11 +8,6 @@ namespace SaturnData.Notation.Core;
 public class Chart
 {
     /// <summary>
-    /// Song entry associated with the chart.
-    /// </summary>
-    public Entry Entry = new();
-    
-    /// <summary>
     /// All global events that aren't bound to layers.
     /// </summary>
     public readonly List<Event> GlobalEvents = [];

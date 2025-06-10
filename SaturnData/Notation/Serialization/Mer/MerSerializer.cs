@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
@@ -17,8 +19,230 @@ public static class MerSerializer
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart)
+    public static string ToString(Entry entry, Chart chart, NotationSerializerOptions options)
     {
+        /*try
+        {
+            StringBuilder sb = new();
+
+            List<Event> events = [];
+            List<Note> notes = [];
+        
+            // Add all global events
+            events.AddRange(chart.GlobalEvents);
+        
+            // Add all layer-specific events from the first layer.
+            // Discard all events from other layers.
+            Dictionary<EffectSubEvent, string> subEventTypes = new();
+            if (chart.EventLayers.Count != 0)
+            {
+                foreach (KeyValuePair<int, Layer<Event>> layer in chart.EventLayers)
+                foreach (Event @event in layer.Value.Items)
+                {
+                    if (@event is InvisibleEffectEvent) continue; // Mer does not have Invisible Effect Events
+                    if (@event is ReverseEffectEvent reverse)
+                    {
+                        subEventTypes.Add(reverse.SubEvents[0], "   6");
+                        subEventTypes.Add(reverse.SubEvents[1], "   7");
+                        subEventTypes.Add(reverse.SubEvents[2], "   8");
+                        continue;
+                    }
+
+                    if (@event is StopEffectEvent stop)
+                    {
+                        subEventTypes.Add(stop.SubEvents[0], "   9");
+                        subEventTypes.Add(stop.SubEvents[1], "  10");
+                        continue;
+                    }
+
+                    events.Add(@event);
+                }
+                
+                events.AddRange(chart.EventLayers.First().Value.Items
+                    .Where(x => x is not InvisibleEffectEvent));
+            }
+
+            // Order events by timestamp.
+            events = events
+                .Where(x => x is ITimeable)
+                .OrderBy(x => ((ITimeable)x).Timestamp.FullTick)
+                .ToList();
+
+            // Add all notes from all layers.
+            // Break out hold points from their parent note and
+            // save the note they will "reference" in the .mer file.
+            Dictionary<HoldPointNote, HoldPointNote> holdPointReferences = new();
+            Dictionary<HoldPointNote, int> holdPointTypes = new();
+            foreach (KeyValuePair<int, Layer<Note>> layer in chart.NoteLayers)
+            foreach (Note note in layer.Value.Items)
+            {
+                if (note is HoldNote hold)
+                {
+                    for (int i = 0; i < hold.Points.Count; i++)
+                    {
+                        notes.Add(hold.Points[i]);
+
+                        int type;
+                        if      (i == 0 && hold.BonusType is BonusType.None or BonusType.Bonus)  type = 9;
+                        else if (i == 0 && hold.BonusType is BonusType.R)     type = 25;
+                        else if (i == hold.Points.Count - 1) type = 11;
+                        else type = 10;
+                            
+                        holdPointTypes.Add(hold.Points[i], type);
+                        
+                        if (i == hold.Points.Count - 1) continue;
+                        
+                        holdPointReferences.Add(hold.Points[i], hold.Points[i + 1]);
+                    }
+                    
+                    continue;
+                }
+
+                notes.Add(note);
+            }
+            
+            notes.AddRange(chart.Masks);
+        
+            // Order notes by timestamp.
+            notes = notes
+                .Where(x => x is ITimeable)
+                .OrderBy(x => ((ITimeable)x).Timestamp.FullTick)
+                .ToList();
+            
+            // Write metadata
+            sb.Append("#MUSIC_SCORE_ID 0\n");
+            sb.Append("#MUSIC_SCORE_VERSION 0\n");
+            sb.Append("#GAME_VERSION\n");
+            sb.Append(options.WriteMerMusicFilePath switch
+            {
+                NotationSerializerOptions.WriteMerMusicFilePathOption.None => "#MUSIC_FILE_PATH\n",
+                NotationSerializerOptions.WriteMerMusicFilePathOption.NoExtension => $"#MUSIC_FILE_PATH {Path.GetFileNameWithoutExtension(entry.AudioPath)}\n",
+                NotationSerializerOptions.WriteMerMusicFilePathOption.WithExtension => $"#MUSIC_FILE_PATH {Path.GetFileName(entry.AudioPath)}\n",
+                _ => throw new ArgumentOutOfRangeException(),
+            });
+            sb.Append($"#OFFSET {entry.AudioOffset / 1000}\n");
+            sb.Append($"#MOVIEOFFSET {entry.VideoOffset / 1000}\n");
+            sb.Append("#BODY\n");
+            
+            // Write Events
+            foreach (Event @event in events)
+            {
+                if (@event is not ITimeable timeable) continue;
+                Timestamp timestamp = timeable.Timestamp;
+
+                sb.Append($"{timestamp.Measure,4} {timestamp.FullTick,4} ");
+                
+                if (@event is BpmChangeEvent bpmChangeEvent)
+                {
+                    sb.Append($"   2 {bpmChangeEvent.Bpm:F6}");
+                }
+                
+                if (@event is TimeSignatureChangeEvent timeSignatureChangeEvent)
+                {
+                    sb.Append($"   3 {timeSignatureChangeEvent} {timeSignatureChangeEvent.Lower,4}");
+                }
+                
+                if (@event is HiSpeedChangeEvent highSpeedChangeEvent)
+                {
+                    sb.Append($"   4 {highSpeedChangeEvent.HiSpeed:F6}");
+                }
+                
+                if (@event is EffectSubEvent subEvent)
+                {
+                    sb.Append($"{subEventTypes[subEvent]}");
+                }
+                
+                sb.Append("\n");
+            }
+            
+            // Write Notes
+            for (int i = 0; i < notes.Count; i++)
+            {
+                Note note = notes[i];
+                if (note is not ITimeable timeable) continue;
+                if (note is not IPositionable positionable) continue;
+
+                BonusType bonus = note is IPlayable playable ? playable.BonusType : BonusType.None;
+
+                int type = (note, bonus) switch
+                {
+                    (TouchNote, BonusType.None) => 1,
+                    (TouchNote, BonusType.Bonus) => 2,
+                    (TouchNote, BonusType.R) => 20,
+                    (SnapForwardNote, BonusType.None) => 3,
+                    (SnapForwardNote, BonusType.Bonus) => 3,
+                    (SnapForwardNote, BonusType.R) => 21,
+                    (SnapBackwardNote, BonusType.None) => 4,
+                    (SnapBackwardNote, BonusType.Bonus) => 4,
+                    (SnapBackwardNote, BonusType.R) => 22,
+                    (SlideClockwiseNote, BonusType.None) => 5,
+                    (SlideClockwiseNote, BonusType.Bonus) => 6,
+                    (SlideClockwiseNote, BonusType.R) => 23,
+                    (SlideCounterclockwiseNote, BonusType.None) => 7,
+                    (SlideCounterclockwiseNote, BonusType.Bonus) => 8,
+                    (SlideCounterclockwiseNote, BonusType.R) => 24,
+                    (ChainNote, BonusType.None) => 16,
+                    (ChainNote, BonusType.Bonus) => 16,
+                    (ChainNote, BonusType.R) => 26,
+                    (HoldPointNote point, _) => holdPointTypes[point],
+                    (HoldNote, BonusType.None) => 9,
+                    (HoldNote, BonusType.Bonus) => 9,
+                    (HoldNote, BonusType.R) => 25,
+                    
+                    _ => 1,
+                };
+                
+                sb.Append($"{timeable.Timestamp.Measure,4} {timeable.Timestamp.FullTick,4}    1 ");
+                sb.Append($"{type,4} {i,4} {positionable.Position,4} {positionable.Size,4} ");
+
+                if (note is HoldPointNote holdPointNote)
+                {
+                    if (!holdPointReferences.TryGetValue(holdPointNote, out HoldPointNote reference))
+                    {
+                        //throw new Exception("HoldPointNote references nothing.");
+                        continue;
+                    }
+
+                    sb.Append($"{notes.IndexOf(reference),4}");
+                }
+
+                else if (note is MaskAddNote maskAddNote)
+                {
+                    sb.Append($"{(int)maskAddNote.Direction,4}");
+                }
+
+                else if (note is MaskSubtractNote maskSubtractNote)
+                {
+                    sb.Append($"{(int)maskSubtractNote.Direction,4}");
+                }
+
+                else
+                {
+                    sb.Append("   1");
+                }
+                
+                sb.Append("\n");
+            }
+
+            // Write Chart End
+            if (chart.ChartEnd == null)
+            {
+                
+            }
+            else
+            {
+                
+            }
+        
+            return sb.ToString();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            // ignored
+        }
+
+        return "";*/
         return "";
     }
 
@@ -27,7 +251,7 @@ public static class MerSerializer
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines)
+    public static Chart ToChart(string[] lines, NotationSerializerOptions options)
     {
         Chart chart = new();
 
@@ -119,6 +343,9 @@ public static class MerSerializer
                     {
                         HoldNote holdNote = new(bonusType, true);
                         NotationUtils.AddOrCreate(chart.NoteLayers, 0, holdNote);
+
+                        HoldPointNote holdPointNote = new(timestamp, position, size, holdNote, HoldPointRenderBehaviour.Visible);
+                        holdNote.Points.Add(holdPointNote);
                         
                         // Add the index that this hold note references to the dictionary.
                         int reference = Convert.ToInt32(split[8],CultureInfo.InvariantCulture);
@@ -134,16 +361,35 @@ public static class MerSerializer
                         if (!holdNotesByLastReference.TryGetValue(index, out HoldNote holdNote)) continue;
                         
                         // Create and add hold point to parent hold.
-                        int render = Convert.ToInt32(split[7], CultureInfo.InvariantCulture);
-                        HoldPointNote holdPointNote = new(timestamp, position, size, holdNote);
+                        HoldPointRenderBehaviour renderBehaviour = (HoldPointRenderBehaviour)Convert.ToInt32(split[7], CultureInfo.InvariantCulture);
+                        HoldPointNote holdPointNote = new(timestamp, position, size, holdNote, renderBehaviour);
                         holdNote.Points.Add(holdPointNote);
                         
-                        // Ignore no render hold ends.
-                        if (noteType == 10 && render == 0) noRenderHoldPoints.Add(holdPointNote);
-
-                        // Update the parent hold note reference to the next segment.
-                        int reference = Convert.ToInt32(split[8],CultureInfo.InvariantCulture);
-                        holdNotesByLastReference.Add(reference, holdNote);
+                        // Only handle render behaviour and references on hold points.
+                        if (noteType is 10)
+                        {
+                            if (renderBehaviour == HoldPointRenderBehaviour.Hidden) noRenderHoldPoints.Add(holdPointNote);
+                            
+                            // Update the parent hold note reference to the next segment.
+                            int reference = Convert.ToInt32(split[8],CultureInfo.InvariantCulture);
+                            holdNotesByLastReference.Add(reference, holdNote);
+                        }
+                    }
+                    
+                    // Mask Add
+                    if (noteType is 12)
+                    {
+                        MaskDirection direction = (MaskDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        MaskAddNote maskAddNote = new(timestamp, position, size, direction);
+                        chart.Masks.Add(maskAddNote);
+                    }
+                    
+                    // Mask Remove
+                    if (noteType is 13)
+                    {
+                        MaskDirection direction = (MaskDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        MaskSubtractNote maskSubtractNote = new(timestamp, position, size, direction);
+                        chart.Masks.Add(maskSubtractNote);
                     }
                 }
 
@@ -160,7 +406,9 @@ public static class MerSerializer
                 if (objectType is 3)
                 {
                     int upper = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
-                    int lower = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
+                    int lower = split.Length == 4 // Older files can omit the lower. In that case set it to 4.
+                        ? 4
+                        : Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
                     TimeSignatureChangeEvent timeSignatureChangeEvent = new(timestamp, upper, lower);
 
                     chart.GlobalEvents.Add(timeSignatureChangeEvent);
@@ -224,16 +472,20 @@ public static class MerSerializer
                     tempStopEvent = null;
                 }
             }
-            catch (ArgumentOutOfRangeException)
+            catch (Exception e)
             {
-                // ignored
+                Console.WriteLine(e);
+                // ignored, continue to next line.
             }
         }
 
-        // Filter out all no-render hold points.
-        foreach (HoldPointNote holdPoint in noRenderHoldPoints)
+        // Trim all no-render hold points.
+        if (options.TrimHoldNotes)
         {
-            holdPoint.Parent.Points.Remove(holdPoint);
+            foreach (HoldPointNote holdPoint in noRenderHoldPoints)
+            {
+                holdPoint.Parent.Points.Remove(holdPoint);
+            }
         }
         
         return chart;
@@ -270,13 +522,13 @@ public static class MerSerializer
                 if (NotationUtils.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value); }
                 if (NotationUtils.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioPath = value; }
                 if (NotationUtils.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
-                if (NotationUtils.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value); }
-                if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewDuration = Convert.ToSingle(value); }
+                if (NotationUtils.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewDuration = Convert.ToSingle(value) * 1000; }
                 
                 // MER COMPATIBILITY
                 if (NotationUtils.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioPath = value; }
-                if (NotationUtils.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value); }
-                if (NotationUtils.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value); }
+                if (NotationUtils.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value) * 1000; }
             }
             catch
             {

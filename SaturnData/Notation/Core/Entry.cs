@@ -7,10 +7,29 @@ namespace SaturnData.Notation.Core;
 /// </summary>
 public enum FormatVersion
 {
+    /// <summary>
+    /// An unknown, unrecognized, or broken format that can't be parsed.
+    /// </summary>
     Unknown = -1,
+    
+    /// <summary>
+    /// Mer format. Legacy support for the original game format.<br/>
+    /// </summary>
     Mer = 0,
+    
+    /// <summary>
+    /// First Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_1">Saturn Docs</see>.
+    /// </summary>
     SatV1 = 1,
+    
+    /// <summary>
+    /// Second Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_2">Saturn Docs</see>.
+    /// </summary>
     SatV2 = 2,
+    
+    /// <summary>
+    /// Third Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_3">Saturn Docs</see>.
+    /// </summary>
     SatV3 = 3,
 }
 

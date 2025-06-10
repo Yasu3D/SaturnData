@@ -17,11 +17,11 @@ public static class NotationSerializer
     /// <param name="chart">The chart to serialize.</param>
     /// <param name="formatVersion">The format to serialize as.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, FormatVersion formatVersion)
+    public static string ToString(Entry entry, Chart chart, FormatVersion formatVersion, NotationSerializerOptions options)
     {
         return formatVersion switch
         {
-            FormatVersion.Mer => MerSerializer.ToString(entry, chart),
+            FormatVersion.Mer => MerSerializer.ToString(entry, chart, options),
             FormatVersion.SatV1 => SatV1Serializer.ToString(entry, chart),
             FormatVersion.SatV2 => SatV2Serializer.ToString(entry, chart),
             FormatVersion.SatV3 => SatV3Serializer.ToString(entry, chart),
@@ -34,12 +34,12 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="path">The file to open.</param>
     /// <returns></returns>
-    public static Chart ToChart(string path)
+    public static Chart ToChart(string path, NotationSerializerOptions options)
     {
         try
         {
             string[] lines = File.ReadAllLines(path);
-            return ToChart(lines);
+            return ToChart(lines, options);
         }
         catch
         {
@@ -52,14 +52,14 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines)
+    public static Chart ToChart(string[] lines, NotationSerializerOptions options)
     {
         try
         {
             FormatVersion formatVersion = NotationUtils.DetectFormatVersion(lines);
             return formatVersion switch
             {
-                FormatVersion.Mer => MerSerializer.ToChart(lines),
+                FormatVersion.Mer => MerSerializer.ToChart(lines, options),
                 FormatVersion.SatV1 => SatV1Serializer.ToChart(lines),
                 FormatVersion.SatV2 => SatV2Serializer.ToChart(lines),
                 FormatVersion.SatV3 => SatV3Serializer.ToChart(lines),
