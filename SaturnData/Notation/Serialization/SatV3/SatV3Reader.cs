@@ -1,8 +1,8 @@
 using SaturnData.Notation.Core;
 
-namespace SaturnData.Notation.Serialization.SatV1;
+namespace SaturnData.Notation.Serialization.SatV3;
 
-public class SatV1Serializer
+public static class SatV3Reader
 {
     /// <summary>
     /// Converts a chart into a string.
@@ -10,7 +10,7 @@ public class SatV1Serializer
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart)
+    public static string ToString(Entry entry, Chart chart, NotationSerializerOptions options)
     {
         return "";
     }
@@ -20,7 +20,7 @@ public class SatV1Serializer
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines)
+    public static Chart ToChart(string[] lines, NotationSerializerOptions options)
     {
         return null;
     }

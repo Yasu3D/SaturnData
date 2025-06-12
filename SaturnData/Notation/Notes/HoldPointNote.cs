@@ -5,8 +5,8 @@ namespace SaturnData.Notation.Notes;
 
 public enum HoldPointRenderBehaviour
 {
-    Visible = 0,
-    Hidden = 1,
+    Hidden = 0,
+    Visible = 1,
 }
 
 /// <summary>
@@ -14,6 +14,15 @@ public enum HoldPointRenderBehaviour
 /// </summary>
 public class HoldPointNote : Note, ITimeable, IPositionable
 {
+    internal HoldPointNote(Timestamp timestamp, int position, int size, HoldPointRenderBehaviour renderBehaviour)
+    {
+        Timestamp = timestamp;
+        Position = position;
+        Size = size;
+        RenderBehaviour = renderBehaviour;
+        Parent = null!;
+    }
+    
     public HoldPointNote(Timestamp timestamp, int position, int size, HoldNote parent, HoldPointRenderBehaviour renderBehaviour)
     {
         Timestamp = timestamp;
@@ -32,7 +41,7 @@ public class HoldPointNote : Note, ITimeable, IPositionable
     /// <summary>
     /// The parent hold note this hold point note belongs to.
     /// </summary>
-    public HoldNote Parent { get; }
+    public HoldNote Parent { get; internal set; }
     
     /// <summary>
     /// The render behaviour of the hold point.

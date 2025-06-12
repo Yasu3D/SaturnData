@@ -53,4 +53,9 @@ public struct NotationSerializerOptions
     /// Determines if no-render segments are created when exporting.
     /// </summary>
     public bool BakeHoldNotes { get; set; }
+    
+    /// <summary>
+    /// Generates a chart end marker on export if it isn't manually defined.
+    /// </summary>
+    public bool GenerateChartEnd { get; set; }
 }

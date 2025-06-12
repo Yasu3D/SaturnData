@@ -21,10 +21,10 @@ public static class NotationSerializer
     {
         return formatVersion switch
         {
-            FormatVersion.Mer => MerSerializer.ToString(entry, chart, options),
-            FormatVersion.SatV1 => SatV1Serializer.ToString(entry, chart),
-            FormatVersion.SatV2 => SatV2Serializer.ToString(entry, chart),
-            FormatVersion.SatV3 => SatV3Serializer.ToString(entry, chart),
+            FormatVersion.Mer => MerWriter.ToString(entry, chart, options),
+            FormatVersion.SatV1 => SatV1Writer.ToString(entry, chart, options),
+            FormatVersion.SatV2 => SatV2Writer.ToString(entry, chart, options),
+            FormatVersion.SatV3 => SatV3Writer.ToString(entry, chart, options),
             _ => "",
         };
     }
@@ -59,10 +59,10 @@ public static class NotationSerializer
             FormatVersion formatVersion = NotationUtils.DetectFormatVersion(lines);
             return formatVersion switch
             {
-                FormatVersion.Mer => MerSerializer.ToChart(lines, options),
-                FormatVersion.SatV1 => SatV1Serializer.ToChart(lines),
-                FormatVersion.SatV2 => SatV2Serializer.ToChart(lines),
-                FormatVersion.SatV3 => SatV3Serializer.ToChart(lines),
+                FormatVersion.Mer => MerReader.ToChart(lines, options),
+                FormatVersion.SatV1 => SatV1Reader.ToChart(lines, options),
+                FormatVersion.SatV2 => SatV2Reader.ToChart(lines, options),
+                FormatVersion.SatV3 => SatV3Reader.ToChart(lines, options),
                 _ => throw new(),
             };
         }
@@ -106,10 +106,10 @@ public static class NotationSerializer
 
             return formatVersion switch
             {
-                FormatVersion.Mer => MerSerializer.ToEntry(lines),
-                FormatVersion.SatV1 => SatV1Serializer.ToEntry(lines),
-                FormatVersion.SatV2 => SatV2Serializer.ToEntry(lines),
-                FormatVersion.SatV3 => SatV3Serializer.ToEntry(lines),
+                FormatVersion.Mer => MerReader.ToEntry(lines),
+                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines),
+                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines),
+                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines),
                 _ => throw new(),
             };
         }

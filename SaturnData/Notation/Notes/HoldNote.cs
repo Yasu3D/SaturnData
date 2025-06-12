@@ -35,9 +35,11 @@ public class HoldNote : Note, ITimeable, IPlayable
     /// </summary>
     public Timestamp Timestamp
     {
-        get => Points[0].Timestamp;
+        get => Points.Count == 0 ? new() : Points[0].Timestamp;
         set
-        { 
+        {
+            if (Points.Count == 0) return;
+            
             // Move all sub-events equally when setting timestamp.
             Timestamp delta = value - Points[0].Timestamp;
 
