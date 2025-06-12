@@ -1,3 +1,4 @@
+using System.Text;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Serialization.SatV2;
 
@@ -13,7 +14,11 @@ public static class SatV1Writer
     /// <returns></returns>
     public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
     {
-        // SatV2 is an extension of SatV1 and fully backwards-compatible.
         return SatV2Writer.ToString(entry, chart, options);
     }
+
+    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteOptions options) => SatV2Writer.WriteMetadata(sb, entry, options);
+    public static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteOptions options) => SatV2Writer.WriteBookmarks(sb, chart, options);
+    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteOptions options) => SatV2Writer.WriteEvents(sb, chart, options);
+    public static void WriteNotes(StringBuilder sb, Chart chart, NotationWriteOptions options) => SatV2Writer.WriteNotes(sb, chart, options);
 }

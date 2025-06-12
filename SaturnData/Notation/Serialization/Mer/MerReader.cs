@@ -291,7 +291,10 @@ public static class MerReader
                     : merHoldNotes.FirstOrDefault(x => x.Index == current.Reference);
             }
 
-            holdNote.Points = holdNote.Points.OrderBy(x => x.Timestamp).ToList();
+            holdNote.Points = holdNote.Points
+                .OrderBy(x => x.Timestamp)
+                .ToList();
+            
             NotationUtils.AddOrCreate(chart.NoteLayers, 0, holdNote);
         }
 

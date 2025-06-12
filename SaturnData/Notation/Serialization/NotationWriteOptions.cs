@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace SaturnData.Notation.Serialization;
 
 public struct NotationWriteOptions
@@ -34,15 +36,19 @@ public struct NotationWriteOptions
 
     public NotationWriteOptions()
     {
-        WriteMerMusicFilePath = WriteMerMusicFilePathOption.NoExtension;
+        ExportWatermark = $"Generated with SaturnData v{Assembly.GetExecutingAssembly().GetName().Version}";
         BakeHoldNotes = true;
+        GenerateChartEnd = true;
+        
+        
+        WriteMerMusicFilePath = WriteMerMusicFilePathOption.NoExtension;
     }
 
     /// <summary>
-    /// Determines how the <c>#MUSIC_FILE_PATH</c> tag is written in a Mer format file.
+    /// A watermark to leave on
     /// </summary>
-    public WriteMerMusicFilePathOption WriteMerMusicFilePath { get; set; }
-    
+    public string? ExportWatermark { get; set; }
+
     /// <summary>
     /// Determines if no-render segments are created when exporting.
     /// </summary>
@@ -52,4 +58,24 @@ public struct NotationWriteOptions
     /// Generates a chart end marker on export if it isn't manually defined.
     /// </summary>
     public bool GenerateChartEnd { get; set; }
+
+    /// <summary>
+    /// <b>Only affects .SATv1 and .SATv2 export!</b><br/>
+    /// Determines if layer 0 should be implicit, or explicitly written as <c>.L0</c>.
+    /// </summary>
+    public bool ExplicitLayerAttributes { get; set; }
+
+    /// <summary>
+    /// <b>Only affects .SATv1 and .SATv2 export!</b><br/>
+    /// Determines if <c>BonusType.None</c> should be implicit, or explicitly written as <c>.NORMAL</c>.
+    /// </summary>
+    public bool ExplicitBonusTypeAttributes { get; set; }
+
+    /// <summary>
+    /// <b>Only affects .MER export!</b><br/>
+    /// Determines how the <c>#MUSIC_FILE_PATH</c> tag is written in a Mer format file.
+    /// </summary>
+    public WriteMerMusicFilePathOption WriteMerMusicFilePath { get; set; }
+    
+    
 }

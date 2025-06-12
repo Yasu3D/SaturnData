@@ -260,7 +260,9 @@ internal static class SatV2Reader
                     
                     HoldPointRenderBehaviour renderBehaviour = attributes2RenderBehaviour(attributes);
                     tempHoldNote.Points.Add(new(timestamp, position, size, renderBehaviour));
-                    tempHoldNote.Points = tempHoldNote.Points.OrderBy(x => x.Timestamp).ToList();
+                    tempHoldNote.Points = tempHoldNote.Points
+                        .OrderBy(x => x.Timestamp)
+                        .ToList();
                     
                     NotationUtils.AddOrCreate(chart.NoteLayers, tempHoldNoteLayer, tempHoldNote);
                     
@@ -378,13 +380,13 @@ internal static class SatV2Reader
                 if (NotationUtils.ContainsKey(line, "@DIFF ", out value)) entry.Diff = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture);
                 if (NotationUtils.ContainsKey(line, "@LEVEL ", out value)) entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture);
 
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_START ", out value)) entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture);
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_TIME ", out value)) entry.PreviewDuration = Convert.ToSingle(value, CultureInfo.InvariantCulture);
+                if (NotationUtils.ContainsKey(line, "@PREVIEW_START ", out value)) entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
+                if (NotationUtils.ContainsKey(line, "@PREVIEW_TIME ", out value)) entry.PreviewDuration = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
 
                 if (NotationUtils.ContainsKey(line, "@BGM ", out value)) entry.AudioPath = value;
-                if (NotationUtils.ContainsKey(line, "@BGM_OFFSET ", out value)) entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture);
+                if (NotationUtils.ContainsKey(line, "@BGM_OFFSET ", out value)) entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
                 if (NotationUtils.ContainsKey(line, "@BGA ", out value)) entry.VideoPath = value;
-                if (NotationUtils.ContainsKey(line, "@BGA_OFFSET ", out value)) entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture);
+                if (NotationUtils.ContainsKey(line, "@BGA_OFFSET ", out value)) entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
                 if (NotationUtils.ContainsKey(line, "@JACKET ", out value)) entry.JacketPath = value;
             }
             catch
