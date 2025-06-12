@@ -14,9 +14,7 @@ public static class MerWriter
 {
     private class MerWriterNote
     {
-        public int Measure { get; set; }
-
-        public int Tick { get; set; }
+        public Timestamp Timestamp { get; set; }
 
         public int NoteType { get; set; }
 
@@ -33,9 +31,7 @@ public static class MerWriter
 
     private class MerWriterEvent
     {
-        public int Measure { get; set; }
-        
-        public int Tick { get; set; }
+        public Timestamp Timestamp { get; set; }
 
         public int ObjectType { get; set; }
         
@@ -52,7 +48,7 @@ public static class MerWriter
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, NotationSerializerOptions options)
+    public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
     {
         StringBuilder sb = new();
 
@@ -69,7 +65,7 @@ public static class MerWriter
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="entry">The entry that holds the metadata to write.</param>
     /// <param name="options">Options to adjust serialization behaviour.</param>
-    internal static void WriteMetadata(StringBuilder sb, Entry entry, NotationSerializerOptions options)
+    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteOptions options)
     {
         sb.Append("#MUSIC_SCORE_ID 0\n");
         sb.Append("#MUSIC_SCORE_VERSION 0\n");
@@ -77,15 +73,15 @@ public static class MerWriter
 
         switch (options.WriteMerMusicFilePath)
         {
-            case NotationSerializerOptions.WriteMerMusicFilePathOption.None:
+            case NotationWriteOptions.WriteMerMusicFilePathOption.None:
                 sb.Append("#MUSIC_FILE_PATH\n");
                 break;
 
-            case NotationSerializerOptions.WriteMerMusicFilePathOption.NoExtension:
+            case NotationWriteOptions.WriteMerMusicFilePathOption.NoExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileNameWithoutExtension(entry.AudioPath)}\n");
                 break;
 
-            case NotationSerializerOptions.WriteMerMusicFilePathOption.WithExtension:
+            case NotationWriteOptions.WriteMerMusicFilePathOption.WithExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileName(entry.AudioPath)}\n");
                 break;
         }
@@ -101,7 +97,7 @@ public static class MerWriter
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="chart">The chart that holds the events to write.</param>
     /// <param name="options">Options to adjust serialization behaviour.</param>
-    internal static void WriteEvents(StringBuilder sb, Chart chart, NotationSerializerOptions options)
+    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteOptions options)
     {
         List<MerWriterEvent> events = [];
         
@@ -112,8 +108,7 @@ public static class MerWriter
             {
                 events.Add(new ()
                 {
-                    Measure = bpmChangeEvent.Timestamp.Measure,
-                    Tick = bpmChangeEvent.Timestamp.Tick,
+                    Timestamp = bpmChangeEvent.Timestamp,
                     ObjectType = 2,
                     FloatValue = bpmChangeEvent.Bpm,
                 });
@@ -125,8 +120,7 @@ public static class MerWriter
             {
                 events.Add(new ()
                 {
-                    Measure = timeSignatureChangeEvent.Timestamp.Measure,
-                    Tick = timeSignatureChangeEvent.Timestamp.Tick,
+                    Timestamp = timeSignatureChangeEvent.Timestamp,
                     ObjectType = 3,
                     IntValue1 = timeSignatureChangeEvent.Upper,
                     IntValue2 = timeSignatureChangeEvent.Lower,
@@ -150,22 +144,19 @@ public static class MerWriter
 
                     events.Add(new()
                     {
-                        Measure = reverseEffectEvent.SubEvents[0].Timestamp.Measure,
-                        Tick = reverseEffectEvent.SubEvents[0].Timestamp.Tick,
+                        Timestamp = reverseEffectEvent.SubEvents[0].Timestamp,
                         ObjectType = 6,
                     });
 
                     events.Add(new()
                     {
-                        Measure = reverseEffectEvent.SubEvents[1].Timestamp.Measure,
-                        Tick = reverseEffectEvent.SubEvents[1].Timestamp.Tick,
+                        Timestamp = reverseEffectEvent.SubEvents[1].Timestamp,
                         ObjectType = 7,
                     });
 
                     events.Add(new()
                     {
-                        Measure = reverseEffectEvent.SubEvents[2].Timestamp.Measure,
-                        Tick = reverseEffectEvent.SubEvents[2].Timestamp.Tick,
+                        Timestamp = reverseEffectEvent.SubEvents[2].Timestamp,
                         ObjectType = 8,
                     });
 
@@ -178,15 +169,13 @@ public static class MerWriter
 
                     events.Add(new()
                     {
-                        Measure = stopEffectEvent.SubEvents[0].Timestamp.Measure,
-                        Tick = stopEffectEvent.SubEvents[0].Timestamp.Tick,
+                        Timestamp = stopEffectEvent.SubEvents[0].Timestamp,
                         ObjectType = 9,
                     });
 
                     events.Add(new()
                     {
-                        Measure = stopEffectEvent.SubEvents[1].Timestamp.Measure,
-                        Tick = stopEffectEvent.SubEvents[1].Timestamp.Tick,
+                        Timestamp = stopEffectEvent.SubEvents[1].Timestamp,
                         ObjectType = 10,
                     });
 
@@ -197,8 +186,7 @@ public static class MerWriter
                 {
                     events.Add(new()
                     {
-                        Measure = hiSpeedChangeEvent.Timestamp.Measure,
-                        Tick = hiSpeedChangeEvent.Timestamp.Tick,
+                        Timestamp = hiSpeedChangeEvent.Timestamp,
                         ObjectType = 5,
                         FloatValue = hiSpeedChangeEvent.HiSpeed,
                     });
@@ -210,14 +198,13 @@ public static class MerWriter
 
         // Order events by timestamp.
         events = events
-            .OrderBy(x => x.Measure)
-            .ThenBy(x => x.Tick)
+            .OrderBy(x => x.Timestamp)
             .ToList();
 
         // Create string with StringBuilder
         foreach (MerWriterEvent @event in events)
         {
-            sb.Append($"{@event.Measure,4} {@event.Tick,4} {@event.ObjectType,4}");
+            sb.Append($"{@event.Timestamp.Measure,4} {@event.Timestamp.Tick,4} {@event.ObjectType,4}");
 
             if (@event.FloatValue != null)
             {
@@ -239,7 +226,7 @@ public static class MerWriter
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="chart">The chart that holds the notes to write.</param>
     /// <param name="options">Options to adjust serialization behaviour.</param>
-    internal static void WriteNotes(StringBuilder sb, Chart chart, NotationSerializerOptions options)
+    public static void WriteNotes(StringBuilder sb, Chart chart, NotationWriteOptions options)
     {
         List<MerWriterNote> notes = [];
         
@@ -251,8 +238,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = touchNote.Timestamp.Measure,
-                    Tick = touchNote.Timestamp.Tick,
+                    Timestamp = touchNote.Timestamp,
                     NoteType = touchNote.BonusType switch
                     {
                         BonusType.None => 1,
@@ -272,8 +258,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = snapForwardNote.Timestamp.Measure,
-                    Tick = snapForwardNote.Timestamp.Tick,
+                    Timestamp = snapForwardNote.Timestamp,
                     NoteType = snapForwardNote.BonusType switch
                     {
                         BonusType.None => 3,
@@ -293,8 +278,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = snapBackwardNote.Timestamp.Measure,
-                    Tick = snapBackwardNote.Timestamp.Tick,
+                    Timestamp = snapBackwardNote.Timestamp,
                     NoteType = snapBackwardNote.BonusType switch
                     {
                         BonusType.None => 4,
@@ -314,8 +298,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = slideClockwiseNote.Timestamp.Measure,
-                    Tick = slideClockwiseNote.Timestamp.Tick,
+                    Timestamp = slideClockwiseNote.Timestamp,
                     NoteType = slideClockwiseNote.BonusType switch
                     {
                         BonusType.None => 5,
@@ -335,8 +318,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = slideCounterclockwiseNote.Timestamp.Measure,
-                    Tick = slideCounterclockwiseNote.Timestamp.Tick,
+                    Timestamp = slideCounterclockwiseNote.Timestamp,
                     NoteType = slideCounterclockwiseNote.BonusType switch
                     {
                         BonusType.None => 7,
@@ -356,8 +338,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = chainNote.Timestamp.Measure,
-                    Tick = chainNote.Timestamp.Tick,
+                    Timestamp = chainNote.Timestamp,
                     NoteType = chainNote.BonusType switch
                     {
                         BonusType.None => 16,
@@ -384,8 +365,7 @@ public static class MerWriter
 
                     MerWriterNote merWriterNote = new()
                     {
-                        Measure = point.Timestamp.Measure,
-                        Tick = point.Timestamp.Tick,
+                        Timestamp = point.Timestamp,
                         Position = point.Position,
                         Size = point.Size,
                     };
@@ -434,8 +414,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = maskAddNote.Timestamp.Measure,
-                    Tick = maskAddNote.Timestamp.Tick,
+                    Timestamp = maskAddNote.Timestamp,
                     NoteType = 12,
                     Position = maskAddNote.Position,
                     Size = maskAddNote.Size,
@@ -450,8 +429,7 @@ public static class MerWriter
             {
                 notes.Add(new()
                 {
-                    Measure = maskSubtractNote.Timestamp.Measure,
-                    Tick = maskSubtractNote.Timestamp.Tick,
+                    Timestamp = maskSubtractNote.Timestamp,
                     NoteType = 13,
                     Position = maskSubtractNote.Position,
                     Size = maskSubtractNote.Size,
@@ -472,8 +450,7 @@ public static class MerWriter
         {
             notes.Add(new()
             {
-                Measure = chart.ChartEnd.Value.Measure,
-                Tick = chart.ChartEnd.Value.Tick,
+                Timestamp = chart.ChartEnd.Value,
                 NoteType = 14,
                 Position = 0,
                 Size = 60,
@@ -482,14 +459,13 @@ public static class MerWriter
         }
         
         notes = notes
-            .OrderBy(x => x.Measure)
-            .ThenBy(x => x.Tick)
+            .OrderBy(x => x.Timestamp)
             .ToList();
 
         for (int i = 0; i < notes.Count; i++)
         {
             MerWriterNote writerNote = notes[i];
-            sb.Append($"{writerNote.Measure,4} {writerNote.Tick,4}    1 {writerNote.NoteType,4} {i,4} {writerNote.Position,4} {writerNote.Size,4} {writerNote.Render,4}");
+            sb.Append($"{writerNote.Timestamp.Measure,4} {writerNote.Timestamp.Tick,4}    1 {writerNote.NoteType,4} {i,4} {writerNote.Position,4} {writerNote.Size,4} {writerNote.Render,4}");
 
             if (writerNote.Direction != null)
             {

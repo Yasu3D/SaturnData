@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Core;
 /// Contains information about an object's position in time.
 /// </summary>
 [Serializable]
-public struct Timestamp : IEquatable<Timestamp>
+public struct Timestamp : IEquatable<Timestamp>, IComparable
 {
     /// <summary>
     /// Creates a timestamp from a <c>Measure</c> and <c>Tick</c> value.
@@ -104,12 +104,12 @@ public struct Timestamp : IEquatable<Timestamp>
     /// <summary>
     /// Timestamp in milliseconds.
     /// </summary>
-    public float Time;
+    public float Time { get; internal set; }
 
     /// <summary>
     /// Pseudo-Timestamp in milliseconds, scaled by scroll speed events.
     /// </summary>
-    public float ScaledTime;
+    public float ScaledTime { get; internal set; }
 
     /// <summary>
     /// Returns the larger Timestamp.
@@ -127,7 +127,7 @@ public struct Timestamp : IEquatable<Timestamp>
     public bool Equals(Timestamp other) => FullTick == other.FullTick;
     public override bool Equals(object? obj) => obj is Timestamp timestamp && Equals(timestamp);
     public override int GetHashCode() => HashCode.Combine(Measure, Tick, FullTick, Time, ScaledTime);
-        
+
     public static bool operator ==(Timestamp a, Timestamp b) => a.Equals(b);
     public static bool operator !=(Timestamp a, Timestamp b) => !a.Equals(b);
     public static bool operator >(Timestamp a, Timestamp b) => a.FullTick > b.FullTick;
@@ -141,5 +141,11 @@ public struct Timestamp : IEquatable<Timestamp>
     {
         if (b == 0) throw new DivideByZeroException();
         return new((int)(a.FullTick / b));
+    }
+    
+    public int CompareTo(object obj)
+    {
+        if (obj is not Timestamp timestamp) return 1;
+        return FullTick.CompareTo(timestamp.FullTick);
     }
 }

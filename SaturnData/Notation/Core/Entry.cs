@@ -86,6 +86,11 @@ public class Entry
     public string Guid = "";
 
     /// <summary>
+    /// The current revision of the chart. Optional and only used for users to keep track of different chart revisions.
+    /// </summary>
+    public string Revision = "";
+    
+    /// <summary>
     /// The title of the chart's song.
     /// </summary>
     public string Title = "";

@@ -1,4 +1,5 @@
 using SaturnData.Notation.Core;
+using SaturnData.Notation.Serialization.SatV2;
 
 namespace SaturnData.Notation.Serialization.SatV1;
 
@@ -9,9 +10,10 @@ public static class SatV1Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationSerializerOptions options)
+    public static Chart ToChart(string[] lines, NotationReadOptions options)
     {
-        return null;
+        // SatV2 is an extension of SatV1 and fully backwards-compatible.
+        return SatV2Reader.ToChart(lines, options);
     }
 
     /// <summary>
@@ -21,6 +23,7 @@ public static class SatV1Reader
     /// <returns></returns>
     public static Entry ToEntry(string[] lines)
     {
-        return null;
+        // SatV2 is an extension of SatV1 and fully backwards-compatible.
+        return SatV2Reader.ToEntry(lines);
     }
 }

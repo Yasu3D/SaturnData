@@ -55,9 +55,9 @@ public class HoldNote : Note, ITimeable, IPlayable
     public BonusType BonusType { get; set; }
     
     public bool IsJudgeable { get; set; }
-    
+
     /// <summary>
     /// The individual points defining the shape and path a hold note takes.
     /// </summary>
-    public readonly List<HoldPointNote> Points = [];
+    public List<HoldPointNote> Points { get; set; } = [];
 }

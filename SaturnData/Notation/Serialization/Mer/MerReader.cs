@@ -35,7 +35,7 @@ public static class MerReader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationSerializerOptions options)
+    internal static Chart ToChart(string[] lines, NotationReadOptions options)
     {
         Chart chart = new();
         
@@ -45,12 +45,13 @@ public static class MerReader
         // Hold note linking/creation
         List<MerReaderHoldNote> merHoldNotes = [];
         HashSet<MerReaderHoldNote> checkedMerHoldNotes = [];
+
+        int startIndex = Array.IndexOf(lines, "#BODY");
+        if (startIndex == -1) return chart;
         
-        // Hold note trimming
-        HashSet<HoldPointNote> noRenderHoldPoints = [];
-        
-        foreach (string line in lines)
+        for (int i = startIndex + 1; i < lines.Length; i++)
         {
+            string line = lines[i];
             try
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
@@ -84,48 +85,48 @@ public static class MerReader
                         TouchNote touchNote = new(timestamp, position, size, bonusType, true);
                         NotationUtils.AddOrCreate(chart.NoteLayers, 0, touchNote);
                     }
-                    
+
                     // Snap Forward Note
                     if (noteType is 3 or 21)
                     {
                         SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, true);
                         NotationUtils.AddOrCreate(chart.NoteLayers, 0, snapForwardNote);
                     }
-                    
+
                     // Snap Backward Note
                     if (noteType is 4 or 22)
                     {
                         SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, true);
                         NotationUtils.AddOrCreate(chart.NoteLayers, 0, snapBackwardNote);
                     }
-                    
+
                     // Slide Clockwise
                     if (noteType is 5 or 6 or 23)
                     {
                         SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, true);
                         NotationUtils.AddOrCreate(chart.NoteLayers, 0, slideClockwiseNote);
                     }
-                    
+
                     // Slide Counterclockwise
                     if (noteType is 7 or 8 or 24)
                     {
                         SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, true);
                         NotationUtils.AddOrCreate(chart.NoteLayers, 0, slideCounterclockwiseNote);
                     }
-                    
+
                     // Chain
                     if (noteType is 16 or 26)
                     {
                         ChainNote chainNote = new(timestamp, position, size, bonusType, true);
                         NotationUtils.AddOrCreate(chart.NoteLayers, 0, chainNote);
                     }
-                    
+
                     // End of Chart
                     if (noteType is 14)
                     {
                         chart.ChartEnd = timestamp;
                     }
-                    
+
                     // Hold Start / Point / End
                     if (noteType is 9 or 10 or 11 or 25)
                     {
@@ -148,48 +149,10 @@ public static class MerReader
                             Render = render,
                             Reference = reference,
                         };
-                        
+
                         merHoldNotes.Add(merReaderHoldNote);
                     }
-                    
-                    /*// Hold Start
-                    if (noteType is 9 or 25)
-                    {
-                        HoldNote holdNote = new(bonusType, true);
-                        NotationUtils.AddOrCreate(chart.NoteLayers, 0, holdNote);
 
-                        HoldPointNote holdPointNote = new(timestamp, position, size, holdNote, HoldPointRenderBehaviour.Visible);
-                        holdNote.Points.Add(holdPointNote);
-                        
-                        // Add the index that this hold note references to the dictionary.
-                        int reference = Convert.ToInt32(split[8],CultureInfo.InvariantCulture);
-                        holdNotesByLastReference.Add(reference, holdNote);
-                    }
-                    
-                    // Hold Point or Hold End
-                    if (noteType is 10 or 11)
-                    {
-                        // Look for hold note in the dictionary that references this note's index.
-                        // If it can't be found, skip.
-                        int index = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
-                        if (!holdNotesByLastReference.TryGetValue(index, out HoldNote holdNote)) continue;
-                        
-                        // Create and add hold point to parent hold.
-                        HoldPointRenderBehaviour renderBehaviour = (HoldPointRenderBehaviour)Convert.ToInt32(split[7], CultureInfo.InvariantCulture);
-                        HoldPointNote holdPointNote = new(timestamp, position, size, holdNote, renderBehaviour);
-                        holdNote.Points.Add(holdPointNote);
-                        
-                        // Only handle render behaviour and references on hold points.
-                        if (noteType is 10)
-                        {
-                            if (renderBehaviour == HoldPointRenderBehaviour.Hidden) noRenderHoldPoints.Add(holdPointNote);
-                            
-                            // Update the parent hold note reference to the next segment.
-                            int reference = Convert.ToInt32(split[8],CultureInfo.InvariantCulture);
-                            holdNotesByLastReference.Add(reference, holdNote);
-                        }
-                    }*/
-                    
                     // Mask Add
                     if (noteType is 12)
                     {
@@ -197,7 +160,7 @@ public static class MerReader
                         MaskAddNote maskAddNote = new(timestamp, position, size, direction);
                         chart.Masks.Add(maskAddNote);
                     }
-                    
+
                     // Mask Remove
                     if (noteType is 13)
                     {
@@ -292,7 +255,7 @@ public static class MerReader
                 // ignored, continue to the next line.
             }
         }
-        
+
         // Create real hold notes from temporary Mer holds.
         // This is *incredibly* inefficient...
         foreach (MerReaderHoldNote merHoldNote in merHoldNotes)
@@ -322,29 +285,17 @@ public static class MerReader
                 
                 HoldPointNote holdPointNote = new(new(current.Measure, current.Tick), current.Position, current.Size, (HoldPointRenderBehaviour)current.Render);
                 holdNote.Points.Add(holdPointNote);
-
-                if (holdPointNote.RenderBehaviour == HoldPointRenderBehaviour.Hidden)
-                {
-                    noRenderHoldPoints.Add(holdPointNote);
-                }
                 
                 current = current.Reference == null
                     ? null
                     : merHoldNotes.FirstOrDefault(x => x.Index == current.Reference);
             }
-            
+
+            holdNote.Points = holdNote.Points.OrderBy(x => x.Timestamp).ToList();
             NotationUtils.AddOrCreate(chart.NoteLayers, 0, holdNote);
         }
 
-        // Trim all no-render hold points.
-        if (options.TrimHoldNotes)
-        {
-            Console.WriteLine("Trim!");
-            foreach (HoldPointNote holdPoint in noRenderHoldPoints)
-            {
-                holdPoint.Parent.Points.Remove(holdPoint);
-            }
-        }
+        NotationUtils.PostProcessChart(chart, options);
         
         return chart;
     }
@@ -354,7 +305,7 @@ public static class MerReader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines)
+    internal static Entry ToEntry(string[] lines)
     {
         Entry entry = new();
         
@@ -369,24 +320,33 @@ public static class MerReader
                 if (NotationUtils.ContainsKey(line, "#X_BAKKA_MUSIC_FILENAME ", out value)) { entry.AudioPath = value; }
                 
                 if (NotationUtils.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioPath = value; }
-                if (NotationUtils.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value); }
+                if (NotationUtils.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 if (NotationUtils.ContainsKey(line, "#EDITOR_AUTHOR ",          out value)) { entry.NotesDesigner = value; }
-                if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value) * 1000; }
-                if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.PreviewDuration = Convert.ToSingle(value) * 1000; }
-                if (NotationUtils.ContainsKey(line, "#EDITOR_OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value) * 1000; }
-                if (NotationUtils.ContainsKey(line, "#EDITOR_MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.PreviewDuration = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#EDITOR_OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#EDITOR_MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
             
                 // WACK COMPATIBILITY
                 if (NotationUtils.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value); }
                 if (NotationUtils.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioPath = value; }
                 if (NotationUtils.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
-                if (NotationUtils.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value) * 1000; }
-                if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewDuration = Convert.ToSingle(value) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewDuration = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
                 // MER COMPATIBILITY
                 if (NotationUtils.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioPath = value; }
-                if (NotationUtils.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value) * 1000; }
-                if (NotationUtils.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                
+                // PROTOTYPE MER COMPATIBILITY
+                if (NotationUtils.ContainsKey(line, "#MUSIC_NAME @JPN ",               out value)) { entry.Title = value; }
+                if (NotationUtils.ContainsKey(line, "#MUSIC_NAME_RUBY @JPN ",          out value)) { entry.Reading = value; }
+                if (NotationUtils.ContainsKey(line, "#ARTIST_NAME @JPN ",              out value)) { entry.Artist = value; }
+                if (NotationUtils.ContainsKey(line, "#MUSIC_SCORE_CREATOR_NAME @JPN ", out value)) { entry.NotesDesigner = value; }
+                if (NotationUtils.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketPath = value; }
+                if (NotationUtils.ContainsKey(line, "#DIFFICULTY ",                    out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationUtils.ContainsKey(line, "#DISPLAY_BPM ",                   out value)) { entry.BpmMessage = value; }
             }
             catch
             {

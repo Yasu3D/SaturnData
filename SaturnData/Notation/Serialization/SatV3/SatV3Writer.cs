@@ -10,7 +10,7 @@ public static class SatV3Writer
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, NotationSerializerOptions options)
+    public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
     {
         return "";
     }

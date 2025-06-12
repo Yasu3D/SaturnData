@@ -1,6 +1,6 @@
 namespace SaturnData.Notation.Serialization;
 
-public struct NotationSerializerOptions
+public struct NotationWriteOptions
 {
     public enum WriteMerMusicFilePathOption
     {
@@ -32,10 +32,9 @@ public struct NotationSerializerOptions
         WithExtension = 2,
     }
 
-    public NotationSerializerOptions()
+    public NotationWriteOptions()
     {
         WriteMerMusicFilePath = WriteMerMusicFilePathOption.NoExtension;
-        TrimHoldNotes = true;
         BakeHoldNotes = true;
     }
 
@@ -43,11 +42,6 @@ public struct NotationSerializerOptions
     /// Determines how the <c>#MUSIC_FILE_PATH</c> tag is written in a Mer format file.
     /// </summary>
     public WriteMerMusicFilePathOption WriteMerMusicFilePath { get; set; }
-    
-    /// <summary>
-    /// Determines if no-render segments are removed when importing.
-    /// </summary>
-    public bool TrimHoldNotes { get; set; }
     
     /// <summary>
     /// Determines if no-render segments are created when exporting.

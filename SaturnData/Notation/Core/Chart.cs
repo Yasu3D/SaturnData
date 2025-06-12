@@ -26,6 +26,11 @@ public class Chart
     /// All mask notes.
     /// </summary>
     public readonly List<Note> Masks = [];
+    
+    /// <summary>
+    /// Editor-only bookmarks.
+    /// </summary>
+    public readonly List<Bookmark> Bookmarks = [];
 
     /// <summary>
     /// The Chart End timestamp, where playback stops and the gameplay result is shown.

@@ -17,7 +17,7 @@ public static class NotationSerializer
     /// <param name="chart">The chart to serialize.</param>
     /// <param name="formatVersion">The format to serialize as.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, FormatVersion formatVersion, NotationSerializerOptions options)
+    public static string ToString(Entry entry, Chart chart, FormatVersion formatVersion, NotationWriteOptions options)
     {
         return formatVersion switch
         {
@@ -34,7 +34,7 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="path">The file to open.</param>
     /// <returns></returns>
-    public static Chart ToChart(string path, NotationSerializerOptions options)
+    public static Chart ToChart(string path, NotationReadOptions options)
     {
         try
         {
@@ -52,7 +52,7 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationSerializerOptions options)
+    public static Chart ToChart(string[] lines, NotationReadOptions options)
     {
         try
         {

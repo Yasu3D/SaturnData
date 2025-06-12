@@ -2,7 +2,7 @@ namespace SaturnData.Notation.Interfaces;
 
 public enum MaskDirection
 {
-    CounterClockwise = 0,
+    Counterclockwise = 0,
     Clockwise = 1,
     Center = 2,
     Instant = 3,
