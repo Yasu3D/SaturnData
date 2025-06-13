@@ -6,9 +6,9 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note that hides the tunnel lanes it occupies once it reaches the judgement line.
 /// </summary>
-public class MaskSubtractNote : Note, ITimeable, IPositionable, IMask
+public class LaneHideNote : Note, ITimeable, IPositionable, ILaneToggle
 {
-    public MaskSubtractNote(MaskSubtractNote cloneSource)
+    public LaneHideNote(LaneHideNote cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
         Position = cloneSource.Position;
@@ -16,7 +16,7 @@ public class MaskSubtractNote : Note, ITimeable, IPositionable, IMask
         Direction = cloneSource.Direction;
     }
     
-    public MaskSubtractNote(Timestamp timestamp, int position, int size, MaskDirection direction)
+    public LaneHideNote(Timestamp timestamp, int position, int size, LaneSweepDirection direction)
     {
         Timestamp = timestamp;
         Position = position;
@@ -30,5 +30,5 @@ public class MaskSubtractNote : Note, ITimeable, IPositionable, IMask
     
     public int Size { get; set; }
     
-    public MaskDirection Direction { get; set; }
+    public LaneSweepDirection Direction { get; set; }
 }

@@ -18,14 +18,14 @@ public class Chart
     public readonly Dictionary<int, Layer<Event>> EventLayers = new();
     
     /// <summary>
-    /// All notes (except mask notes), grouped by layer.
+    /// All notes (except lane toggle notes), grouped by layer.
     /// </summary>
     public readonly Dictionary<int, Layer<Note>> NoteLayers = new();
 
     /// <summary>
-    /// All mask notes.
+    /// All lane toggle notes.
     /// </summary>
-    public readonly List<Note> Masks = [];
+    public readonly List<Note> LaneToggles = [];
     
     /// <summary>
     /// Editor-only bookmarks.

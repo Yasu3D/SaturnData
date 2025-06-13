@@ -169,7 +169,7 @@ public static class SatV2Writer
             if (layerIndex > 9) break;
         }
         
-        notes.AddRange(chart.Masks);
+        notes.AddRange(chart.LaneToggles);
 
         notes = notes
             .OrderBy(x => ((ITimeable)x).Timestamp)
@@ -220,8 +220,8 @@ public static class SatV2Writer
                     SlideClockwiseNote => "SLIDE_CW",
                     SlideCounterclockwiseNote => "SLIDE_CCW",
                     ChainNote => "CHAIN",
-                    MaskAddNote => "MASK_ADD",
-                    MaskSubtractNote => "MASK_SUB",
+                    LaneShowNote => "MASK_ADD",
+                    LaneHideNote => "MASK_SUB",
                     _ => "UNKNOWN",
                 };
 
@@ -238,14 +238,14 @@ public static class SatV2Writer
                     };
                 }
 
-                if (note is IMask mask)
+                if (note is ILaneToggle laneToggle)
                 {
-                    attributes += mask.Direction switch
+                    attributes += laneToggle.Direction switch
                     {
-                        MaskDirection.Counterclockwise => ".CCW",
-                        MaskDirection.Clockwise => ".CW",
-                        MaskDirection.Center => ".CENTER",
-                        MaskDirection.Instant => ".CENTER",
+                        LaneSweepDirection.Counterclockwise => ".CCW",
+                        LaneSweepDirection.Clockwise => ".CW",
+                        LaneSweepDirection.Center => ".CENTER",
+                        LaneSweepDirection.Instant => ".CENTER",
                         _ => "",
                     };
                 }

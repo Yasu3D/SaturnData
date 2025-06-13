@@ -153,20 +153,20 @@ public static class MerReader
                         merHoldNotes.Add(merReaderHoldNote);
                     }
 
-                    // Mask Add
+                    // Lane Show
                     if (noteType is 12)
                     {
-                        MaskDirection direction = (MaskDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
-                        MaskAddNote maskAddNote = new(timestamp, position, size, direction);
-                        chart.Masks.Add(maskAddNote);
+                        LaneSweepDirection direction = (LaneSweepDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        LaneShowNote laneShowNote = new(timestamp, position, size, direction);
+                        chart.LaneToggles.Add(laneShowNote);
                     }
 
-                    // Mask Remove
+                    // Lane Hide
                     if (noteType is 13)
                     {
-                        MaskDirection direction = (MaskDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
-                        MaskSubtractNote maskSubtractNote = new(timestamp, position, size, direction);
-                        chart.Masks.Add(maskSubtractNote);
+                        LaneSweepDirection direction = (LaneSweepDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        LaneHideNote laneHideNote = new(timestamp, position, size, direction);
+                        chart.LaneToggles.Add(laneHideNote);
                     }
                 }
 

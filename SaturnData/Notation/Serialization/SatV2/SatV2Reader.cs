@@ -13,6 +13,11 @@ namespace SaturnData.Notation.Serialization.SatV2;
 internal static class SatV2Reader
 { 
     /// <summary>
+    /// RegEx pattern to parse bookmarks.
+    /// </summary>
+    private const string BookmarkRegExPattern = @"^\s*(\d+)\s+(\d+)\s+(\d+)\s+(.*)";
+    
+    /// <summary>
     /// Reads chart data and converts it into a chart.
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
@@ -30,23 +35,14 @@ internal static class SatV2Reader
         string[] bookmarks = lines[(bookmarkIndex + 1)..eventIndex];
         string[] events = lines[(eventIndex + 1)..objectIndex];
         string[] objects = lines[(objectIndex + 1)..];
-
-        // Skip whitespace at beginning of string,
-        // Capture 1 or more digits, (MEASURE)
-        // Skip whitespace,
-        // Capture 1 or more digits, (TICK)
-        // Skip whitespace,
-        // Capture 1 or more digits, (INDEX)
-        // Skip whitespace,
-        // Capture any remaining characters. (MESSAGE)
-        const string pattern = @"^\s*(\d+)\s+(\d+)\s+(\d+)\s+(.*)";
+        
         foreach (string line in bookmarks)
         {
             try
             {
                 if (line.StartsWith('#')) continue;
 
-                Match match = Regex.Match(line, pattern);
+                Match match = Regex.Match(line, BookmarkRegExPattern);
                 if (!match.Success) continue;
 
                 // match 3 is the index and can be ignored.
@@ -272,16 +268,16 @@ internal static class SatV2Reader
                 
                 if (type == "MASK_ADD")
                 {
-                    MaskDirection direction = attributes2MaskDirection(attributes);
-                    MaskAddNote maskAddNote = new(timestamp, position, size, direction);
-                    chart.Masks.Add(maskAddNote);
+                    LaneSweepDirection direction = attributes2LaneToggleDirection(attributes);
+                    LaneShowNote laneShowNote = new(timestamp, position, size, direction);
+                    chart.LaneToggles.Add(laneShowNote);
                 }
                 
                 if (type == "MASK_SUB")
                 {
-                    MaskDirection direction = attributes2MaskDirection(attributes);
-                    MaskSubtractNote maskSubtractNote = new(timestamp, position, size, direction);
-                    chart.Masks.Add(maskSubtractNote);
+                    LaneSweepDirection direction = attributes2LaneToggleDirection(attributes);
+                    LaneHideNote laneHideNote = new(timestamp, position, size, direction);
+                    chart.LaneToggles.Add(laneHideNote);
                 }
             }
             catch
@@ -325,16 +321,16 @@ internal static class SatV2Reader
             return BonusType.None;
         }
 
-        MaskDirection attributes2MaskDirection(string[] attributes)
+        LaneSweepDirection attributes2LaneToggleDirection(string[] attributes)
         {
             foreach (string a in attributes)
             {
-                if (a == "CW") return MaskDirection.Clockwise;
-                if (a == "CCW") return MaskDirection.Counterclockwise;
-                if (a == "CENTER") return MaskDirection.Center;
+                if (a == "CW") return LaneSweepDirection.Clockwise;
+                if (a == "CCW") return LaneSweepDirection.Counterclockwise;
+                if (a == "CENTER") return LaneSweepDirection.Center;
             }
 
-            return MaskDirection.Clockwise;
+            return LaneSweepDirection.Clockwise;
         }
 
         HoldPointRenderBehaviour attributes2RenderBehaviour(string[] attributes)
@@ -353,7 +349,7 @@ internal static class SatV2Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Entry ToEntry(string[] lines)
+    internal static Entry ToEntry(string[] lines, NotationReadOptions options)
     {
         Entry entry = new();
 
@@ -394,6 +390,8 @@ internal static class SatV2Reader
                 // ignored, continue
             }
         }
+
+        NotationUtils.PostProcessEntry(entry, options);
 
         return entry;
     }

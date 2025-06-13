@@ -6,9 +6,9 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note that shows the tunnel lanes it occupies once it reaches the judgement line.
 /// </summary>
-public class MaskAddNote : Note, ITimeable, IPositionable, IMask
+public class LaneShowNote : Note, ITimeable, IPositionable, ILaneToggle
 {
-    public MaskAddNote(MaskAddNote cloneSource)
+    public LaneShowNote(LaneShowNote cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
         Position = cloneSource.Position;
@@ -16,7 +16,7 @@ public class MaskAddNote : Note, ITimeable, IPositionable, IMask
         Direction = cloneSource.Direction;
     }
     
-    public MaskAddNote(Timestamp timestamp, int position, int size, MaskDirection direction)
+    public LaneShowNote(Timestamp timestamp, int position, int size, LaneSweepDirection direction)
     {
         Timestamp = timestamp;
         Position = position;
@@ -30,5 +30,5 @@ public class MaskAddNote : Note, ITimeable, IPositionable, IMask
     
     public int Size { get; set; }
     
-    public MaskDirection Direction { get; set; }
+    public LaneSweepDirection Direction { get; set; }
 }

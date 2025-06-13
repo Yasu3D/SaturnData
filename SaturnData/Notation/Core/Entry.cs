@@ -130,6 +130,8 @@ public class Entry
     /// </summary>
     public float Level = 0;
 
+    public float ClearThreshold = 0.45f;
+    
     /// <summary>
     /// The timestamp the chart preview starts at <b>in milliseconds</b>
     /// </summary>

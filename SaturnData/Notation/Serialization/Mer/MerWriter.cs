@@ -407,34 +407,34 @@ public static class MerWriter
             }
         }
         
-        // Add all mask notes.
-        foreach (Note mask in chart.Masks)
+        // Add all lane toggle notes.
+        foreach (Note laneToggle in chart.LaneToggles)
         {
-            if (mask is MaskAddNote maskAddNote)
+            if (laneToggle is LaneShowNote laneShowNote)
             {
                 notes.Add(new()
                 {
-                    Timestamp = maskAddNote.Timestamp,
+                    Timestamp = laneShowNote.Timestamp,
                     NoteType = 12,
-                    Position = maskAddNote.Position,
-                    Size = maskAddNote.Size,
+                    Position = laneShowNote.Position,
+                    Size = laneShowNote.Size,
                     Render = 1,
-                    Direction = (int)maskAddNote.Direction,
+                    Direction = (int)laneShowNote.Direction,
                 });
 
                 continue;
             }
 
-            if (mask is MaskSubtractNote maskSubtractNote)
+            if (laneToggle is LaneHideNote laneHideNote)
             {
                 notes.Add(new()
                 {
-                    Timestamp = maskSubtractNote.Timestamp,
+                    Timestamp = laneHideNote.Timestamp,
                     NoteType = 13,
-                    Position = maskSubtractNote.Position,
-                    Size = maskSubtractNote.Size,
+                    Position = laneHideNote.Position,
+                    Size = laneHideNote.Size,
                     Render = 1,
-                    Direction = (int)maskSubtractNote.Direction,
+                    Direction = (int)laneHideNote.Direction,
                 });
 
                 continue;

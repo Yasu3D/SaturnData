@@ -77,12 +77,12 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="path">The file to open.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string path)
+    public static Entry ToEntry(string path, NotationReadOptions options)
     {
         try
         {
             string[] lines = File.ReadAllLines(path);
-            Entry entry = ToEntry(lines);
+            Entry entry = ToEntry(lines, options);
             entry.ChartPath = path;
             
             return entry;
@@ -98,7 +98,7 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines)
+    public static Entry ToEntry(string[] lines, NotationReadOptions options)
     {
         try
         {
@@ -107,8 +107,8 @@ public static class NotationSerializer
             return formatVersion switch
             {
                 FormatVersion.Mer => MerReader.ToEntry(lines),
-                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines),
-                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines),
+                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, options),
+                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, options),
                 FormatVersion.SatV3 => SatV3Reader.ToEntry(lines),
                 _ => throw new(),
             };

@@ -78,7 +78,22 @@ internal static class NotationUtils
                 }
             }
         }
-        
-        
+    }
+
+    internal static void PostProcessEntry(Entry entry, NotationReadOptions options)
+    {
+        if (options.InferClearThresholdFromDifficulty)
+        {
+            entry.ClearThreshold = entry.Diff switch
+            {
+                Difficulty.None => 0.45f,
+                Difficulty.Normal => 0.45f,
+                Difficulty.Hard => 0.55f,
+                Difficulty.Expert => 0.8f,
+                Difficulty.Inferno => 0.8f,
+                Difficulty.WorldsEnd => 0.8f,
+                _ => 0.45f,
+            };
+        }  
     }
 }
