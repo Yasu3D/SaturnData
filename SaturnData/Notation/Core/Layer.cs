@@ -5,5 +5,6 @@ namespace SaturnData.Notation.Core;
 public class Layer<T>(string name)
 {
     public string Name { get; set; } = name;
-    public List<T> Items { get; }= [];
+    public List<T> Events { get; } = [];
+    public List<T> Notes { get; } = [];
 }

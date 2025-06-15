@@ -89,7 +89,7 @@ internal static class SatV2Reader
                     float bpm = Convert.ToSingle(split[4], CultureInfo.InvariantCulture);
                     BpmChangeEvent bpmChangeEvent = new(timestamp, bpm);
 
-                    chart.GlobalEvents.Add(bpmChangeEvent);
+                    chart.Events.Add(bpmChangeEvent);
                 }
 
                 if (type == "TIMESIG" && split.Length == 6)
@@ -98,7 +98,7 @@ internal static class SatV2Reader
                     int lower = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
                     TimeSignatureChangeEvent timeSignatureChangeEvent = new(timestamp, upper, lower);
 
-                    chart.GlobalEvents.Add(timeSignatureChangeEvent);
+                    chart.Events.Add(timeSignatureChangeEvent);
                 }
 
                 if (type == "HISPEED" && split.Length == 5)
@@ -373,7 +373,7 @@ internal static class SatV2Reader
 
                 if (NotationUtils.ContainsKey(line, "@BACKGROUND ", out value)) entry.Background = (BackgroundOption)Convert.ToInt32(value, CultureInfo.InvariantCulture);
 
-                if (NotationUtils.ContainsKey(line, "@DIFF ", out value)) entry.Diff = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture);
+                if (NotationUtils.ContainsKey(line, "@DIFF ", out value)) entry.Difficulty = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture);
                 if (NotationUtils.ContainsKey(line, "@LEVEL ", out value)) entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture);
 
                 if (NotationUtils.ContainsKey(line, "@PREVIEW_START ", out value)) entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;

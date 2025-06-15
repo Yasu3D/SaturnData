@@ -51,6 +51,7 @@ public static class MerWriter
     public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
     {
         StringBuilder sb = new();
+        NotationUtils.PreProcessChart(chart, options);
 
         WriteMetadata(sb, entry, options);
         WriteEvents(sb, chart, options);
@@ -102,7 +103,7 @@ public static class MerWriter
         List<MerWriterEvent> events = [];
         
         // Add all global events
-        foreach (Event globalEvent in chart.GlobalEvents)
+        foreach (Event globalEvent in chart.Events)
         {
             if (globalEvent is BpmChangeEvent bpmChangeEvent)
             {
@@ -442,11 +443,7 @@ public static class MerWriter
         }
         
         // Add chart end.
-        if (options.GenerateChartEnd && chart.ChartEnd == null)
-        {
-            throw new NotImplementedException();
-        }
-        else if (chart.ChartEnd != null)
+        if (chart.ChartEnd != null)
         {
             notes.Add(new()
             {

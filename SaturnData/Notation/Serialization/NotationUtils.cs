@@ -58,7 +58,15 @@ internal static class NotationUtils
 
     internal static void PreProcessChart(Chart chart, NotationWriteOptions options)
     {
+        if (options.BakeHoldNotes)
+        {
+            // TODO
+        }
         
+        if (chart.ChartEnd == null && options.GenerateChartEnd)
+        {
+            // TODO
+        }
     }
     
     internal static void PostProcessChart(Chart chart, NotationReadOptions options)
@@ -84,7 +92,7 @@ internal static class NotationUtils
     {
         if (options.InferClearThresholdFromDifficulty)
         {
-            entry.ClearThreshold = entry.Diff switch
+            entry.ClearThreshold = entry.Difficulty switch
             {
                 Difficulty.None => 0.45f,
                 Difficulty.Normal => 0.45f,

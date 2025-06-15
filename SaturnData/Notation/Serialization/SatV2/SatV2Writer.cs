@@ -22,6 +22,7 @@ public static class SatV2Writer
     public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
     {
         StringBuilder sb = new();
+        NotationUtils.PreProcessChart(chart, options);
 
         WriteMetadata(sb, entry, options);
         WriteBookmarks(sb, chart, options);
@@ -49,8 +50,9 @@ public static class SatV2Writer
         sb.Append('\n');
         sb.Append($"{"@BACKGROUND",-16}{(int)entry.Background}\n");
         sb.Append('\n');
-        sb.Append($"{"@DIFF",-16}{(int)entry.Diff}\n");
-        sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("F1", CultureInfo.InvariantCulture)}\n");
+        sb.Append($"{"@DIFF",-16}{(int)entry.Difficulty}\n");
+        sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("F6", CultureInfo.InvariantCulture)}\n");
+        sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("F6", CultureInfo.InvariantCulture)}\n");
         sb.Append('\n');
         sb.Append($"{"@PREVIEW_START",-16}{(entry.PreviewBegin / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
         sb.Append($"{"@PREVIEW_TIME",-16}{(entry.PreviewDuration / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
@@ -82,7 +84,7 @@ public static class SatV2Writer
         List<Event> events = [];
         Dictionary<Event, int> layerIndices = new();
         
-        events.AddRange(chart.GlobalEvents);
+        events.AddRange(chart.Events);
 
         int layerIndex = 0;
         foreach (Layer<Event> layer in chart.EventLayers.Values)

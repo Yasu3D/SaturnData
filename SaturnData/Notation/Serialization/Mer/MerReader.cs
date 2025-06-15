@@ -176,7 +176,7 @@ public static class MerReader
                     float bpm = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
                     BpmChangeEvent bpmChangeEvent = new(timestamp, bpm);
 
-                    chart.GlobalEvents.Add(bpmChangeEvent);
+                    chart.Events.Add(bpmChangeEvent);
                 }
 
                 // Time Signature Change Event
@@ -188,7 +188,7 @@ public static class MerReader
                         : Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
                     TimeSignatureChangeEvent timeSignatureChangeEvent = new(timestamp, upper, lower);
 
-                    chart.GlobalEvents.Add(timeSignatureChangeEvent);
+                    chart.Events.Add(timeSignatureChangeEvent);
                 }
 
                 // HiSpeed Change Event

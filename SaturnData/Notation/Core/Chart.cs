@@ -10,18 +10,13 @@ public class Chart
     /// <summary>
     /// All global events that aren't bound to layers.
     /// </summary>
-    public readonly List<Event> GlobalEvents = [];
+    public readonly List<Event> Events = [];
     
     /// <summary>
-    /// All events that are bound to layers, grouped by layer.
+    /// All local events and notes, grouped by layer.
     /// </summary>
-    public readonly Dictionary<int, Layer<Event>> EventLayers = new();
+    public readonly List<Layer<Event>> Layers = [];
     
-    /// <summary>
-    /// All notes (except lane toggle notes), grouped by layer.
-    /// </summary>
-    public readonly Dictionary<int, Layer<Note>> NoteLayers = new();
-
     /// <summary>
     /// All lane toggle notes.
     /// </summary>

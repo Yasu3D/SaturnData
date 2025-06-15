@@ -123,7 +123,7 @@ public class Entry
     /// <summary>
     /// The difficulty category of the chart.
     /// </summary>
-    public Difficulty Diff = Difficulty.Normal;
+    public Difficulty Difficulty = Difficulty.Normal;
 
     /// <summary>
     /// The level (or constant) of the chart.
@@ -141,16 +141,6 @@ public class Entry
     /// The duration of the chart preview <b>in milliseconds</b>
     /// </summary>
     public float PreviewDuration = 10;
-    
-    /// <summary>
-    /// Audio offset <b>in milliseconds</b>
-    /// </summary>
-    public float AudioOffset = 0;
-
-    /// <summary>
-    /// Video offset <b>in milliseconds</b>
-    /// </summary>
-    public float VideoOffset = 0;
 
     /// <summary>
     /// Absolute filepath to the chart file that defined this entry.
@@ -173,10 +163,25 @@ public class Entry
     public string JacketPath = "";
 
     /// <summary>
+    /// Audio offset <b>in milliseconds</b>
+    /// </summary>
+    public float AudioOffset = 0;
+
+    /// <summary>
+    /// Video offset <b>in milliseconds</b>
+    /// </summary>
+    public float VideoOffset = 0;
+
+    /// <summary>
+    /// Should this chart be shown in tutorial mode?
+    /// </summary>
+    public bool IsTutorial = false;
+    
+    /// <summary>
     /// Does a file exist at <c>VideoPath</c>?
     /// </summary>
     public bool VideoExists => File.Exists(VideoPath);
-
+    
     /// <summary>
     /// Returns the integer part of the level, and adds a + if the decimal part is >= 0.7.
     /// </summary>
