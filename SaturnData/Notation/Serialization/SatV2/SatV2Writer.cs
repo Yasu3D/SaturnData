@@ -55,7 +55,7 @@ public static class SatV2Writer
         sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("F6", CultureInfo.InvariantCulture)}\n");
         sb.Append('\n');
         sb.Append($"{"@PREVIEW_START",-16}{(entry.PreviewBegin / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-        sb.Append($"{"@PREVIEW_TIME",-16}{(entry.PreviewDuration / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+        sb.Append($"{"@PREVIEW_TIME",-16}{(entry.PreviewLength / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
         sb.Append('\n');
         sb.Append($"{"@JACKET",-16}{Path.GetFileName(entry.JacketPath)}\n");
         sb.Append($"{"@BGM",-16}{Path.GetFileName(entry.AudioPath)}\n");
@@ -87,9 +87,9 @@ public static class SatV2Writer
         events.AddRange(chart.Events);
 
         int layerIndex = 0;
-        foreach (Layer<Event> layer in chart.EventLayers.Values)
+        foreach (Layer layer in chart.Layers)
         {
-            foreach (Event @event in layer.Items)
+            foreach (Event @event in layer.Events)
             {
                 events.Add(@event);
                 layerIndices.Add(@event, layerIndex);
@@ -159,9 +159,9 @@ public static class SatV2Writer
         Dictionary<Note, int> layerIndices = new();
         
         int layerIndex = 0;
-        foreach (Layer<Note> layer in chart.NoteLayers.Values)
+        foreach (Layer layer in chart.Layers)
         {
-            foreach (Note note in layer.Items)
+            foreach (Note note in layer.Notes)
             {
                 notes.Add(note);
                 layerIndices.Add(note, layerIndex);

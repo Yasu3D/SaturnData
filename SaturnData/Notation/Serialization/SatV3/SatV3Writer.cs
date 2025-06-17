@@ -33,37 +33,46 @@ public static class SatV3Writer
 
     public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteOptions options)
     {
-        if (options.ExportWatermark != null)
+        try
         {
-            sb.Append($"# {options.ExportWatermark}\n");
+            if (options.ExportWatermark != null)
+            {
+                sb.Append($"# {options.ExportWatermark}\n");
+            }
+
+            sb.Append($"{"@SAT_VERSION",-16}3\n");
+            sb.Append('\n');
+            sb.Append($"{"@REVISION",-16}{entry.Revision}\n");
+            sb.Append($"{"@GUID",-16}{entry.Guid}\n");
+            sb.Append($"{"@TITLE",-16}{entry.Title}\n");
+            sb.Append($"{"@READING",-16}{entry.Reading}\n");
+            sb.Append($"{"@ARTIST",-16}{entry.Artist}\n");
+            sb.Append($"{"@NOTES_DESIGNER",-16}{entry.NotesDesigner}\n");
+            sb.Append($"{"@BPM_MESSAGE",-16}{entry.BpmMessage}\n");
+            sb.Append('\n');
+            sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
+            sb.Append('\n');
+            sb.Append($"{"@DIFFICULTY",-16}{difficulty2String(entry.Difficulty)}\n");
+            sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("F1", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("F2", CultureInfo.InvariantCulture)}\n");
+            sb.Append('\n');
+            sb.Append($"{"@PREVIEW_BEGIN",-16}{(entry.PreviewBegin / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@PREVIEW_LENGTH",-16}{(entry.PreviewLength / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append('\n');
+            sb.Append($"{"@JACKET",-16}{Path.GetFileName(entry.JacketPath)}\n");
+            sb.Append($"{"@AUDIO",-16}{Path.GetFileName(entry.AudioPath)}\n");
+            sb.Append($"{"@VIDEO",-16}{Path.GetFileName(entry.VideoPath)}\n");
+            sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append('\n');
+            sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.IsTutorial)}\n");
+            sb.Append('\n');
         }
-        
-        sb.Append($"{"@SAT_VERSION",-16}2\n");
-        sb.Append($"{"@REVISION",-16}{entry.Revision}\n");
-        sb.Append($"{"@GUID",-16}{entry.Guid}\n");
-        sb.Append($"{"@TITLE",-16}{entry.Title}\n");
-        sb.Append($"{"@READING",-16}{entry.Reading}\n");
-        sb.Append($"{"@ARTIST",-16}{entry.Artist}\n");
-        sb.Append($"{"@NOTES_DESIGNER",-16}{entry.NotesDesigner}\n");
-        sb.Append($"{"@BPM_MESSAGE",-16}{entry.BpmMessage}\n");
-        sb.Append('\n');
-        sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
-        sb.Append('\n');
-        sb.Append($"{"@DIFFICULTY",-16}{difficulty2String(entry.Difficulty)}\n");
-        sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("F1", CultureInfo.InvariantCulture)}\n");
-        sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("F2", CultureInfo.InvariantCulture)}\n");
-        sb.Append('\n');
-        sb.Append($"{"@PREVIEW_START",-16}{(entry.PreviewBegin / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-        sb.Append($"{"@PREVIEW_TIME",-16}{(entry.PreviewDuration / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-        sb.Append('\n');
-        sb.Append($"{"@JACKET",-16}{Path.GetFileName(entry.JacketPath)}\n");
-        sb.Append($"{"@AUDIO",-16}{Path.GetFileName(entry.AudioPath)}\n");
-        sb.Append($"{"@VIDEO",-16}{Path.GetFileName(entry.VideoPath)}\n");
-        sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-        sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-        sb.Append('\n');
-        sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.IsTutorial)}\n");
-        sb.Append('\n');
+        catch
+        {
+            // ignored
+        }
+
         return;
 
         string background2String(BackgroundOption background)
@@ -128,7 +137,7 @@ public static class SatV3Writer
 
             if (@event is TimeSignatureChangeEvent timeSignatureChangeEvent)
             {
-                sb.Append($"{"TEMPO",-9} {timeSignatureChangeEvent.Timestamp.Measure,-4} {timeSignatureChangeEvent.Timestamp.Tick,-4} {timeSignatureChangeEvent.Upper,4}   {timeSignatureChangeEvent.Lower,4}\n");
+                sb.Append($"{"METRE",-9} {timeSignatureChangeEvent.Timestamp.Measure,-4} {timeSignatureChangeEvent.Timestamp.Tick,-4} {timeSignatureChangeEvent.Upper,4}   {timeSignatureChangeEvent.Lower,4}\n");
             }
 
             if (@event is TutorialTagEvent tutorialTagEvent)
@@ -139,7 +148,7 @@ public static class SatV3Writer
         
         if (chart.ChartEnd != null)
         {
-            sb.Append($"{"END",-9}{chart.ChartEnd.Value.Measure,-4} {chart.ChartEnd.Value.Tick,-4}\n");
+            sb.Append($"{"END",-9} {chart.ChartEnd.Value.Measure,-4} {chart.ChartEnd.Value.Tick,-4}\n");
         }
         
         sb.Append('\n');
@@ -180,6 +189,129 @@ public static class SatV3Writer
     
     public static void WriteLayers(StringBuilder sb, Chart chart, NotationWriteOptions options)
     {
-        
+        for (int l = 0; l < chart.Layers.Count; l++)
+        {
+            Layer layer = chart.Layers[l];
+            
+            sb.Append($"@LAYER {layer.Name}\n");
+
+            foreach (Event @event in layer.Events)
+            {
+                if (@event is HiSpeedChangeEvent hiSpeedChangeEvent)
+                {
+                    sb.Append($"{"SPEED",-9} {hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {hiSpeedChangeEvent.HiSpeed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
+                }
+
+                if (@event is InvisibleEffectEvent invisibleEffectEvent)
+                {
+                    sb.Append($"{"INVIS",-9} {invisibleEffectEvent.Timestamp.Measure,-4} {invisibleEffectEvent.Timestamp.Tick,-4} {bool2String(invisibleEffectEvent.Visible),11}\n");
+                }
+
+                if (@event is ReverseEffectEvent reverseEffectEvent)
+                {
+                    sb.Append($"{"REVERSE",-9} {reverseEffectEvent.SubEvents[0].Timestamp.Measure,-4} {reverseEffectEvent.SubEvents[0].Timestamp.Tick,-4}\n");
+                    sb.Append($"{"|",-9} {reverseEffectEvent.SubEvents[1].Timestamp.Measure,-4} {reverseEffectEvent.SubEvents[1].Timestamp.Tick,-4}\n");
+                    sb.Append($"{"|",-9} {reverseEffectEvent.SubEvents[2].Timestamp.Measure,-4} {reverseEffectEvent.SubEvents[2].Timestamp.Tick,-4}\n");
+                }
+
+                if (@event is StopEffectEvent stopEffectEvent)
+                {
+                    sb.Append($"{"STOP",-9} {stopEffectEvent.SubEvents[0].Timestamp.Measure,-4} {stopEffectEvent.SubEvents[0].Timestamp.Tick,-4}\n");
+                    sb.Append($"{"|",-9} {stopEffectEvent.SubEvents[1].Timestamp.Measure,-4} {stopEffectEvent.SubEvents[1].Timestamp.Tick,-4}\n");
+                }
+            }
+
+            sb.Append('\n');
+
+            for (int n = 0; n < layer.Notes.Count; n++)
+            {
+                Note note = layer.Notes[n];
+                
+                if (note is TouchNote touchNote)
+                {
+                    sb.Append($"{"TOUCH" + attributes2String(touchNote),-9} {touchNote.Timestamp.Measure,-4} {touchNote.Timestamp.Tick,-4} {touchNote.Position,-4} {touchNote.Size,-4}\n");
+                }
+
+                if (note is SnapForwardNote snapForwardNote)
+                {
+                    sb.Append($"{"SNFWD" + attributes2String(snapForwardNote),-9} {snapForwardNote.Timestamp.Measure,-4} {snapForwardNote.Timestamp.Tick,-4} {snapForwardNote.Position,-4} {snapForwardNote.Size,-4}\n");
+                }
+
+                if (note is SnapBackwardNote snapBackwardNote)
+                {
+                    sb.Append($"{"SNBWD" + attributes2String(snapBackwardNote),-9} {snapBackwardNote.Timestamp.Measure,-4} {snapBackwardNote.Timestamp.Tick,-4} {snapBackwardNote.Position,-4} {snapBackwardNote.Size,-4}\n");
+                }
+
+                if (note is SlideClockwiseNote slideClockwiseNote)
+                {
+                    sb.Append($"{"SLCLW" + attributes2String(slideClockwiseNote),-9} {slideClockwiseNote.Timestamp.Measure,-4} {slideClockwiseNote.Timestamp.Tick,-4} {slideClockwiseNote.Position,-4} {slideClockwiseNote.Size,-4}\n");
+                }
+
+                if (note is SlideCounterclockwiseNote slideCounterclockwiseNote)
+                {
+                    sb.Append($"{"SLCCW" + attributes2String(slideCounterclockwiseNote),-9} {slideCounterclockwiseNote.Timestamp.Measure,-4} {slideCounterclockwiseNote.Timestamp.Tick,-4} {slideCounterclockwiseNote.Position,-4} {slideCounterclockwiseNote.Size,-4}\n");
+                }
+
+                if (note is ChainNote chainNote)
+                {
+                    sb.Append($"{"CHAIN" + attributes2String(chainNote),-9} {chainNote.Timestamp.Measure,-4} {chainNote.Timestamp.Tick,-4} {chainNote.Position,-4} {chainNote.Size,-4}\n");
+                }
+
+                if (note is HoldNote holdNote)
+                {
+                    sb.Append($"{"HOLD" + attributes2String(holdNote),-9} {holdNote.Points[0].Timestamp.Measure,-4} {holdNote.Points[0].Timestamp.Tick,-4} {holdNote.Points[0].Position,-4} {holdNote.Points[0].Size,-4}\n");
+
+                    for (int p = 1; p < holdNote.Points.Count; p++)
+                    {
+                        HoldPointNote point = holdNote.Points[p];
+                        sb.Append($"{(point.RenderBehaviour == HoldPointRenderBehaviour.Visible ? "|" : "~"),-9} {point.Timestamp.Measure,-4} {point.Timestamp.Tick,-4} {point.Position,-4} {point.Size,-4}\n");
+                    }
+                }
+
+                if (note is MeasureLineNote measureLineNote)
+                {
+                    sb.Append($"{"MLINE",-9} {measureLineNote.Timestamp.Measure,-4} {measureLineNote.Timestamp.Tick,-4}\n");
+                }
+
+                // Remove line break on the very last note.
+                if (l == chart.Layers.Count - 1 && n == layer.Notes.Count - 1 && sb[^1] == '\n')
+                {
+                    sb.Remove(sb.Length - 1, 1);
+                }
+            }
+
+            // Only add line break if it's not the last layer.
+            if (l != chart.Layers.Count - 1)
+            {
+                sb.Append('\n');
+            }
+        }
+
+        return;
+
+        string bool2String(bool b)
+        {
+            return b ? "TRUE" : "FALSE";
+        }
+
+        string attributes2String(IPlayable playable)
+        {
+            string result = playable.BonusType switch
+            {
+                BonusType.None => "",
+                BonusType.Bonus => ".B",
+                BonusType.R => ".R",
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+
+            result += playable.JudgementType switch
+            {
+                JudgementType.Normal => "",
+                JudgementType.Autoplay => ".A",
+                JudgementType.Fake => ".F",
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+            return result;
+        }
     }
 }

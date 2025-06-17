@@ -14,17 +14,17 @@ public class SlideCounterclockwiseNote : Note, ITimeable, IPositionable, IPlayab
         Position = cloneSource.Position;
         Size = cloneSource.Size;
         BonusType = cloneSource.BonusType;
-        IsJudgeable = cloneSource.IsJudgeable;
+        JudgementType = cloneSource.JudgementType;
         TimingWindow = cloneSource.TimingWindow;
     }
     
-    public SlideCounterclockwiseNote(Timestamp timestamp, int position, int size, BonusType bonusType, bool isJudgeable)
+    public SlideCounterclockwiseNote(Timestamp timestamp, int position, int size, BonusType bonusType, JudgementType judgementType)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
         BonusType = bonusType;
-        IsJudgeable = isJudgeable;
+        JudgementType = judgementType;
         TimingWindow = new(-10, -8, -5, -1, 1, 7, 10, 10);
     }
     
@@ -38,5 +38,5 @@ public class SlideCounterclockwiseNote : Note, ITimeable, IPositionable, IPlayab
     
     public BonusType BonusType { get; set; }
     
-    public bool IsJudgeable { get; set; }
+    public JudgementType JudgementType { get; set; } 
 }

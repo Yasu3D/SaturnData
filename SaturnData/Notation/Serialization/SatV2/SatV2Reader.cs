@@ -50,20 +50,22 @@ internal static class SatV2Reader
                 int tick = Convert.ToInt32(match.Groups[2].Value, CultureInfo.InvariantCulture);
                 string message = match.Groups[4].Value;
 
-                Bookmark bookmark = new(new(measure, tick), "#DDDDDD", message);
+                Bookmark bookmark = new(new(measure, tick), "DDDDDD", message);
                 chart.Bookmarks.Add(bookmark);
             }
-            catch
+            catch (Exception e)
             {
-                // ignored
+                Console.WriteLine(e);
+                Console.WriteLine($"Error occurred on this line:\n{line}");
+                // don't throw.
             }
         }
 
         ReverseEffectEvent? tempReverseEvent = null;
-        int tempReverseLayer = 0;
+        string tempReverseLayer = "Layer 0";
 
         StopEffectEvent? tempStopEvent = null;
-        int tempStopLayer = 0;
+        string tempStopLayer = "Layer 0";
         
         foreach (string line in events)
         {
@@ -106,8 +108,8 @@ internal static class SatV2Reader
                     float hiSpeed = Convert.ToSingle(split[4], CultureInfo.InvariantCulture);
                     HiSpeedChangeEvent hiSpeedChangeEvent = new(timestamp, hiSpeed);
 
-                    int layer = attributes2Layer(attributes);
-                    NotationUtils.AddOrCreate(chart.EventLayers, layer, hiSpeedChangeEvent);
+                    string layer = attributes2Layer(attributes);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, hiSpeedChangeEvent);
                 }
 
                 if (type == "REV_START")
@@ -134,10 +136,10 @@ internal static class SatV2Reader
                     if (tempReverseEvent.SubEvents[1].Timestamp > timestamp) continue;
 
                     tempReverseEvent.SubEvents[2] = new(timestamp, tempReverseEvent);
-                    NotationUtils.AddOrCreate(chart.EventLayers, tempReverseLayer, tempReverseEvent);
+                    NotationUtils.AddOrCreate(chart.Layers, tempReverseLayer, tempReverseEvent);
 
                     tempReverseEvent = null;
-                    tempReverseLayer = 0;
+                    tempReverseLayer = "Layer 0";
                 }
 
                 if (type == "STOP_START")
@@ -153,10 +155,10 @@ internal static class SatV2Reader
                     if (tempStopEvent.SubEvents[0].Timestamp > timestamp) continue;
 
                     tempStopEvent.SubEvents[1] = new(timestamp, tempStopEvent);
-                    NotationUtils.AddOrCreate(chart.EventLayers, tempStopLayer, tempStopEvent);
+                    NotationUtils.AddOrCreate(chart.Layers, tempStopLayer, tempStopEvent);
 
                     tempStopEvent = null;
-                    tempStopLayer = 0;
+                    tempStopLayer = "Layer 0";
                 }
 
                 if (type == "CHART_END")
@@ -164,14 +166,16 @@ internal static class SatV2Reader
                     chart.ChartEnd = timestamp;
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // ignored
+                Console.WriteLine(e);
+                Console.WriteLine($"Error occurred on this line:\n{line}");
+                // don't throw.
             }
         }
 
         HoldNote? tempHoldNote = null;
-        int tempHoldNoteLayer = 0;
+        string tempHoldNoteLayer = "Layer 0";
 
         foreach (string line in objects)
         {
@@ -194,52 +198,52 @@ internal static class SatV2Reader
                 if (attributes.Length == 0) continue;
                 
                 string type = attributes[0];
-                int layer = attributes2Layer(attributes);
+                string layer = attributes2Layer(attributes);
                 BonusType bonusType = attributes2BonusType(attributes);
 
                 if (type == "TOUCH")
                 {
-                    TouchNote touchNote = new(timestamp, position, size, bonusType, true);
-                    NotationUtils.AddOrCreate(chart.NoteLayers, layer, touchNote);
+                    TouchNote touchNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, touchNote);
                 }
 
                 if (type == "SNAP_FW")
                 {
-                    SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, true);
-                    NotationUtils.AddOrCreate(chart.NoteLayers, layer, snapForwardNote);
+                    SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, snapForwardNote);
                 }
                 
                 if (type == "SNAP_BW")
                 {
-                    SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, true);
-                    NotationUtils.AddOrCreate(chart.NoteLayers, layer, snapBackwardNote);
+                    SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, snapBackwardNote);
                 }
                 
                 if (type == "SLIDE_CW")
                 {
-                    SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, true);
-                    NotationUtils.AddOrCreate(chart.NoteLayers, layer, slideClockwiseNote);
+                    SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, slideClockwiseNote);
                 }
                 
                 if (type == "SLIDE_CCW")
                 {
-                    SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, true);
-                    NotationUtils.AddOrCreate(chart.NoteLayers, layer, slideCounterclockwiseNote);
+                    SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, slideCounterclockwiseNote);
                 }
                 
                 if (type == "CHAIN")
                 {
-                    ChainNote chainNote = new(timestamp, position, size, bonusType, true);
-                    NotationUtils.AddOrCreate(chart.NoteLayers, layer, chainNote);
+                    ChainNote chainNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, chainNote);
                 }
                 
                 if (type == "HOLD_START")
                 {
-                    tempHoldNote = new(bonusType, true);
+                    tempHoldNote = new(bonusType, JudgementType.Normal);
                     tempHoldNoteLayer = layer;
 
                     HoldPointRenderBehaviour renderBehaviour = attributes2RenderBehaviour(attributes);
-                    tempHoldNote.Points.Add(new(timestamp, position, size, renderBehaviour));
+                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderBehaviour));
                 }
                 
                 if (type == "HOLD_POINT")
@@ -247,7 +251,7 @@ internal static class SatV2Reader
                     if (tempHoldNote == null) continue;
                     
                     HoldPointRenderBehaviour renderBehaviour = attributes2RenderBehaviour(attributes);
-                    tempHoldNote.Points.Add(new(timestamp, position, size, renderBehaviour));
+                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderBehaviour));
                 }
                 
                 if (type == "HOLD_END")
@@ -255,15 +259,15 @@ internal static class SatV2Reader
                     if (tempHoldNote == null) continue;
                     
                     HoldPointRenderBehaviour renderBehaviour = attributes2RenderBehaviour(attributes);
-                    tempHoldNote.Points.Add(new(timestamp, position, size, renderBehaviour));
+                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderBehaviour));
                     tempHoldNote.Points = tempHoldNote.Points
                         .OrderBy(x => x.Timestamp)
                         .ToList();
                     
-                    NotationUtils.AddOrCreate(chart.NoteLayers, tempHoldNoteLayer, tempHoldNote);
+                    NotationUtils.AddOrCreate(chart.Layers, tempHoldNoteLayer, tempHoldNote);
                     
                     tempHoldNote = null;
-                    tempHoldNoteLayer = 0;
+                    tempHoldNoteLayer = "Layer 0";
                 }
                 
                 if (type == "MASK_ADD")
@@ -280,9 +284,11 @@ internal static class SatV2Reader
                     chart.LaneToggles.Add(laneHideNote);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // ignored
+                Console.WriteLine(e);
+                Console.WriteLine($"Error occurred on this line:\n{line}");
+                // don't throw.
             }
         }
 
@@ -290,23 +296,23 @@ internal static class SatV2Reader
 
         return chart;
 
-        int attributes2Layer(string[] attributes)
+        string attributes2Layer(string[] attributes)
         {
             foreach (string a in attributes)
             {
-                if (a == "L0") return 0;
-                if (a == "L1") return 1;
-                if (a == "L2") return 2;
-                if (a == "L3") return 3;
-                if (a == "L4") return 4;
-                if (a == "L5") return 5;
-                if (a == "L6") return 6;
-                if (a == "L7") return 7;
-                if (a == "L8") return 8;
-                if (a == "L9") return 9;
+                if (a == "L0") return "Layer 0";
+                if (a == "L1") return "Layer 1";
+                if (a == "L2") return "Layer 2";
+                if (a == "L3") return "Layer 3";
+                if (a == "L4") return "Layer 4";
+                if (a == "L5") return "Layer 5";
+                if (a == "L6") return "Layer 6";
+                if (a == "L7") return "Layer 7";
+                if (a == "L8") return "Layer 8";
+                if (a == "L9") return "Layer 9";
             }
 
-            return 0;
+            return "Layer 0";
         }
 
         BonusType attributes2BonusType(string[] attributes)
@@ -363,31 +369,34 @@ internal static class SatV2Reader
 
                 string value;
 
-                if (NotationUtils.ContainsKey(line, "@GUID ", out value)) entry.Guid = value;
-                if (NotationUtils.ContainsKey(line, "@VERSION ", out value)) entry.Revision = value;
-                if (NotationUtils.ContainsKey(line, "@TITLE ", out value)) entry.Title = value;
-                if (NotationUtils.ContainsKey(line, "@RUBI ", out value)) entry.Reading = value;
-                if (NotationUtils.ContainsKey(line, "@ARTIST ", out value)) entry.Artist = value;
-                if (NotationUtils.ContainsKey(line, "@AUTHOR ", out value)) entry.NotesDesigner = value;
-                if (NotationUtils.ContainsKey(line, "@BPM_TEXT ", out value)) entry.BpmMessage = value;
+                if (NotationUtils.ContainsKey(line, "@GUID ",     out value)) { entry.Guid = value; }
+                if (NotationUtils.ContainsKey(line, "@VERSION ",  out value)) { entry.Revision = value; }
+                if (NotationUtils.ContainsKey(line, "@TITLE ",    out value)) { entry.Title = value; }
+                if (NotationUtils.ContainsKey(line, "@RUBI ",     out value)) { entry.Reading = value; }
+                if (NotationUtils.ContainsKey(line, "@ARTIST ",   out value)) { entry.Artist = value; }
+                if (NotationUtils.ContainsKey(line, "@AUTHOR ",   out value)) { entry.NotesDesigner = value; }
+                if (NotationUtils.ContainsKey(line, "@BPM_TEXT ", out value)) { entry.BpmMessage = value; }
 
-                if (NotationUtils.ContainsKey(line, "@BACKGROUND ", out value)) entry.Background = (BackgroundOption)Convert.ToInt32(value, CultureInfo.InvariantCulture);
+                if (NotationUtils.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = (BackgroundOption)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
 
-                if (NotationUtils.ContainsKey(line, "@DIFF ", out value)) entry.Difficulty = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture);
-                if (NotationUtils.ContainsKey(line, "@LEVEL ", out value)) entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture);
+                if (NotationUtils.ContainsKey(line, "@DIFF ",  out value)) { entry.Difficulty = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+                if (NotationUtils.ContainsKey(line, "@LEVEL ", out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationUtils.ContainsKey(line, "@CLEAR ", out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
 
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_START ", out value)) entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_TIME ", out value)) entry.PreviewDuration = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
+                if (NotationUtils.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (NotationUtils.ContainsKey(line, "@BGM ", out value)) entry.AudioPath = value;
-                if (NotationUtils.ContainsKey(line, "@BGM_OFFSET ", out value)) entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
-                if (NotationUtils.ContainsKey(line, "@BGA ", out value)) entry.VideoPath = value;
-                if (NotationUtils.ContainsKey(line, "@BGA_OFFSET ", out value)) entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000;
-                if (NotationUtils.ContainsKey(line, "@JACKET ", out value)) entry.JacketPath = value;
+                if (NotationUtils.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketPath = value; }
+                if (NotationUtils.ContainsKey(line, "@BGM ",        out value)) { entry.AudioPath = value; }
+                if (NotationUtils.ContainsKey(line, "@BGA ",        out value)) { entry.VideoPath = value; }
+                if (NotationUtils.ContainsKey(line, "@BGM_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "@BGA_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
             }
-            catch
+            catch (Exception e)
             {
-                // ignored, continue
+                Console.WriteLine(e);
+                Console.WriteLine($"Error occurred on this line:\n{line}");
+                // don't throw.
             }
         }
 

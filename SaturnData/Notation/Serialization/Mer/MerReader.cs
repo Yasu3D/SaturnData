@@ -82,43 +82,43 @@ public static class MerReader
                     // Touch Note
                     if (noteType is 1 or 2 or 20)
                     {
-                        TouchNote touchNote = new(timestamp, position, size, bonusType, true);
-                        NotationUtils.AddOrCreate(chart.NoteLayers, 0, touchNote);
+                        TouchNote touchNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", touchNote);
                     }
 
                     // Snap Forward Note
                     if (noteType is 3 or 21)
                     {
-                        SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, true);
-                        NotationUtils.AddOrCreate(chart.NoteLayers, 0, snapForwardNote);
+                        SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", snapForwardNote);
                     }
 
                     // Snap Backward Note
                     if (noteType is 4 or 22)
                     {
-                        SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, true);
-                        NotationUtils.AddOrCreate(chart.NoteLayers, 0, snapBackwardNote);
+                        SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", snapBackwardNote);
                     }
 
                     // Slide Clockwise
                     if (noteType is 5 or 6 or 23)
                     {
-                        SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, true);
-                        NotationUtils.AddOrCreate(chart.NoteLayers, 0, slideClockwiseNote);
+                        SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", slideClockwiseNote);
                     }
 
                     // Slide Counterclockwise
                     if (noteType is 7 or 8 or 24)
                     {
-                        SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, true);
-                        NotationUtils.AddOrCreate(chart.NoteLayers, 0, slideCounterclockwiseNote);
+                        SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", slideCounterclockwiseNote);
                     }
 
                     // Chain
                     if (noteType is 16 or 26)
                     {
-                        ChainNote chainNote = new(timestamp, position, size, bonusType, true);
-                        NotationUtils.AddOrCreate(chart.NoteLayers, 0, chainNote);
+                        ChainNote chainNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
+                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", chainNote);
                     }
 
                     // End of Chart
@@ -197,7 +197,7 @@ public static class MerReader
                     float hiSpeed = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
                     HiSpeedChangeEvent hiSpeedChangeEvent = new(timestamp, hiSpeed);
 
-                    NotationUtils.AddOrCreate(chart.EventLayers, 0, hiSpeedChangeEvent);
+                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", hiSpeedChangeEvent);
                 }
 
                 // Reverse Effect Begin Event
@@ -225,7 +225,7 @@ public static class MerReader
                     if (tempReverseEvent.SubEvents[1].Timestamp > timestamp) continue;
 
                     tempReverseEvent.SubEvents[2] = new(timestamp, tempReverseEvent);
-                    NotationUtils.AddOrCreate(chart.EventLayers, 0, tempReverseEvent);
+                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", tempReverseEvent);
 
                     tempReverseEvent = null;
                 }
@@ -244,7 +244,7 @@ public static class MerReader
                     if (tempStopEvent.SubEvents[0].Timestamp > timestamp) continue;
 
                     tempStopEvent.SubEvents[1] = new(timestamp, tempStopEvent);
-                    NotationUtils.AddOrCreate(chart.EventLayers, 0, tempStopEvent);
+                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", tempStopEvent);
 
                     tempStopEvent = null;
                 }
@@ -252,7 +252,8 @@ public static class MerReader
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                // ignored, continue to the next line.
+                Console.WriteLine($"Error occurred on this line:\n{line}");
+                // don't throw.
             }
         }
 
@@ -275,7 +276,7 @@ public static class MerReader
                 previousReference = merHoldNotes.FirstOrDefault(x => current.Index == x.Reference);
             }
 
-            HoldNote holdNote = new(current.BonusType, true);
+            HoldNote holdNote = new(current.BonusType, JudgementType.Normal);
 
             steps = 0; // failsafe if there's a cyclic reference.
             while (current != null && steps < merHoldNotes.Count)
@@ -283,7 +284,7 @@ public static class MerReader
                 checkedMerHoldNotes.Add(current);
                 steps++;
                 
-                HoldPointNote holdPointNote = new(new(current.Measure, current.Tick), current.Position, current.Size, (HoldPointRenderBehaviour)current.Render);
+                HoldPointNote holdPointNote = new(new(current.Measure, current.Tick), current.Position, current.Size, holdNote, (HoldPointRenderBehaviour)current.Render);
                 holdNote.Points.Add(holdPointNote);
                 
                 current = current.Reference == null
@@ -295,7 +296,7 @@ public static class MerReader
                 .OrderBy(x => x.Timestamp)
                 .ToList();
             
-            NotationUtils.AddOrCreate(chart.NoteLayers, 0, holdNote);
+            NotationUtils.AddOrCreate(chart.Layers, "Layer 0", holdNote);
         }
 
         NotationUtils.PostProcessChart(chart, options);
@@ -326,7 +327,7 @@ public static class MerReader
                 if (NotationUtils.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 if (NotationUtils.ContainsKey(line, "#EDITOR_AUTHOR ",          out value)) { entry.NotesDesigner = value; }
                 if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.PreviewDuration = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "#EDITOR_OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "#EDITOR_MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
             
@@ -335,7 +336,7 @@ public static class MerReader
                 if (NotationUtils.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioPath = value; }
                 if (NotationUtils.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
                 if (NotationUtils.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewDuration = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
                 // MER COMPATIBILITY
                 if (NotationUtils.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioPath = value; }
@@ -350,6 +351,7 @@ public static class MerReader
                 if (NotationUtils.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketPath = value; }
                 if (NotationUtils.ContainsKey(line, "#DIFFICULTY ",                    out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 if (NotationUtils.ContainsKey(line, "#DISPLAY_BPM ",                   out value)) { entry.BpmMessage = value; }
+                if (NotationUtils.ContainsKey(line, "#CREAR_NORMA_RATE ",              out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
             }
             catch
             {

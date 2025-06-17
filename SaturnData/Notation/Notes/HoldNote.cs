@@ -13,7 +13,7 @@ public class HoldNote : Note, ITimeable, IPlayable
     {
         Timestamp = cloneSource.Timestamp;
         BonusType = cloneSource.BonusType;
-        IsJudgeable = cloneSource.IsJudgeable;
+        JudgementType = cloneSource.JudgementType;
         TimingWindow = cloneSource.TimingWindow;
 
         foreach (HoldPointNote point in cloneSource.Points)
@@ -22,10 +22,10 @@ public class HoldNote : Note, ITimeable, IPlayable
         }
     }
     
-    public HoldNote(BonusType bonusType, bool isJudgeable)
+    public HoldNote(BonusType bonusType, JudgementType judgementType)
     {
         BonusType = bonusType;
-        IsJudgeable = isJudgeable;
+        JudgementType = judgementType;
         TimingWindow = new(-6, -5, -3, -1, 1, 3, 5, 6);
     }
     
@@ -54,7 +54,7 @@ public class HoldNote : Note, ITimeable, IPlayable
     
     public BonusType BonusType { get; set; }
     
-    public bool IsJudgeable { get; set; }
+    public JudgementType JudgementType { get; set; }
 
     /// <summary>
     /// The individual points defining the shape and path a hold note takes.

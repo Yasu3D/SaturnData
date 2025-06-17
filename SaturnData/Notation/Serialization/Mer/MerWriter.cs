@@ -132,10 +132,10 @@ public static class MerWriter
         }
 
         // Add all layer-specific events from the first layer
-        Layer<Event>? firstLayer = chart.EventLayers.Values.FirstOrDefault();
+        Layer? firstLayer = chart.Layers.FirstOrDefault();
         if (firstLayer != null)
         {
-            foreach (Event @event in firstLayer.Items)
+            foreach (Event @event in firstLayer.Events)
             {
                 if (@event is InvisibleEffectEvent) continue;
 
@@ -232,8 +232,8 @@ public static class MerWriter
         List<MerWriterNote> notes = [];
         
         // Add all note layers.
-        foreach (Layer<Note> layer in chart.NoteLayers.Values)
-        foreach (Note note in layer.Items)
+        foreach (Layer layer in chart.Layers)
+        foreach (Note note in layer.Notes)
         {
             if (note is TouchNote touchNote)
             {

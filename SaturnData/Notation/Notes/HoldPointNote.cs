@@ -14,15 +14,6 @@ public enum HoldPointRenderBehaviour
 /// </summary>
 public class HoldPointNote : Note, ITimeable, IPositionable
 {
-    internal HoldPointNote(Timestamp timestamp, int position, int size, HoldPointRenderBehaviour renderBehaviour)
-    {
-        Timestamp = timestamp;
-        Position = position;
-        Size = size;
-        RenderBehaviour = renderBehaviour;
-        Parent = null!;
-    }
-    
     public HoldPointNote(Timestamp timestamp, int position, int size, HoldNote parent, HoldPointRenderBehaviour renderBehaviour)
     {
         Timestamp = timestamp;

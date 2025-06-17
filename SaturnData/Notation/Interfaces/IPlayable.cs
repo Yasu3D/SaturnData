@@ -9,6 +9,13 @@ public enum BonusType
     R = 2,
 }
 
+public enum JudgementType
+{
+    Normal = 0,
+    Autoplay = 1,
+    Fake = 2,
+}
+
 /// <summary>
 /// Implements gameplay-specific attributes.
 /// </summary>
@@ -27,5 +34,5 @@ public interface IPlayable
     /// <summary>
     /// Determines if an IPlayable should be judged or not.
     /// </summary>
-    public bool IsJudgeable { get; set; }
+    public JudgementType JudgementType { get; set; }
 }

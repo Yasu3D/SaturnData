@@ -10,22 +10,22 @@ public class Chart
     /// <summary>
     /// All global events that aren't bound to layers.
     /// </summary>
-    public readonly List<Event> Events = [];
+    public List<Event> Events { get; set; } = [];
     
     /// <summary>
     /// All local events and notes, grouped by layer.
     /// </summary>
-    public readonly List<Layer<Event>> Layers = [];
+    public List<Layer> Layers { get; set; } = [];
     
     /// <summary>
     /// All lane toggle notes.
     /// </summary>
-    public readonly List<Note> LaneToggles = [];
+    public List<Note> LaneToggles { get; set; } = [];
     
     /// <summary>
     /// Editor-only bookmarks.
     /// </summary>
-    public readonly List<Bookmark> Bookmarks = [];
+    public List<Bookmark> Bookmarks { get; set; } = [];
 
     /// <summary>
     /// The Chart End timestamp, where playback stops and the gameplay result is shown.

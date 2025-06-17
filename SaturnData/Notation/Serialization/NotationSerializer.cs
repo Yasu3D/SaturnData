@@ -109,7 +109,7 @@ public static class NotationSerializer
                 FormatVersion.Mer => MerReader.ToEntry(lines),
                 FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, options),
                 FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, options),
-                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines),
+                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines, options),
                 _ => throw new(),
             };
         }

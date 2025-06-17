@@ -14,17 +14,17 @@ public class SnapBackwardNote : Note, ITimeable, IPositionable, IPlayable
         Position = cloneSource.Position;
         Size = cloneSource.Size;
         BonusType = cloneSource.BonusType;
-        IsJudgeable = cloneSource.IsJudgeable;
+        JudgementType = cloneSource.JudgementType;
         TimingWindow = cloneSource.TimingWindow;
     }
     
-    public SnapBackwardNote(Timestamp timestamp, int position, int size, BonusType bonusType, bool isJudgeable)
+    public SnapBackwardNote(Timestamp timestamp, int position, int size, BonusType bonusType, JudgementType judgementType)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
         BonusType = bonusType;
-        IsJudgeable = isJudgeable;
+        JudgementType = judgementType;
         TimingWindow = new(-10, -10, -7, -1, 1, 5, 8, 10);
     }
     
@@ -38,5 +38,5 @@ public class SnapBackwardNote : Note, ITimeable, IPositionable, IPlayable
     
     public BonusType BonusType { get; set; }
     
-    public bool IsJudgeable { get; set; }
+    public JudgementType JudgementType { get; set; }
 }

@@ -83,7 +83,7 @@ public class Entry
     /// <summary>
     /// The unique identifier of the chart.
     /// </summary>
-    public string Guid = "";
+    public string Guid = $"SAT{System.Guid.NewGuid()}";
 
     /// <summary>
     /// The current revision of the chart. Optional and only used for users to keep track of different chart revisions.
@@ -140,7 +140,7 @@ public class Entry
     /// <summary>
     /// The duration of the chart preview <b>in milliseconds</b>
     /// </summary>
-    public float PreviewDuration = 10;
+    public float PreviewLength = 10000;
 
     /// <summary>
     /// Absolute filepath to the chart file that defined this entry.

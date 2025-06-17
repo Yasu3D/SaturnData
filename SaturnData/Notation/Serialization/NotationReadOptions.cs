@@ -4,14 +4,20 @@ public struct NotationReadOptions
 {
     public NotationReadOptions()
     {
-        TrimHoldNotes = true;
+        SortCollections = true;
+        OptimizeHoldNotes = true;
         InferClearThresholdFromDifficulty = true;
     }
     
     /// <summary>
+    /// Determines if all collections should be sorted by timestamp after reading a file.
+    /// </summary>
+    public bool SortCollections { get; set; }
+    
+    /// <summary>
     /// Determines if no-render segments are removed when importing.
     /// </summary>
-    public bool TrimHoldNotes { get; set; }
+    public bool OptimizeHoldNotes { get; set; }
     
     /// <summary>
     /// If the clear threshold should be inferred from the chosen Difficulty instead of the @CLEAR value.
