@@ -42,30 +42,28 @@ public static class SatV3Writer
 
             sb.Append($"{"@SAT_VERSION",-16}3\n");
             sb.Append('\n');
-            sb.Append($"{"@REVISION",-16}{entry.Revision}\n");
             sb.Append($"{"@GUID",-16}{entry.Guid}\n");
             sb.Append($"{"@TITLE",-16}{entry.Title}\n");
             sb.Append($"{"@READING",-16}{entry.Reading}\n");
             sb.Append($"{"@ARTIST",-16}{entry.Artist}\n");
-            sb.Append($"{"@NOTES_DESIGNER",-16}{entry.NotesDesigner}\n");
             sb.Append($"{"@BPM_MESSAGE",-16}{entry.BpmMessage}\n");
             sb.Append('\n');
-            sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
-            sb.Append('\n');
+            sb.Append($"{"@REVISION",-16}{entry.Revision}\n");
+            sb.Append($"{"@NOTES_DESIGNER",-16}{entry.NotesDesigner}\n");
             sb.Append($"{"@DIFFICULTY",-16}{difficulty2String(entry.Difficulty)}\n");
             sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("F1", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("F2", CultureInfo.InvariantCulture)}\n");
             sb.Append('\n');
             sb.Append($"{"@PREVIEW_BEGIN",-16}{(entry.PreviewBegin / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@PREVIEW_LENGTH",-16}{(entry.PreviewLength / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
+            sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.IsTutorial)}\n");
             sb.Append('\n');
             sb.Append($"{"@JACKET",-16}{Path.GetFileName(entry.JacketPath)}\n");
             sb.Append($"{"@AUDIO",-16}{Path.GetFileName(entry.AudioPath)}\n");
             sb.Append($"{"@VIDEO",-16}{Path.GetFileName(entry.VideoPath)}\n");
             sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-            sb.Append('\n');
-            sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.IsTutorial)}\n");
             sb.Append('\n');
         }
         catch
