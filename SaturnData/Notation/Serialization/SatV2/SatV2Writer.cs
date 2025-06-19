@@ -22,6 +22,7 @@ public static class SatV2Writer
     public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
     {
         StringBuilder sb = new();
+        NotationUtils.PreProcessEntry(entry, options);
         NotationUtils.PreProcessChart(chart, options);
 
         WriteMetadata(sb, entry, options);

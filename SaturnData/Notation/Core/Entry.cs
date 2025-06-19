@@ -84,11 +84,8 @@ public class Entry
     /// The unique identifier of the chart.
     /// </summary>
     public string Guid = $"SAT{System.Guid.NewGuid()}";
-
-    /// <summary>
-    /// The current revision of the chart. Optional and only used for users to keep track of different chart revisions.
-    /// </summary>
-    public string Revision = "";
+    
+    
     
     /// <summary>
     /// The title of the chart's song.
@@ -106,31 +103,38 @@ public class Entry
     public string Artist = "";
     
     /// <summary>
-    /// The notes designer of the chart.
-    /// </summary>
-    public string NotesDesigner = "";
-
-    /// <summary>
     /// The bpm text to display on the song select screen.
     /// </summary>
     public string BpmMessage = "";
 
+    
+    
     /// <summary>
-    /// The default background for the chart.
+    /// The current revision of the chart. Optional and only used for users to keep track of different chart revisions.
     /// </summary>
-    public BackgroundOption Background = BackgroundOption.Auto;
-
+    public string Revision = "";
+    
+    /// <summary>
+    /// The notes designer of the chart.
+    /// </summary>
+    public string NotesDesigner = "";
+    
     /// <summary>
     /// The difficulty category of the chart.
     /// </summary>
     public Difficulty Difficulty = Difficulty.Normal;
-
+    
     /// <summary>
     /// The level (or constant) of the chart.
     /// </summary>
     public float Level = 0;
 
+    /// <summary>
+    /// The percentage of the clear bar that needs to be reached to clear a song.
+    /// </summary>
     public float ClearThreshold = 0.45f;
+    
+    
     
     /// <summary>
     /// The timestamp the chart preview starts at <b>in milliseconds</b>
@@ -141,7 +145,14 @@ public class Entry
     /// The duration of the chart preview <b>in milliseconds</b>
     /// </summary>
     public float PreviewLength = 10000;
+    
+    /// <summary>
+    /// The default background for the chart.
+    /// </summary>
+    public BackgroundOption Background = BackgroundOption.Auto;
 
+    
+    
     /// <summary>
     /// Absolute filepath to the chart file that defined this entry.
     /// </summary>
@@ -171,11 +182,27 @@ public class Entry
     /// Video offset <b>in milliseconds</b>
     /// </summary>
     public float VideoOffset = 0;
-
+    
     /// <summary>
     /// Should this chart be shown in tutorial mode?
     /// </summary>
-    public bool IsTutorial = false;
+    public bool TutorialMode = false;
+    
+    /// <summary>
+    /// Should the <see cref="Reading"/> be determined automatically?
+    /// </summary>
+    public bool AutoReading = false;
+    
+    
+    /// <summary>
+    /// Should the <see cref="BpmMessage"/> be determined automatically?
+    /// </summary>
+    public bool AutoBpmMessage = false;
+    
+    /// <summary>
+    /// Should the <see cref="ClearThreshold"/> be determined automatically?
+    /// </summary>
+    public bool AutoClearThreshold = true;
     
     /// <summary>
     /// Does a file exist at <c>VideoPath</c>?

@@ -428,23 +428,22 @@ public static class SatV3Reader
                 if (line.StartsWith("@COMMENTS")) break;
 
                 string value;
-
-                if (NotationUtils.ContainsKey(line, "@REVISION ",       out value)) { entry.Revision = value; }
+                
                 if (NotationUtils.ContainsKey(line, "@GUID ",           out value)) { entry.Guid = value; }
                 if (NotationUtils.ContainsKey(line, "@TITLE ",          out value)) { entry.Title = value; }
                 if (NotationUtils.ContainsKey(line, "@READING ",        out value)) { entry.Reading = value; }
                 if (NotationUtils.ContainsKey(line, "@ARTIST ",         out value)) { entry.Artist = value; }
-                if (NotationUtils.ContainsKey(line, "@NOTES_DESIGNER ", out value)) { entry.NotesDesigner = value; }
                 if (NotationUtils.ContainsKey(line, "@BPM_MESSAGE ",    out value)) { entry.BpmMessage = value; }
-
-                if (NotationUtils.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = string2BackgroundOption(value); }
-
+                
+                if (NotationUtils.ContainsKey(line, "@REVISION ",       out value)) { entry.Revision = value; }
+                if (NotationUtils.ContainsKey(line, "@NOTES_DESIGNER ", out value)) { entry.NotesDesigner = value; }
                 if (NotationUtils.ContainsKey(line, "@DIFFICULTY ", out value)) { entry.Difficulty = string2Difficulty(value); }
                 if (NotationUtils.ContainsKey(line, "@LEVEL ",      out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 if (NotationUtils.ContainsKey(line, "@CLEAR",       out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
 
                 if (NotationUtils.ContainsKey(line, "@PREVIEW_BEGIN ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = string2BackgroundOption(value); }
 
                 if (NotationUtils.ContainsKey(line, "@JACKET ",       out value)) { entry.JacketPath = value; }
                 if (NotationUtils.ContainsKey(line, "@AUDIO ",        out value)) { entry.AudioPath = value; }
@@ -452,7 +451,10 @@ public static class SatV3Reader
                 if (NotationUtils.ContainsKey(line, "@AUDIO_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@VIDEO_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (NotationUtils.ContainsKey(line, "@TUTORIAL ", out value)) { entry.IsTutorial = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@TUTORIAL ", out value)) { entry.TutorialMode = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@AUTO_READING ", out value)) { entry.AutoReading = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@AUTO_BPM_MSG ", out value)) { entry.AutoBpmMessage = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@AUTO_CLEAR ", out value)) { entry.AutoClearThreshold = value == "TRUE"; }
             }
             catch (Exception e)
             {

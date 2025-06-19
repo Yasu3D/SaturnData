@@ -20,6 +20,7 @@ public static class SatV3Writer
     public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
     {
         StringBuilder sb = new();
+        NotationUtils.PreProcessEntry(entry, options);
         NotationUtils.PreProcessChart(chart, options);
 
         WriteMetadata(sb, entry, options);
@@ -57,13 +58,17 @@ public static class SatV3Writer
             sb.Append($"{"@PREVIEW_BEGIN",-16}{(entry.PreviewBegin / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@PREVIEW_LENGTH",-16}{(entry.PreviewLength / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
-            sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.IsTutorial)}\n");
             sb.Append('\n');
             sb.Append($"{"@JACKET",-16}{Path.GetFileName(entry.JacketPath)}\n");
             sb.Append($"{"@AUDIO",-16}{Path.GetFileName(entry.AudioPath)}\n");
             sb.Append($"{"@VIDEO",-16}{Path.GetFileName(entry.VideoPath)}\n");
             sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append('\n');
+            sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.TutorialMode)}\n");
+            sb.Append($"{"@AUTO_READING",-16}{bool2String(entry.AutoReading)}\n");
+            sb.Append($"{"@AUTO_BPM_MSG",-16}{bool2String(entry.AutoBpmMessage)}\n");
+            sb.Append($"{"@AUTO_CLEAR",-16}{bool2String(entry.AutoClearThreshold)}\n");
             sb.Append('\n');
         }
         catch

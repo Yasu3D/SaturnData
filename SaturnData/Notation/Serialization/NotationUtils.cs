@@ -82,6 +82,12 @@ internal static class NotationUtils
             // TODO
         }
     }
+
+    internal static void PreProcessEntry(Entry entry, NotationWriteOptions options)
+    {
+        entry.Level = MathF.Floor(entry.Level * 10) / 10;
+        entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
+    }
     
     internal static void PostProcessChart(Chart chart, NotationReadOptions options)
     {
@@ -117,6 +123,9 @@ internal static class NotationUtils
 
     internal static void PostProcessEntry(Entry entry, NotationReadOptions options)
     {
+        entry.Level = MathF.Floor(entry.Level * 10) / 10;
+        entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
+        
         if (options.InferClearThresholdFromDifficulty)
         {
             entry.ClearThreshold = entry.Difficulty switch
