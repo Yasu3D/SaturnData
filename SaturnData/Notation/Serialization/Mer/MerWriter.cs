@@ -397,7 +397,7 @@ public static class MerWriter
                     else
                     {
                         merWriterNote.NoteType = 10;
-                        merWriterNote.Render = (int)point.RenderBehaviour;
+                        merWriterNote.Render = (int)point.RenderType;
                         merWriterNote.Reference = lastNoteToReference;
                     }
 

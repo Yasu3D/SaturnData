@@ -3,7 +3,7 @@ using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Notation.Notes;
 
-public enum HoldPointRenderBehaviour
+public enum HoldPointRenderType
 {
     Hidden = 0,
     Visible = 1,
@@ -14,13 +14,13 @@ public enum HoldPointRenderBehaviour
 /// </summary>
 public class HoldPointNote : Note, ITimeable, IPositionable
 {
-    public HoldPointNote(Timestamp timestamp, int position, int size, HoldNote parent, HoldPointRenderBehaviour renderBehaviour)
+    public HoldPointNote(Timestamp timestamp, int position, int size, HoldNote parent, HoldPointRenderType renderType)
     {
         Timestamp = timestamp;
         Position = position;
         Size = size;
         Parent = parent;
-        RenderBehaviour = renderBehaviour;
+        RenderType = renderType;
     }
     
     public Timestamp Timestamp { get; set; }
@@ -37,5 +37,5 @@ public class HoldPointNote : Note, ITimeable, IPositionable
     /// <summary>
     /// The render behaviour of the hold point.
     /// </summary>
-    public HoldPointRenderBehaviour RenderBehaviour { get; set; }
+    public HoldPointRenderType RenderType { get; set; }
 }

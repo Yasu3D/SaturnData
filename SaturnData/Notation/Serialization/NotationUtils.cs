@@ -113,7 +113,7 @@ internal static class NotationUtils
 
                 foreach (HoldPointNote point in holdNote.Points.ToArray())
                 {
-                    if (point.RenderBehaviour == HoldPointRenderBehaviour.Visible) continue;
+                    if (point.RenderType == HoldPointRenderType.Visible) continue;
                     
                     holdNote.Points.Remove(point);
                 }

@@ -267,7 +267,7 @@ public static class SatV3Writer
                     for (int p = 1; p < holdNote.Points.Count; p++)
                     {
                         HoldPointNote point = holdNote.Points[p];
-                        sb.Append($"{(point.RenderBehaviour == HoldPointRenderBehaviour.Visible ? "|" : "~"),-9} {point.Timestamp.Measure,-4} {point.Timestamp.Tick,-4} {point.Position,-4} {point.Size,-4}\n");
+                        sb.Append($"{(point.RenderType == HoldPointRenderType.Visible ? "|" : "~"),-9} {point.Timestamp.Measure,-4} {point.Timestamp.Tick,-4} {point.Position,-4} {point.Size,-4}\n");
                     }
                 }
 

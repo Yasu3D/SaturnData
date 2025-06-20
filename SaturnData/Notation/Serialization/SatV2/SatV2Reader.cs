@@ -242,24 +242,24 @@ internal static class SatV2Reader
                     tempHoldNote = new(bonusType, JudgementType.Normal);
                     tempHoldNoteLayer = layer;
 
-                    HoldPointRenderBehaviour renderBehaviour = attributes2RenderBehaviour(attributes);
-                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderBehaviour));
+                    HoldPointRenderType renderType = attributes2RenderBehaviour(attributes);
+                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderType));
                 }
                 
                 if (type == "HOLD_POINT")
                 {
                     if (tempHoldNote == null) continue;
                     
-                    HoldPointRenderBehaviour renderBehaviour = attributes2RenderBehaviour(attributes);
-                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderBehaviour));
+                    HoldPointRenderType renderType = attributes2RenderBehaviour(attributes);
+                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderType));
                 }
                 
                 if (type == "HOLD_END")
                 {
                     if (tempHoldNote == null) continue;
                     
-                    HoldPointRenderBehaviour renderBehaviour = attributes2RenderBehaviour(attributes);
-                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderBehaviour));
+                    HoldPointRenderType renderType = attributes2RenderBehaviour(attributes);
+                    tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderType));
                     tempHoldNote.Points = tempHoldNote.Points
                         .OrderBy(x => x.Timestamp)
                         .ToList();
@@ -339,14 +339,14 @@ internal static class SatV2Reader
             return LaneSweepDirection.Clockwise;
         }
 
-        HoldPointRenderBehaviour attributes2RenderBehaviour(string[] attributes)
+        HoldPointRenderType attributes2RenderBehaviour(string[] attributes)
         {
             foreach (string a in attributes)
             {
-                if (a == "NR") return HoldPointRenderBehaviour.Hidden;
+                if (a == "NR") return HoldPointRenderType.Hidden;
             }
             
-            return HoldPointRenderBehaviour.Visible;
+            return HoldPointRenderType.Visible;
         }
     }
 

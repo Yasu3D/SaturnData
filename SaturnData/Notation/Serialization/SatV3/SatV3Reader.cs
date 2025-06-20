@@ -225,11 +225,11 @@ public static class SatV3Reader
                     {
                         if (currentMultilineObject is HoldNote holdNote)
                         {
-                            HoldPointRenderBehaviour behaviour = split[0] == "|" ? HoldPointRenderBehaviour.Visible : HoldPointRenderBehaviour.Hidden;
+                            HoldPointRenderType type = split[0] == "|" ? HoldPointRenderType.Visible : HoldPointRenderType.Hidden;
                             position = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
                             size = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
                     
-                            holdNote.Points.Add(new(timestamp, position, size, holdNote, behaviour));
+                            holdNote.Points.Add(new(timestamp, position, size, holdNote, type));
                         }
 
                         if (currentMultilineObject is ReverseEffectEvent reverseEffectEvent)
@@ -321,7 +321,7 @@ public static class SatV3Reader
                         HoldNote holdNote = new(bonusType, judgementType);
                         setCurrentMultiLineObject(holdNote);
                         
-                        holdNote.Points.Add(new(timestamp, position, size, holdNote, HoldPointRenderBehaviour.Visible));
+                        holdNote.Points.Add(new(timestamp, position, size, holdNote, HoldPointRenderType.Visible));
                     }
 
                     if (attributes[0] == "MLINE")

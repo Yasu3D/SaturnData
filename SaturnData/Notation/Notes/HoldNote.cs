@@ -18,7 +18,7 @@ public class HoldNote : Note, ITimeable, IPlayable
 
         foreach (HoldPointNote point in cloneSource.Points)
         {
-            Points.Add(new(point.Timestamp, point.Position, point.Size, this, point.RenderBehaviour));
+            Points.Add(new(point.Timestamp, point.Position, point.Size, this, point.RenderType));
         }
     }
     

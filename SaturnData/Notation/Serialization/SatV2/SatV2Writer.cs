@@ -203,7 +203,7 @@ public static class SatV2Writer
                         };
                     int? layer = layerIndices.TryGetValue(holdNote, out int value) ? value : null;
                     attributes += GetLayerAttribute(layer, options);
-                    attributes += point.RenderBehaviour == HoldPointRenderBehaviour.Hidden ? ".NR" : "";
+                    attributes += point.RenderType == HoldPointRenderType.Hidden ? ".NR" : "";
 
                     sb.Append($"{point.Timestamp.Measure,-4} {point.Timestamp.Tick,-4} {index,-4} {point.Position,-4} {point.Size,-4} {type}{attributes}\n");
                     

@@ -284,7 +284,7 @@ public static class MerReader
                 checkedMerHoldNotes.Add(current);
                 steps++;
                 
-                HoldPointNote holdPointNote = new(new(current.Measure, current.Tick), current.Position, current.Size, holdNote, (HoldPointRenderBehaviour)current.Render);
+                HoldPointNote holdPointNote = new(new(current.Measure, current.Tick), current.Position, current.Size, holdNote, (HoldPointRenderType)current.Render);
                 holdNote.Points.Add(holdPointNote);
                 
                 current = current.Reference == null
