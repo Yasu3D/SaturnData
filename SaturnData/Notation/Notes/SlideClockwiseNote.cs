@@ -4,7 +4,7 @@ using SaturnData.Notation.Interfaces;
 namespace SaturnData.Notation.Notes;
 
 /// <summary>
-/// A note hit by sliding clockwise within its area at the right time.
+/// A note hit by flicking clockwise within its area at the right time.
 /// </summary>
 public class SlideClockwiseNote : Note, ITimeable, IPositionable, IPlayable
 {
