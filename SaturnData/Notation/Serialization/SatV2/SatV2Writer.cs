@@ -27,7 +27,7 @@ public static class SatV2Writer
 
         WriteMetadata(sb, entry, options);
         WriteBookmarks(sb, chart, options);
-        WriteEvents(sb, chart, options);
+        WriteEvents(sb, chart, entry, options);
         WriteNotes(sb, chart, options);
 
         return sb.ToString();
@@ -80,7 +80,7 @@ public static class SatV2Writer
         sb.Append('\n');
     }
     
-    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteEvents(StringBuilder sb, Chart chart, Entry entry, NotationWriteOptions options)
     {
         List<Event> events = [];
         Dictionary<Event, int> layerIndices = new();
@@ -146,9 +146,9 @@ public static class SatV2Writer
             index++;
         }
 
-        if (chart.ChartEnd != null)
+        if (entry.ChartEnd != null)
         {
-            sb.Append($"{chart.ChartEnd.Value.Measure,-4} {chart.ChartEnd.Value.Tick,-4} {index,-4} {"CHART_END",-16}\n");
+            sb.Append($"{entry.ChartEnd.Value.Measure,-4} {entry.ChartEnd.Value.Tick,-4} {index,-4} {"CHART_END",-16}\n");
         }
         
         sb.Append('\n');

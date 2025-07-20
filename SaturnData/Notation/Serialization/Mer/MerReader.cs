@@ -120,12 +120,8 @@ public static class MerReader
                         ChainNote chainNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
                         NotationUtils.AddOrCreate(chart.Layers, "Layer 0", chainNote);
                     }
-
-                    // End of Chart
-                    if (noteType is 14)
-                    {
-                        chart.ChartEnd = timestamp;
-                    }
+                    
+                    // End of Chart handled in ToEntry().
 
                     // Hold Start / Point / End
                     if (noteType is 9 or 10 or 11 or 25)
@@ -312,7 +308,8 @@ public static class MerReader
     internal static Entry ToEntry(string[] lines)
     {
         Entry entry = new();
-        
+
+        bool bodyReached = false;
         foreach (string line in lines)
         {
             try
@@ -352,6 +349,26 @@ public static class MerReader
                 if (NotationUtils.ContainsKey(line, "#DIFFICULTY ",                    out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 if (NotationUtils.ContainsKey(line, "#DISPLAY_BPM ",                   out value)) { entry.BpmMessage = value; }
                 if (NotationUtils.ContainsKey(line, "#CREAR_NORMA_RATE ",              out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+
+                if (line.StartsWith("#BODY"))
+                {
+                    bodyReached = true;
+                    continue;
+                }
+                
+                if (!bodyReached) continue;
+                
+                // Search for End of Chart note.
+                string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
+                int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
+                int objectType = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
+                int noteType = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
+
+                if (objectType == 1 && noteType == 14)
+                {
+                    entry.ChartEnd = new(measure, tick);
+                }
             }
             catch
             {

@@ -26,9 +26,4 @@ public class Chart
     /// Editor-only bookmarks.
     /// </summary>
     public List<Bookmark> Bookmarks { get; set; } = [];
-
-    /// <summary>
-    /// The Chart End timestamp, where playback stops and the gameplay result is shown.
-    /// </summary>
-    public Timestamp? ChartEnd = null;
 }

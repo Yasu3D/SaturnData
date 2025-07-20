@@ -65,10 +65,13 @@ public static class SatV3Writer
             sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append('\n');
+            sb.Append($"{"@END",-16}{entry.ChartEnd!.Value.Measure,-4}{entry.ChartEnd!.Value.Tick,-4}\n");
+            sb.Append('\n');
             sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.TutorialMode)}\n");
             sb.Append($"{"@AUTO_READING",-16}{bool2String(entry.AutoReading)}\n");
             sb.Append($"{"@AUTO_BPM_MSG",-16}{bool2String(entry.AutoBpmMessage)}\n");
             sb.Append($"{"@AUTO_CLEAR",-16}{bool2String(entry.AutoClearThreshold)}\n");
+            sb.Append($"{"@AUTO_END",-16}{bool2String(entry.AutoChartEnd)}\n");
             sb.Append('\n');
         }
         catch
@@ -147,11 +150,6 @@ public static class SatV3Writer
             {
                 sb.Append($"{"TUTORIAL",-9} {tutorialTagEvent.Timestamp.Measure,-4} {tutorialTagEvent.Timestamp.Tick,-4} {tutorialTagEvent.Key}");
             }
-        }
-        
-        if (chart.ChartEnd != null)
-        {
-            sb.Append($"{"END",-9} {chart.ChartEnd.Value.Measure,-4} {chart.ChartEnd.Value.Tick,-4}\n");
         }
         
         sb.Append('\n');

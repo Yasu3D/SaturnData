@@ -76,17 +76,17 @@ internal static class NotationUtils
         {
             // TODO
         }
-        
-        if (chart.ChartEnd == null && options.GenerateChartEnd)
-        {
-            // TODO
-        }
     }
 
     internal static void PreProcessEntry(Entry entry, NotationWriteOptions options)
     {
         entry.Level = MathF.Floor(entry.Level * 10) / 10;
         entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
+        
+        if (entry.ChartEnd == null && entry.AutoChartEnd)
+        {
+            // TODO
+        }
     }
     
     internal static void PostProcessChart(Chart chart, NotationReadOptions options)

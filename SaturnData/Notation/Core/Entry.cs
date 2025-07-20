@@ -184,6 +184,11 @@ public class Entry
     public float VideoOffset = 0;
     
     /// <summary>
+    /// The Chart End timestamp, where playback stops and the gameplay result is shown.
+    /// </summary>
+    public Timestamp? ChartEnd = null;
+    
+    /// <summary>
     /// Should this chart be shown in tutorial mode?
     /// </summary>
     public bool TutorialMode = false;
@@ -192,7 +197,6 @@ public class Entry
     /// Should the <see cref="Reading"/> be determined automatically?
     /// </summary>
     public bool AutoReading = false;
-    
     
     /// <summary>
     /// Should the <see cref="BpmMessage"/> be determined automatically?
@@ -203,6 +207,11 @@ public class Entry
     /// Should the <see cref="ClearThreshold"/> be determined automatically?
     /// </summary>
     public bool AutoClearThreshold = true;
+
+    /// <summary>
+    /// Should the <see cref="ChartEnd"/> be determined automatically?
+    /// </summary>
+    public bool AutoChartEnd = true;
     
     /// <summary>
     /// Does a file exist at <c>VideoPath</c>?

@@ -130,12 +130,6 @@ public static class SatV3Reader
                         chart.Events.Add(timeSignatureChangeEvent);
                         continue;
                     }
-
-                    if (split[0] == "END")
-                    {
-                        chart.ChartEnd = timestamp;
-                        continue;
-                    }
                 }
 
                 // Parse Lane Toggle Region
@@ -437,24 +431,34 @@ public static class SatV3Reader
                 
                 if (NotationUtils.ContainsKey(line, "@REVISION ",       out value)) { entry.Revision = value; }
                 if (NotationUtils.ContainsKey(line, "@NOTES_DESIGNER ", out value)) { entry.NotesDesigner = value; }
-                if (NotationUtils.ContainsKey(line, "@DIFFICULTY ", out value)) { entry.Difficulty = string2Difficulty(value); }
-                if (NotationUtils.ContainsKey(line, "@LEVEL ",      out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                if (NotationUtils.ContainsKey(line, "@CLEAR",       out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationUtils.ContainsKey(line, "@DIFFICULTY ",     out value)) { entry.Difficulty = string2Difficulty(value); }
+                if (NotationUtils.ContainsKey(line, "@LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationUtils.ContainsKey(line, "@CLEAR",           out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
 
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_BEGIN ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "@PREVIEW_BEGIN ",  out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = string2BackgroundOption(value); }
+                if (NotationUtils.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
 
-                if (NotationUtils.ContainsKey(line, "@JACKET ",       out value)) { entry.JacketPath = value; }
-                if (NotationUtils.ContainsKey(line, "@AUDIO ",        out value)) { entry.AudioPath = value; }
-                if (NotationUtils.ContainsKey(line, "@VIDEO ",        out value)) { entry.VideoPath = value; }
-                if (NotationUtils.ContainsKey(line, "@AUDIO_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "@VIDEO_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketPath = value; }
+                if (NotationUtils.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioPath = value; }
+                if (NotationUtils.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoPath = value; }
+                if (NotationUtils.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationUtils.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (NotationUtils.ContainsKey(line, "@TUTORIAL ", out value)) { entry.TutorialMode = value == "TRUE"; }
-                if (NotationUtils.ContainsKey(line, "@AUTO_READING ", out value)) { entry.AutoReading = value == "TRUE"; }
-                if (NotationUtils.ContainsKey(line, "@AUTO_BPM_MSG ", out value)) { entry.AutoBpmMessage = value == "TRUE"; }
-                if (NotationUtils.ContainsKey(line, "@AUTO_CLEAR ", out value)) { entry.AutoClearThreshold = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@TUTORIAL ",       out value)) { entry.TutorialMode       = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@AUTO_READING ",   out value)) { entry.AutoReading        = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@AUTO_BPM_MSG ",   out value)) { entry.AutoBpmMessage     = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@AUTO_CLEAR ",     out value)) { entry.AutoClearThreshold = value == "TRUE"; }
+                if (NotationUtils.ContainsKey(line, "@AUTO_END ",       out value)) { entry.AutoChartEnd       = value == "TRUE"; }
+
+                if (NotationUtils.ContainsKey(line, "@END ",            out value))
+                {
+                    string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
+                    int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
+
+                    entry.ChartEnd = new(measure, tick);
+                }
             }
             catch (Exception e)
             {

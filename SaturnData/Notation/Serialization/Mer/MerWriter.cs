@@ -56,7 +56,7 @@ public static class MerWriter
 
         WriteMetadata(sb, entry, options);
         WriteEvents(sb, chart, options);
-        WriteNotes(sb, chart, options);
+        WriteNotes(sb, chart, entry, options);
 
         return sb.ToString();
     }
@@ -228,7 +228,7 @@ public static class MerWriter
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="chart">The chart that holds the notes to write.</param>
     /// <param name="options">Options to adjust serialization behaviour.</param>
-    public static void WriteNotes(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteNotes(StringBuilder sb, Chart chart, Entry entry, NotationWriteOptions options)
     {
         List<MerWriterNote> notes = [];
         
@@ -444,11 +444,11 @@ public static class MerWriter
         }
         
         // Add chart end.
-        if (chart.ChartEnd != null)
+        if (entry.ChartEnd != null)
         {
             notes.Add(new()
             {
-                Timestamp = chart.ChartEnd.Value,
+                Timestamp = entry.ChartEnd.Value,
                 NoteType = 14,
                 Position = 0,
                 Size = 60,

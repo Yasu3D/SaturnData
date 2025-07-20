@@ -160,11 +160,6 @@ internal static class SatV2Reader
                     tempStopEvent = null;
                     tempStopLayer = "Layer 0";
                 }
-
-                if (type == "CHART_END")
-                {
-                    chart.ChartEnd = timestamp;
-                }
             }
             catch (Exception e)
             {
@@ -365,7 +360,7 @@ internal static class SatV2Reader
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 if (line.StartsWith('#')) continue;
-                if (line.StartsWith("@COMMENTS")) break;
+                if (line.StartsWith("@OBJECTS")) break;
 
                 string value;
 
@@ -391,6 +386,15 @@ internal static class SatV2Reader
                 if (NotationUtils.ContainsKey(line, "@BGA ",        out value)) { entry.VideoPath = value; }
                 if (NotationUtils.ContainsKey(line, "@BGM_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@BGA_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+
+                if (line.EndsWith("CHART_END"))
+                {
+                    string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
+                    int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
+
+                    entry.ChartEnd = new(measure, tick);
+                }
             }
             catch (Exception e)
             {

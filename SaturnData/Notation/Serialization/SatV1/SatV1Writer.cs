@@ -19,6 +19,6 @@ public static class SatV1Writer
 
     public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteOptions options) => SatV2Writer.WriteMetadata(sb, entry, options);
     public static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteOptions options) => SatV2Writer.WriteBookmarks(sb, chart, options);
-    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteOptions options) => SatV2Writer.WriteEvents(sb, chart, options);
+    public static void WriteEvents(StringBuilder sb, Chart chart, Entry entry, NotationWriteOptions options) => SatV2Writer.WriteEvents(sb, chart, entry, options);
     public static void WriteNotes(StringBuilder sb, Chart chart, NotationWriteOptions options) => SatV2Writer.WriteNotes(sb, chart, options);
 }
