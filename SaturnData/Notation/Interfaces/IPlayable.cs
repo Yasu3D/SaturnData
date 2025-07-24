@@ -12,8 +12,8 @@ public enum BonusType
 public enum JudgementType
 {
     Normal = 0,
-    Autoplay = 1,
-    Fake = 2,
+    Fake = 1,
+    Autoplay = 2,
 }
 
 /// <summary>
