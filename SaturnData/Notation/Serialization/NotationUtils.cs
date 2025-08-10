@@ -60,7 +60,7 @@ internal static class NotationUtils
                 break;
             }
 
-            if (line.Contains("#BODY"))
+            if (line.StartsWith("#BODY"))
             {
                 version = FormatVersion.Mer;
                 break;
