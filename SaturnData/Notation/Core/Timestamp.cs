@@ -22,8 +22,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
 
         FullTick = measure * 1920 + tick;
             
-        Time = -1;
-        ScaledTime = -1;
+        Time = null;
+        ScaledTime = null;
     }
 
     /// <summary>
@@ -39,8 +39,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
             
         FullTick = fullTick;
             
-        Time = -1;
-        ScaledTime = -1;
+        Time = null;
+        ScaledTime = null;
     }
     
     /// <summary>
@@ -104,12 +104,12 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <summary>
     /// Timestamp in milliseconds.
     /// </summary>
-    public float Time { get; internal set; }
+    public float? Time { get; internal set; }
 
     /// <summary>
     /// Pseudo-Timestamp in milliseconds, scaled by scroll speed events.
     /// </summary>
-    public float ScaledTime { get; internal set; }
+    public float? ScaledTime { get; internal set; }
 
     /// <summary>
     /// Returns the larger Timestamp.
@@ -136,6 +136,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     public static bool operator <=(Timestamp a, Timestamp b) => a.FullTick <= b.FullTick;
     public static Timestamp operator +(Timestamp a, Timestamp b) => new(a.FullTick + b.FullTick);
     public static Timestamp operator -(Timestamp a, Timestamp b) => new(a.FullTick - b.FullTick);
+    public static Timestamp operator +(Timestamp a, int b) => new(a.FullTick + b);
+    public static Timestamp operator -(Timestamp a, int b) => new(a.FullTick - b);
     public static Timestamp operator *(Timestamp a, float b) => new((int)(a.FullTick * b));
     public static Timestamp operator /(Timestamp a, float b)
     {
