@@ -299,7 +299,7 @@ public static class SatV3Writer
         {
             string result = playable.BonusType switch
             {
-                BonusType.None => "",
+                BonusType.Normal => "",
                 BonusType.Bonus => ".B",
                 BonusType.R => ".R",
                 _ => throw new ArgumentOutOfRangeException(),

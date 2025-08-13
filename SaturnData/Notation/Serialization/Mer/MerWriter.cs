@@ -243,7 +243,7 @@ public static class MerWriter
                     Timestamp = touchNote.Timestamp,
                     NoteType = touchNote.BonusType switch
                     {
-                        BonusType.None => 1,
+                        BonusType.Normal => 1,
                         BonusType.Bonus => 2,
                         BonusType.R => 20,
                         _ => 1,
@@ -263,7 +263,7 @@ public static class MerWriter
                     Timestamp = snapForwardNote.Timestamp,
                     NoteType = snapForwardNote.BonusType switch
                     {
-                        BonusType.None => 3,
+                        BonusType.Normal => 3,
                         BonusType.Bonus => 3,
                         BonusType.R => 21,
                         _ => 3,
@@ -283,7 +283,7 @@ public static class MerWriter
                     Timestamp = snapBackwardNote.Timestamp,
                     NoteType = snapBackwardNote.BonusType switch
                     {
-                        BonusType.None => 4,
+                        BonusType.Normal => 4,
                         BonusType.Bonus => 4,
                         BonusType.R => 22,
                         _ => 4,
@@ -303,7 +303,7 @@ public static class MerWriter
                     Timestamp = slideClockwiseNote.Timestamp,
                     NoteType = slideClockwiseNote.BonusType switch
                     {
-                        BonusType.None => 5,
+                        BonusType.Normal => 5,
                         BonusType.Bonus => 6,
                         BonusType.R => 23,
                         _ => 5,
@@ -323,7 +323,7 @@ public static class MerWriter
                     Timestamp = slideCounterclockwiseNote.Timestamp,
                     NoteType = slideCounterclockwiseNote.BonusType switch
                     {
-                        BonusType.None => 7,
+                        BonusType.Normal => 7,
                         BonusType.Bonus => 8,
                         BonusType.R => 24,
                         _ => 7,
@@ -343,7 +343,7 @@ public static class MerWriter
                     Timestamp = chainNote.Timestamp,
                     NoteType = chainNote.BonusType switch
                     {
-                        BonusType.None => 16,
+                        BonusType.Normal => 16,
                         BonusType.Bonus => 16,
                         BonusType.R => 26,
                         _ => 16,
@@ -384,7 +384,7 @@ public static class MerWriter
                     {
                         merWriterNote.NoteType = holdNote.BonusType switch
                         {
-                            BonusType.None => 9,
+                            BonusType.Normal => 9,
                             BonusType.Bonus => 9,
                             BonusType.R => 25,
                             _ => 9,

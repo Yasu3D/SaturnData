@@ -357,7 +357,7 @@ public static class SatV3Reader
                 if (s == "R") return BonusType.R;
             }
 
-            return BonusType.None;
+            return BonusType.Normal;
         }
 
         JudgementType string2JudgementType(string[] input)

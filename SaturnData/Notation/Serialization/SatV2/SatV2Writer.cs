@@ -196,7 +196,7 @@ public static class SatV2Writer
                         ? ""
                         : holdNote.BonusType switch
                         {
-                            BonusType.None => "",
+                            BonusType.Normal => "",
                             BonusType.Bonus => ".BONUS",
                             BonusType.R => ".RNOTE",
                             _ => "",
@@ -234,7 +234,7 @@ public static class SatV2Writer
                 {
                     attributes += playable.BonusType switch
                     {
-                        BonusType.None => "",
+                        BonusType.Normal => "",
                         BonusType.Bonus => ".BONUS",
                         BonusType.R => ".RNOTE",
                         _ => "",

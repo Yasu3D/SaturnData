@@ -4,7 +4,7 @@ namespace SaturnData.Notation.Interfaces;
 
 public enum BonusType
 {
-    None = 0,
+    Normal = 0,
     Bonus = 1,
     R = 2,
 }

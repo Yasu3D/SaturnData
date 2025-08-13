@@ -76,7 +76,7 @@ public static class MerReader
                     {
                         2 or 3 or 6 or 8 => BonusType.Bonus,
                         20 or 21 or 22 or 23 or 24 or 25 or 26 => BonusType.R,
-                        _ => BonusType.None,
+                        _ => BonusType.Normal,
                     };
 
                     // Touch Note
@@ -141,7 +141,7 @@ public static class MerReader
                             Index = index,
                             Position = position,
                             Size = size,
-                            BonusType = noteType == 25 ? BonusType.R : BonusType.None,
+                            BonusType = noteType == 25 ? BonusType.R : BonusType.Normal,
                             Render = render,
                             Reference = reference,
                         };

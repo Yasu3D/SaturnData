@@ -314,12 +314,12 @@ internal static class SatV2Reader
         {
             foreach (string a in attributes)
             {
-                if (a == "NORMAL") return BonusType.None;
+                if (a == "NORMAL") return BonusType.Normal;
                 if (a == "BONUS") return BonusType.Bonus;
                 if (a == "RNOTE") return BonusType.R;
             }
 
-            return BonusType.None;
+            return BonusType.Normal;
         }
 
         LaneSweepDirection attributes2LaneToggleDirection(string[] attributes)
