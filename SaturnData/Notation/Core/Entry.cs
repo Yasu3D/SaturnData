@@ -1,37 +1,8 @@
+using System;
 using System.IO;
+// ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace SaturnData.Notation.Core;
-
-/// <summary>
-/// The file format type and version. Dictates how a chart file is treated.
-/// </summary>
-public enum FormatVersion
-{
-    /// <summary>
-    /// An unknown, unrecognized, or broken format that can't be parsed.
-    /// </summary>
-    Unknown = -1,
-    
-    /// <summary>
-    /// Mer format. Legacy support for the original game format.<br/>
-    /// </summary>
-    Mer = 0,
-    
-    /// <summary>
-    /// First Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_1">Saturn Docs</see>.
-    /// </summary>
-    SatV1 = 1,
-    
-    /// <summary>
-    /// Second Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_2">Saturn Docs</see>.
-    /// </summary>
-    SatV2 = 2,
-    
-    /// <summary>
-    /// Third Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_3">Saturn Docs</see>.
-    /// </summary>
-    SatV3 = 3,
-}
 
 /// <summary>
 /// The "difficulty category" of a chart.
@@ -70,16 +41,8 @@ public enum BackgroundOption
 /// </summary>
 public class Entry
 {
-    /// <summary>
-    /// Was this entry defined by a <c>.sat</c> file and contains a chart?
-    /// </summary>
-    public bool Exists;
-
-    /// <summary>
-    /// The file format version of the chart.
-    /// </summary>
-    public FormatVersion FormatVersion;
-
+    public event EventHandler? EntryChanged;
+    
     /// <summary>
     /// The unique identifier of the chart.
     /// </summary>
@@ -90,34 +53,106 @@ public class Entry
     /// <summary>
     /// The title of the chart's song.
     /// </summary>
-    public string Title = "";
+    public string Title
+    {
+        get => title;
+        set
+        {
+            if (title != value)
+            {
+                title = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private string title = "";
     
     /// <summary>
     /// The kana reading of the title.
     /// </summary>
-    public string Reading = "";
+    public string Reading
+    {
+        get => reading;
+        set
+        {
+            if (reading != value)
+            {
+                reading = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private string reading = "";
     
     /// <summary>
     /// The artist of the chart's song.
     /// </summary>
-    public string Artist = "";
+    public string Artist
+    {
+        get => artist;
+        set
+        {
+            if (artist != value)
+            {
+                artist = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private string artist = "";
     
     /// <summary>
     /// The bpm text to display on the song select screen.
     /// </summary>
-    public string BpmMessage = "";
+    public string BpmMessage
+    {
+        get => bpmMessage;
+        set
+        {
+            if (bpmMessage != value)
+            {
+                bpmMessage = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private string bpmMessage = "";
 
     
     
     /// <summary>
     /// The current revision of the chart. Optional and only used for users to keep track of different chart revisions.
     /// </summary>
-    public string Revision = "";
+    public string Revision
+    {
+        get => revision;
+        set
+        {
+           if (revision != value)
+           {
+               revision = value;
+               EntryChanged?.Invoke(null, EventArgs.Empty);
+           }
+        }
+    }
+    private string revision = "";
     
     /// <summary>
     /// The notes designer of the chart.
     /// </summary>
-    public string NotesDesigner = "";
+    public string NotesDesigner
+    {
+        get => notesDesigner;
+        set
+        {
+           if (notesDesigner != value)
+           {
+               notesDesigner = value;
+               EntryChanged?.Invoke(null, EventArgs.Empty);
+           }
+        }
+    }
+    private string notesDesigner = "";
     
     /// <summary>
     /// The difficulty category of the chart.
@@ -127,91 +162,299 @@ public class Entry
     /// <summary>
     /// The level (or constant) of the chart.
     /// </summary>
-    public float Level = 0;
+    public float Level
+    {
+        get => level;
+        set
+        {
+            if (level != value)
+            {
+                level = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private float level = 0;
 
     /// <summary>
     /// The percentage of the clear bar that needs to be reached to clear a song.
     /// </summary>
-    public float ClearThreshold = 0.45f;
+    public float ClearThreshold
+    {
+        get => clearThreshold;
+        set
+        {
+            if (clearThreshold != value)
+            {
+                clearThreshold = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private float clearThreshold = 0.45f;
     
     
     
     /// <summary>
     /// The timestamp the chart preview starts at <b>in milliseconds</b>
     /// </summary>
-    public float PreviewBegin = 0;
+    public float PreviewBegin
+    {
+        get => previewBegin;
+        set
+        {
+            if (previewBegin != value)
+            {
+                previewBegin = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private float previewBegin = 0;
 
     /// <summary>
     /// The duration of the chart preview <b>in milliseconds</b>
     /// </summary>
-    public float PreviewLength = 10000;
-    
+    public float PreviewLength
+    {
+        get => previewLength;
+        set
+        {
+            if (previewLength != value)
+            {
+                previewLength = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private float previewLength = 10000;
+
     /// <summary>
     /// The default background for the chart.
     /// </summary>
-    public BackgroundOption Background = BackgroundOption.Auto;
+    public BackgroundOption Background
+    {
+        get => background;
+        set
+        {
+            if (background != value)
+            {
+                background = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private BackgroundOption background = BackgroundOption.Auto;
 
     
     
     /// <summary>
     /// Absolute filepath to the chart file that defined this entry.
     /// </summary>
-    public string ChartPath = "";
+    public string ChartPath
+    {
+        get => chartPath;
+        set
+        {
+           if (chartPath != value)
+           {
+               chartPath = value;
+               EntryChanged?.Invoke(null, EventArgs.Empty);
+           }
+        }
+    }
+    private string chartPath = "";
 
     /// <summary>
     /// Absolute filepath to the background audio file.
     /// </summary>
-    public string AudioPath = "";
+    public string AudioPath
+    {
+        get => audioPath;
+        set
+        {
+           if (audioPath != value)
+           {
+               audioPath = value;
+               EntryChanged?.Invoke(null, EventArgs.Empty);
+           }
+        }
+    }
+    private string audioPath = "";
 
     /// <summary>
     /// Absolute filepath to the background video file.
     /// </summary>
-    public string VideoPath = "";
+    public string VideoPath
+    {
+        get => videoPath;
+        set
+        {
+           if (videoPath != value)
+           {
+               videoPath = value;
+               EntryChanged?.Invoke(null, EventArgs.Empty);
+           }
+        }
+    }
+    private string videoPath = "";
 
     /// <summary>
     /// Absolute filepath to the jacket image file.
     /// </summary>
-    public string JacketPath = "";
+    public string JacketPath
+    {
+        get => jacketPath;
+        set
+        {
+           if (jacketPath != value)
+           {
+               jacketPath = value;
+               EntryChanged?.Invoke(null, EventArgs.Empty);
+           }
+        }
+    }
+    private string jacketPath = "";
 
     /// <summary>
     /// Audio offset <b>in milliseconds</b>
     /// </summary>
-    public float AudioOffset = 0;
+    public float AudioOffset
+    {
+        get => audioOffset;
+        set
+        {
+            if (audioOffset != value)
+            {
+                audioOffset = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private float audioOffset = 0;
 
     /// <summary>
     /// Video offset <b>in milliseconds</b>
     /// </summary>
-    public float VideoOffset = 0;
-    
+    public float VideoOffset
+    {
+        get => videoOffset;
+        set
+        {
+            if (videoOffset != value)
+            {
+                videoOffset = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private float videoOffset = 0;
+
     /// <summary>
     /// The Chart End timestamp, where playback stops and the gameplay result is shown.
     /// </summary>
-    public Timestamp? ChartEnd = null;
+    public Timestamp ChartEnd
+    {
+        get => chartEnd;
+        set
+        {
+            if (chartEnd != value)
+            {
+                chartEnd = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private Timestamp chartEnd = Timestamp.Zero;
+    
+    
     
     /// <summary>
     /// Should this chart be shown in tutorial mode?
     /// </summary>
-    public bool TutorialMode = false;
+    public bool TutorialMode
+    {
+        get => tutorialMode;
+        set
+        {
+            if (tutorialMode != value)
+            {
+                tutorialMode = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private bool tutorialMode = false;
     
     /// <summary>
     /// Should the <see cref="Reading"/> be determined automatically?
     /// </summary>
-    public bool AutoReading = false;
+    public bool AutoReading
+    {
+        get => autoReading;
+        set
+        {
+            if (autoReading != value)
+            {
+                autoReading = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private bool autoReading = false;
     
     /// <summary>
     /// Should the <see cref="BpmMessage"/> be determined automatically?
     /// </summary>
-    public bool AutoBpmMessage = false;
+    public bool AutoBpmMessage
+    {
+        get => autoBpmMessage;
+        set
+        {
+            if (autoBpmMessage != value)
+            {
+                autoBpmMessage = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private bool autoBpmMessage = false;
     
     /// <summary>
     /// Should the <see cref="ClearThreshold"/> be determined automatically?
     /// </summary>
-    public bool AutoClearThreshold = true;
+    public bool AutoClearThreshold
+    {
+        get => autoClearThreshold;
+        set
+        {
+            if (autoClearThreshold != value)
+            {
+                autoClearThreshold = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private bool autoClearThreshold = true;
 
     /// <summary>
     /// Should the <see cref="ChartEnd"/> be determined automatically?
     /// </summary>
-    public bool AutoChartEnd = true;
+    public bool AutoChartEnd
+    {
+        get => autoChartEnd;
+        set
+        {
+            if (autoChartEnd != value)
+            {
+                autoChartEnd = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+        }
+    }
+    private bool autoChartEnd = true;
+    
+    
     
     /// <summary>
     /// Does a file exist at <c>VideoPath</c>?

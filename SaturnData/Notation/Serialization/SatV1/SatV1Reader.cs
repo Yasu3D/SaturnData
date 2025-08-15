@@ -10,10 +10,10 @@ public static class SatV1Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationReadOptions options)
+    public static Chart ToChart(string[] lines, NotationReadArgs args)
     {
         // SatV2 is an extension of SatV1 and fully backwards-compatible.
-        return SatV2Reader.ToChart(lines, options);
+        return SatV2Reader.ToChart(lines, args);
     }
 
     /// <summary>
@@ -21,9 +21,9 @@ public static class SatV1Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines, NotationReadOptions options)
+    public static Entry ToEntry(string[] lines, NotationReadArgs args)
     {
         // SatV2 is an extension of SatV1 and fully backwards-compatible.
-        return SatV2Reader.ToEntry(lines, options);
+        return SatV2Reader.ToEntry(lines, args);
     }
 }

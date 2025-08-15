@@ -27,7 +27,7 @@ public static class SatV3Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationReadOptions options)
+    public static Chart ToChart(string[] lines, NotationReadArgs args)
     {
         Chart chart = new();
 
@@ -409,7 +409,7 @@ public static class SatV3Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Entry ToEntry(string[] lines, NotationReadOptions options)
+    internal static Entry ToEntry(string[] lines, NotationReadArgs args)
     {
         Entry entry = new();
 
@@ -468,7 +468,7 @@ public static class SatV3Reader
             }
         }
 
-        NotationUtils.PostProcessEntry(entry, options);
+        NotationUtils.PostProcessEntry(entry, args);
 
         return entry;
 

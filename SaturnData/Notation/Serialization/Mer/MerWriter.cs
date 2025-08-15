@@ -48,15 +48,15 @@ public static class MerWriter
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
+    public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
-        NotationUtils.PreProcessEntry(entry, options);
-        NotationUtils.PreProcessChart(chart, options);
+        NotationUtils.PreProcessEntry(entry, args);
+        NotationUtils.PreProcessChart(chart, args);
 
-        WriteMetadata(sb, entry, options);
-        WriteEvents(sb, chart, options);
-        WriteNotes(sb, chart, entry, options);
+        WriteMetadata(sb, entry, args);
+        WriteEvents(sb, chart, args);
+        WriteNotes(sb, chart, entry, args);
 
         return sb.ToString();
     }
@@ -66,24 +66,24 @@ public static class MerWriter
     /// </summary>
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="entry">The entry that holds the metadata to write.</param>
-    /// <param name="options">Options to adjust serialization behaviour.</param>
-    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteOptions options)
+    /// <param name="args">Options to adjust serialization behaviour.</param>
+    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteArgs args)
     {
         sb.Append("#MUSIC_SCORE_ID 0\n");
         sb.Append("#MUSIC_SCORE_VERSION 0\n");
         sb.Append("#GAME_VERSION\n");
 
-        switch (options.WriteMerMusicFilePath)
+        switch (args.WriteMerMusicFilePath)
         {
-            case NotationWriteOptions.WriteMerMusicFilePathOption.None:
+            case NotationWriteArgs.WriteMerMusicFilePathOption.None:
                 sb.Append("#MUSIC_FILE_PATH\n");
                 break;
 
-            case NotationWriteOptions.WriteMerMusicFilePathOption.NoExtension:
+            case NotationWriteArgs.WriteMerMusicFilePathOption.NoExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileNameWithoutExtension(entry.AudioPath)}\n");
                 break;
 
-            case NotationWriteOptions.WriteMerMusicFilePathOption.WithExtension:
+            case NotationWriteArgs.WriteMerMusicFilePathOption.WithExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileName(entry.AudioPath)}\n");
                 break;
         }
@@ -98,8 +98,8 @@ public static class MerWriter
     /// </summary>
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="chart">The chart that holds the events to write.</param>
-    /// <param name="options">Options to adjust serialization behaviour.</param>
-    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    /// <param name="args">Options to adjust serialization behaviour.</param>
+    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         List<MerWriterEvent> events = [];
         
@@ -227,8 +227,8 @@ public static class MerWriter
     /// </summary>
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="chart">The chart that holds the notes to write.</param>
-    /// <param name="options">Options to adjust serialization behaviour.</param>
-    public static void WriteNotes(StringBuilder sb, Chart chart, Entry entry, NotationWriteOptions options)
+    /// <param name="args">Options to adjust serialization behaviour.</param>
+    public static void WriteNotes(StringBuilder sb, Chart chart, Entry entry, NotationWriteArgs args)
     {
         List<MerWriterNote> notes = [];
         
@@ -444,17 +444,14 @@ public static class MerWriter
         }
         
         // Add chart end.
-        if (entry.ChartEnd != null)
+        notes.Add(new()
         {
-            notes.Add(new()
-            {
-                Timestamp = entry.ChartEnd.Value,
-                NoteType = 14,
-                Position = 0,
-                Size = 60,
-                Render = 1,
-            });
-        }
+            Timestamp = entry.ChartEnd,
+            NoteType = 14,
+            Position = 0,
+            Size = 60,
+            Render = 1,
+        });
         
         notes = notes
             .OrderBy(x => x.Timestamp)

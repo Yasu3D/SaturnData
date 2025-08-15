@@ -35,7 +35,7 @@ public static class MerReader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Chart ToChart(string[] lines, NotationReadOptions options)
+    internal static Chart ToChart(string[] lines, NotationReadArgs args)
     {
         Chart chart = new();
         
@@ -295,7 +295,7 @@ public static class MerReader
             NotationUtils.AddOrCreate(chart.Layers, "Layer 0", holdNote);
         }
 
-        NotationUtils.PostProcessChart(chart, options);
+        NotationUtils.PostProcessChart(chart, args);
         
         return chart;
     }

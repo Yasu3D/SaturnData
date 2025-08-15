@@ -17,16 +17,22 @@ public static class NotationSerializer
     /// <param name="chart">The chart to serialize.</param>
     /// <param name="formatVersion">The format to serialize as.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, FormatVersion formatVersion, NotationWriteOptions options)
+    public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
     {
-        return formatVersion switch
+        return args.FormatVersion switch
         {
-            FormatVersion.Mer => MerWriter.ToString(entry, chart, options),
-            FormatVersion.SatV1 => SatV1Writer.ToString(entry, chart, options),
-            FormatVersion.SatV2 => SatV2Writer.ToString(entry, chart, options),
-            FormatVersion.SatV3 => SatV3Writer.ToString(entry, chart, options),
+            FormatVersion.Mer => MerWriter.ToString(entry, chart, args),
+            FormatVersion.SatV1 => SatV1Writer.ToString(entry, chart, args),
+            FormatVersion.SatV2 => SatV2Writer.ToString(entry, chart, args),
+            FormatVersion.SatV3 => SatV3Writer.ToString(entry, chart, args),
             _ => "",
         };
+    }
+
+    public static void ToFile(string path, Entry entry, Chart chart, NotationWriteArgs args)
+    {
+        string data = ToString(entry, chart, args);
+        File.WriteAllText(path, data);
     }
 
     /// <summary>
@@ -34,12 +40,12 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="path">The file to open.</param>
     /// <returns></returns>
-    public static Chart ToChart(string path, NotationReadOptions options)
+    public static Chart ToChart(string path, NotationReadArgs args)
     {
         try
         {
             string[] lines = File.ReadAllLines(path);
-            return ToChart(lines, options);
+            return ToChart(lines, args);
         }
         catch
         {
@@ -52,17 +58,17 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationReadOptions options)
+    public static Chart ToChart(string[] lines, NotationReadArgs args)
     {
         try
         {
             FormatVersion formatVersion = NotationUtils.DetectFormatVersion(lines);
             return formatVersion switch
             {
-                FormatVersion.Mer => MerReader.ToChart(lines, options),
-                FormatVersion.SatV1 => SatV1Reader.ToChart(lines, options),
-                FormatVersion.SatV2 => SatV2Reader.ToChart(lines, options),
-                FormatVersion.SatV3 => SatV3Reader.ToChart(lines, options),
+                FormatVersion.Mer => MerReader.ToChart(lines, args),
+                FormatVersion.SatV1 => SatV1Reader.ToChart(lines, args),
+                FormatVersion.SatV2 => SatV2Reader.ToChart(lines, args),
+                FormatVersion.SatV3 => SatV3Reader.ToChart(lines, args),
                 _ => throw new(),
             };
         }
@@ -77,12 +83,12 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="path">The file to open.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string path, NotationReadOptions options)
+    public static Entry ToEntry(string path, NotationReadArgs args)
     {
         try
         {
             string[] lines = File.ReadAllLines(path);
-            Entry entry = ToEntry(lines, options);
+            Entry entry = ToEntry(lines, args);
             entry.ChartPath = path;
             
             return entry;
@@ -98,7 +104,7 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines, NotationReadOptions options)
+    public static Entry ToEntry(string[] lines, NotationReadArgs args)
     {
         try
         {
@@ -107,9 +113,9 @@ public static class NotationSerializer
             return formatVersion switch
             {
                 FormatVersion.Mer => MerReader.ToEntry(lines),
-                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, options),
-                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, options),
-                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines, options),
+                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, args),
+                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, args),
+                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines, args),
                 _ => throw new(),
             };
         }

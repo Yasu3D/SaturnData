@@ -17,28 +17,28 @@ public static class SatV3Writer
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
+    public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
-        NotationUtils.PreProcessEntry(entry, options);
-        NotationUtils.PreProcessChart(chart, options);
+        NotationUtils.PreProcessEntry(entry, args);
+        NotationUtils.PreProcessChart(chart, args);
 
-        WriteMetadata(sb, entry, options);
-        WriteBookmarks(sb, chart, options);
-        WriteEvents(sb, chart, options);
-        WriteLanes(sb, chart, options);
-        WriteLayers(sb, chart, options);
+        WriteMetadata(sb, entry, args);
+        WriteBookmarks(sb, chart, args);
+        WriteEvents(sb, chart, args);
+        WriteLanes(sb, chart, args);
+        WriteLayers(sb, chart, args);
 
         return sb.ToString();
     }
 
-    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteOptions options)
+    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteArgs args)
     {
         try
         {
-            if (options.ExportWatermark != null)
+            if (args.ExportWatermark != null)
             {
-                sb.Append($"# {options.ExportWatermark}\n");
+                sb.Append($"# {args.ExportWatermark}\n");
             }
 
             sb.Append($"{"@SAT_VERSION",-16}3\n");
@@ -65,7 +65,7 @@ public static class SatV3Writer
             sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
             sb.Append('\n');
-            sb.Append($"{"@END",-16}{entry.ChartEnd!.Value.Measure,-4}{entry.ChartEnd!.Value.Tick,-4}\n");
+            sb.Append($"{"@END",-16}{entry.ChartEnd.Measure,-4}{entry.ChartEnd.Tick,-4}\n");
             sb.Append('\n');
             sb.Append($"{"@TUTORIAL",-16}{bool2String(entry.TutorialMode)}\n");
             sb.Append($"{"@AUTO_READING",-16}{bool2String(entry.AutoReading)}\n");
@@ -118,7 +118,7 @@ public static class SatV3Writer
         }
     }
     
-    public static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@BOOKMARKS\n");
         
@@ -130,7 +130,7 @@ public static class SatV3Writer
         sb.Append('\n');
     }
     
-    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@EVENTS\n");
 
@@ -155,7 +155,7 @@ public static class SatV3Writer
         sb.Append('\n');
     }
     
-    public static void WriteLanes(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteLanes(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@LANE\n");
 
@@ -188,7 +188,7 @@ public static class SatV3Writer
         }
     }
     
-    public static void WriteLayers(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteLayers(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         for (int l = 0; l < chart.Layers.Count; l++)
         {

@@ -70,15 +70,15 @@ internal static class NotationUtils
         return version;
     }
 
-    internal static void PreProcessChart(Chart chart, NotationWriteOptions options)
+    internal static void PreProcessChart(Chart chart, NotationWriteArgs args)
     {
-        if (options.BakeHoldNotes)
+        if (args.BakeHoldNotes)
         {
             // TODO
         }
     }
 
-    internal static void PreProcessEntry(Entry entry, NotationWriteOptions options)
+    internal static void PreProcessEntry(Entry entry, NotationWriteArgs args)
     {
         entry.Level = MathF.Floor(entry.Level * 10) / 10;
         entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
@@ -89,9 +89,9 @@ internal static class NotationUtils
         }
     }
     
-    internal static void PostProcessChart(Chart chart, NotationReadOptions options)
+    internal static void PostProcessChart(Chart chart, NotationReadArgs args)
     {
-        if (options.SortCollections)
+        if (args.SortCollections)
         {
             chart.Events = chart.Events.OrderBy(x => ((ITimeable)x).Timestamp.FullTick).ToList();
             chart.LaneToggles = chart.LaneToggles.OrderBy(x => ((ITimeable)x).Timestamp.FullTick).ToList();
@@ -104,7 +104,7 @@ internal static class NotationUtils
             }
         }
         
-        if (options.OptimizeHoldNotes)
+        if (args.OptimizeHoldNotes)
         {
             foreach (Layer layer in chart.Layers)
             foreach (Note note in layer.Notes)
@@ -121,12 +121,12 @@ internal static class NotationUtils
         }
     }
 
-    internal static void PostProcessEntry(Entry entry, NotationReadOptions options)
+    internal static void PostProcessEntry(Entry entry, NotationReadArgs args)
     {
         entry.Level = MathF.Floor(entry.Level * 10) / 10;
         entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
         
-        if (options.InferClearThresholdFromDifficulty)
+        if (args.InferClearThresholdFromDifficulty)
         {
             entry.ClearThreshold = entry.Difficulty switch
             {

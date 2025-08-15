@@ -19,25 +19,25 @@ public static class SatV2Writer
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, NotationWriteOptions options)
+    public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
-        NotationUtils.PreProcessEntry(entry, options);
-        NotationUtils.PreProcessChart(chart, options);
+        NotationUtils.PreProcessEntry(entry, args);
+        NotationUtils.PreProcessChart(chart, args);
 
-        WriteMetadata(sb, entry, options);
-        WriteBookmarks(sb, chart, options);
-        WriteEvents(sb, chart, entry, options);
-        WriteNotes(sb, chart, options);
+        WriteMetadata(sb, entry, args);
+        WriteBookmarks(sb, chart, args);
+        WriteEvents(sb, chart, entry, args);
+        WriteNotes(sb, chart, args);
 
         return sb.ToString();
     }
 
-    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteOptions options)
+    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteArgs args)
     {
-        if (options.ExportWatermark != null)
+        if (args.ExportWatermark != null)
         {
-            sb.Append($"# {options.ExportWatermark}\n");
+            sb.Append($"# {args.ExportWatermark}\n");
         }
         
         sb.Append($"{"@SAT_VERSION",-16}2\n");
@@ -66,7 +66,7 @@ public static class SatV2Writer
         sb.Append('\n');
     }
     
-    public static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@COMMENTS\n");
         
@@ -80,7 +80,7 @@ public static class SatV2Writer
         sb.Append('\n');
     }
     
-    public static void WriteEvents(StringBuilder sb, Chart chart, Entry entry, NotationWriteOptions options)
+    public static void WriteEvents(StringBuilder sb, Chart chart, Entry entry, NotationWriteArgs args)
     {
         List<Event> events = [];
         Dictionary<Event, int> layerIndices = new();
@@ -122,14 +122,14 @@ public static class SatV2Writer
             if (@event is HiSpeedChangeEvent hiSpeedChangeEvent)
             {
                 int? layer = layerIndices.TryGetValue(hiSpeedChangeEvent, out int value) ? value : null;
-                string layerAttribute = GetLayerAttribute(layer, options);
+                string layerAttribute = GetLayerAttribute(layer, args);
                 sb.Append($"{hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {index,-4} {"HISPEED" + layerAttribute,-16} {hiSpeedChangeEvent.HiSpeed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
             }
 
             if (@event is ReverseEffectEvent reverseEffectEvent)
             {
                 int? layer = layerIndices.TryGetValue(reverseEffectEvent, out int value) ? value : null;
-                string layerAttribute = GetLayerAttribute(layer, options);
+                string layerAttribute = GetLayerAttribute(layer, args);
                 sb.Append($"{reverseEffectEvent.SubEvents[0].Timestamp.Measure,-4} {reverseEffectEvent.SubEvents[0].Timestamp.Tick,-4} {index,-4} {"REV_START" + layerAttribute,-16}\n");
                 sb.Append($"{reverseEffectEvent.SubEvents[1].Timestamp.Measure,-4} {reverseEffectEvent.SubEvents[1].Timestamp.Tick,-4} {index,-4} {"REV_END",-16}\n");
                 sb.Append($"{reverseEffectEvent.SubEvents[2].Timestamp.Measure,-4} {reverseEffectEvent.SubEvents[2].Timestamp.Tick,-4} {index,-4} {"REV_ZONE_END",-16}\n");
@@ -138,7 +138,7 @@ public static class SatV2Writer
             if (@event is StopEffectEvent stopEffectEvent)
             {
                 int? layer = layerIndices.TryGetValue(stopEffectEvent, out int value) ? value : null;
-                string layerAttribute = GetLayerAttribute(layer, options);
+                string layerAttribute = GetLayerAttribute(layer, args);
                 sb.Append($"{stopEffectEvent.SubEvents[0].Timestamp.Measure,-4} {stopEffectEvent.SubEvents[0].Timestamp.Tick,-4} {index,-4} {"STOP_START" + layerAttribute,-16}\n");
                 sb.Append($"{stopEffectEvent.SubEvents[1].Timestamp.Measure,-4} {stopEffectEvent.SubEvents[1].Timestamp.Tick,-4} {index,-4} {"STOP_END",-16}\n");
             }
@@ -148,13 +148,13 @@ public static class SatV2Writer
 
         if (entry.ChartEnd != null)
         {
-            sb.Append($"{entry.ChartEnd.Value.Measure,-4} {entry.ChartEnd.Value.Tick,-4} {index,-4} {"CHART_END",-16}\n");
+            sb.Append($"{entry.ChartEnd.Measure,-4} {entry.ChartEnd.Tick,-4} {index,-4} {"CHART_END",-16}\n");
         }
         
         sb.Append('\n');
     }
     
-    public static void WriteNotes(StringBuilder sb, Chart chart, NotationWriteOptions options)
+    public static void WriteNotes(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         List<Note> notes = [];
         Dictionary<Note, int> layerIndices = new();
@@ -202,7 +202,7 @@ public static class SatV2Writer
                             _ => "",
                         };
                     int? layer = layerIndices.TryGetValue(holdNote, out int value) ? value : null;
-                    attributes += GetLayerAttribute(layer, options);
+                    attributes += GetLayerAttribute(layer, args);
                     attributes += point.RenderType == HoldPointRenderType.Hidden ? ".NR" : "";
 
                     sb.Append($"{point.Timestamp.Measure,-4} {point.Timestamp.Tick,-4} {index,-4} {point.Position,-4} {point.Size,-4} {type}{attributes}\n");
@@ -254,7 +254,7 @@ public static class SatV2Writer
                 }
                 
                 int? layer = layerIndices.TryGetValue(note, out int value) ? value : null;
-                attributes += GetLayerAttribute(layer, options);
+                attributes += GetLayerAttribute(layer, args);
                 sb.Append($"{timestamp.Measure,-4} {timestamp.Tick,-4} {index,-4} {position,-4} {size,-4} {type}{attributes}\n");
                 
                 index++;
@@ -262,10 +262,10 @@ public static class SatV2Writer
         }
     }
     
-    private static string GetLayerAttribute(int? layer, NotationWriteOptions options)
+    private static string GetLayerAttribute(int? layer, NotationWriteArgs args)
     {
         if (layer is null) return "";
-        if (!options.ExplicitLayerAttributes && layer == 0) return "";
+        if (!args.ExplicitLayerAttributes && layer == 0) return "";
         
         return $".L{layer}";
     }

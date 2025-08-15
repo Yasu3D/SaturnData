@@ -2,7 +2,38 @@ using System.Reflection;
 
 namespace SaturnData.Notation.Serialization;
 
-public struct NotationWriteOptions
+/// <summary>
+/// The file format type and version. Dictates how a chart file is treated.
+/// </summary>
+public enum FormatVersion
+{
+    /// <summary>
+    /// An unknown, unrecognized, or broken format that can't be parsed.
+    /// </summary>
+    Unknown = -1,
+    
+    /// <summary>
+    /// Mer format. Legacy support for the original game format.<br/>
+    /// </summary>
+    Mer = 0,
+    
+    /// <summary>
+    /// First Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_1">Saturn Docs</see>.
+    /// </summary>
+    SatV1 = 1,
+    
+    /// <summary>
+    /// Second Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_2">Saturn Docs</see>.
+    /// </summary>
+    SatV2 = 2,
+    
+    /// <summary>
+    /// Third Saturn format. See <see href="https://saturn.yasu3d.art/docs/#/sat_format_3">Saturn Docs</see>.
+    /// </summary>
+    SatV3 = 3,
+}
+
+public struct NotationWriteArgs
 {
     public enum WriteMerMusicFilePathOption
     {
@@ -34,19 +65,25 @@ public struct NotationWriteOptions
         WithExtension = 2,
     }
 
-    public NotationWriteOptions()
+    public NotationWriteArgs()
     {
         ExportWatermark = $"Generated with SaturnData v{Assembly.GetExecutingAssembly().GetName().Version}";
-        BakeHoldNotes = true;
-        
-        
+        FormatVersion = FormatVersion.SatV3;
+        BakeHoldNotes = false;
+        ExplicitLayerAttributes = false;
+        ExplicitBonusTypeAttributes = false;
         WriteMerMusicFilePath = WriteMerMusicFilePathOption.NoExtension;
     }
 
     /// <summary>
-    /// A watermark to leave on
+    /// A watermark to write at the beginning of the chart file.
     /// </summary>
     public string? ExportWatermark { get; set; }
+    
+    /// <summary>
+    /// The file format type and version to write the file in.
+    /// </summary>
+    public FormatVersion FormatVersion { get; set; }
 
     /// <summary>
     /// Determines if no-render segments are created when exporting.
@@ -61,7 +98,7 @@ public struct NotationWriteOptions
 
     /// <summary>
     /// <b>Only affects .SATv1 and .SATv2 export!</b><br/>
-    /// Determines if <c>BonusType.None</c> should be implicit, or explicitly written as <c>.NORMAL</c>.
+    /// Determines if <c>BonusType.Normal</c> should be implicit, or explicitly written as <c>.NORMAL</c>.
     /// </summary>
     public bool ExplicitBonusTypeAttributes { get; set; }
 

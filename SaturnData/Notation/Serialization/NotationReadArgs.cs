@@ -1,8 +1,8 @@
 namespace SaturnData.Notation.Serialization;
 
-public struct NotationReadOptions
+public struct NotationReadArgs
 {
-    public NotationReadOptions()
+    public NotationReadArgs()
     {
         SortCollections = true;
         OptimizeHoldNotes = true;
