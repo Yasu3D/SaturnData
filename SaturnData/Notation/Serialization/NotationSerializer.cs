@@ -47,8 +47,9 @@ public static class NotationSerializer
             string[] lines = File.ReadAllLines(path);
             return ToChart(lines, args);
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return new();
         }
     }
@@ -72,8 +73,9 @@ public static class NotationSerializer
                 _ => throw new(),
             };
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return new();
         }
     }
@@ -93,8 +95,9 @@ public static class NotationSerializer
             
             return entry;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return new();
         }
     }
@@ -119,8 +122,9 @@ public static class NotationSerializer
                 _ => throw new(),
             };
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return new();
         }
     }

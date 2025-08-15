@@ -53,9 +53,9 @@ internal static class SatV2Reader
                 Bookmark bookmark = new(new(measure, tick), "DDDDDD", message);
                 chart.Bookmarks.Add(bookmark);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
                 Console.WriteLine($"Error occurred on this line:\n{line}");
                 // don't throw.
             }
@@ -161,9 +161,9 @@ internal static class SatV2Reader
                     tempStopLayer = "Layer 0";
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
                 Console.WriteLine($"Error occurred on this line:\n{line}");
                 // don't throw.
             }
@@ -279,9 +279,9 @@ internal static class SatV2Reader
                     chart.LaneToggles.Add(laneHideNote);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
                 Console.WriteLine($"Error occurred on this line:\n{line}");
                 // don't throw.
             }
@@ -396,9 +396,9 @@ internal static class SatV2Reader
                     entry.ChartEnd = new(measure, tick);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
                 Console.WriteLine($"Error occurred on this line:\n{line}");
                 // don't throw.
             }

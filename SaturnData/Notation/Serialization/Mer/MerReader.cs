@@ -245,9 +245,9 @@ public static class MerReader
                     tempStopEvent = null;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
                 Console.WriteLine($"Error occurred on this line:\n{line}");
                 // don't throw.
             }
@@ -370,8 +370,9 @@ public static class MerReader
                     entry.ChartEnd = new(measure, tick);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 // ignored, continue
             }
         }

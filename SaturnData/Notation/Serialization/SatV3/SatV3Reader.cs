@@ -327,9 +327,9 @@ public static class SatV3Reader
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
                 Console.WriteLine($"Error occurred on this line:\n{line}");
                 // don't throw.
             }
@@ -460,9 +460,9 @@ public static class SatV3Reader
                     entry.ChartEnd = new(measure, tick);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
                 Console.WriteLine($"Error occurred on this line:\n{line}");
                 // don't throw.
             }

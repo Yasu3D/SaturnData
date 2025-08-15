@@ -74,9 +74,9 @@ public static class SatV3Writer
             sb.Append($"{"@AUTO_END",-16}{bool2String(entry.AutoChartEnd)}\n");
             sb.Append('\n');
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            Console.WriteLine(ex);
         }
 
         return;
