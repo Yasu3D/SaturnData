@@ -248,7 +248,7 @@ public static class MerReader
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred on this line:\n{line}");
+                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
             }
         }

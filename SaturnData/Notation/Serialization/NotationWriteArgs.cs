@@ -33,9 +33,7 @@ public enum FormatVersion
     SatV3 = 3,
 }
 
-public struct NotationWriteArgs
-{
-    public enum WriteMerMusicFilePathOption
+public enum WriteMerMusicFilePathOption
     {
         /// <summary>
         /// Don't write the file name at all.
@@ -65,48 +63,47 @@ public struct NotationWriteArgs
         WithExtension = 2,
     }
 
-    public NotationWriteArgs()
-    {
-        ExportWatermark = $"Generated with SaturnData v{Assembly.GetExecutingAssembly().GetName().Version}";
-        FormatVersion = FormatVersion.SatV3;
-        BakeHoldNotes = false;
-        ExplicitLayerAttributes = false;
-        ExplicitBonusTypeAttributes = false;
-        WriteMerMusicFilePath = WriteMerMusicFilePathOption.NoExtension;
-    }
-
+public class NotationWriteArgs
+{
     /// <summary>
     /// A watermark to write at the beginning of the chart file.
     /// </summary>
-    public string? ExportWatermark { get; set; }
-    
+    public string? ExportWatermark { get; set; } = $"Generated with SaturnData v{Assembly.GetExecutingAssembly().GetName().Version}";
+
     /// <summary>
     /// The file format type and version to write the file in.
     /// </summary>
-    public FormatVersion FormatVersion { get; set; }
+    public FormatVersion FormatVersion { get; set; } = FormatVersion.SatV3;
+
+    
+    
+    /// <summary>
+    /// <b>Only affects .MER export!</b><br/>
+    /// Determines how the <c>#MUSIC_FILE_PATH</c> tag is written in a Mer format file.
+    /// </summary>
+    public WriteMerMusicFilePathOption WriteMerMusicFilePath { get; set; } = WriteMerMusicFilePathOption.NoExtension;
+    
+    
+    
+    /// <summary>
+    /// Determines if hidden interpolated segments are created when exporting.
+    /// </summary>
+    public bool BakeHoldNotes { get; set; } = false;
 
     /// <summary>
-    /// Determines if no-render segments are created when exporting.
+    /// Determines if lane toggle notes with <c>SweepDirection.Instant</c>
     /// </summary>
-    public bool BakeHoldNotes { get; set; }
+    public bool BakeInstantLaneToggleNotes { get; set; } = false;
 
     /// <summary>
     /// <b>Only affects .SATv1 and .SATv2 export!</b><br/>
     /// Determines if layer 0 should be implicit, or explicitly written as <c>.L0</c>.
     /// </summary>
-    public bool ExplicitLayerAttributes { get; set; }
+    public bool ExplicitLayerAttributes { get; set; } = false;
 
     /// <summary>
     /// <b>Only affects .SATv1 and .SATv2 export!</b><br/>
     /// Determines if <c>BonusType.Normal</c> should be implicit, or explicitly written as <c>.NORMAL</c>.
     /// </summary>
-    public bool ExplicitBonusTypeAttributes { get; set; }
-
-    /// <summary>
-    /// <b>Only affects .MER export!</b><br/>
-    /// Determines how the <c>#MUSIC_FILE_PATH</c> tag is written in a Mer format file.
-    /// </summary>
-    public WriteMerMusicFilePathOption WriteMerMusicFilePath { get; set; }
-    
-    
+    public bool ExplicitBonusTypeAttributes { get; set; } = false;
 }

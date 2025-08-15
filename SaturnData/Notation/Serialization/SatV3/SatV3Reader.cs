@@ -125,9 +125,17 @@ public static class SatV3Reader
                     if (split[0] == "METRE")
                     { 
                         int upper = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
-                        int lower = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
+                        int lower = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
                         TimeSignatureChangeEvent timeSignatureChangeEvent = new(timestamp, upper, lower);
                         chart.Events.Add(timeSignatureChangeEvent);
+                        continue;
+                    }
+
+                    if (split[0] == "TUTORIAL")
+                    {
+                        string key = split[3];
+                        TutorialTagEvent tutorialTagEvent = new(timestamp, key);
+                        chart.Events.Add(tutorialTagEvent);
                         continue;
                     }
                 }
@@ -135,23 +143,22 @@ public static class SatV3Reader
                 // Parse Lane Toggle Region
                 if (currentRegion is Region.Lane)
                 {
-                    string[] attributes = split[0].Split('.', StringSplitOptions.RemoveEmptyEntries);
-                    LaneSweepDirection direction = string2LaneSweepDirection(attributes);
+                    LaneSweepDirection direction = string2LaneSweepDirection(split[1]);
                     
-                    int measure = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
-                    int tick = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
+                    int measure = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
+                    int tick = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
                     Timestamp timestamp = new(measure, tick);
                     
-                    int position = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
-                    int size = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
-
-                    if (attributes[0] == "SHOW")
+                    int position = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
+                    int size = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
+                    
+                    if (split[0] == "SHOW")
                     {
                         LaneShowNote laneShowNote = new(timestamp, position, size, direction);
                         chart.LaneToggles.Add(laneShowNote);
                     }
 
-                    if (attributes[0] == "HIDE")
+                    if (split[0] == "HIDE")
                     {
                         LaneHideNote laneHideNote = new(timestamp, position, size, direction);
                         chart.LaneToggles.Add(laneHideNote);
@@ -167,11 +174,14 @@ public static class SatV3Reader
                     {
                         throw new("No active layer found while attempting to add items to layers.");
                     }
-                    
-                    int measure = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
-                    int tick = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
-                    Timestamp timestamp = new(measure, tick);
 
+                    bool isEvent = split[0] is "SPEED" or "VISIBLE" or "REVERSE" or "STOP" 
+                                   || (split[0] == "|" && currentMultilineObject is ReverseEffectEvent or StopEffectEvent);
+                    
+                    Timestamp timestamp = isEvent
+                        ? new(Convert.ToInt32(split[1], CultureInfo.InvariantCulture), Convert.ToInt32(split[2], CultureInfo.InvariantCulture))
+                        : new(Convert.ToInt32(split[3], CultureInfo.InvariantCulture), Convert.ToInt32(split[4], CultureInfo.InvariantCulture));
+                    
                     if (split[0] == "SPEED")
                     {
                         float speed = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
@@ -183,13 +193,13 @@ public static class SatV3Reader
                         continue;
                     }
 
-                    if (split[0] == "INVIS")
+                    if (split[0] == "VISIBLE")
                     {
                         bool visible = split[3] == "TRUE";
-                        InvisibleEffectEvent invisibleEffectEvent = new(timestamp, visible);
+                        VisibilityChangeEvent visibilityChangeEvent = new(timestamp, visible);
                         setCurrentMultiLineObject(null);
                         
-                        currentLayer.Events.Add(invisibleEffectEvent);
+                        currentLayer.Events.Add(visibilityChangeEvent);
                         
                         continue;
                     }
@@ -215,13 +225,14 @@ public static class SatV3Reader
                     int position;
                     int size;
                     
-                    if (split[0] is "|" or "~")
+                    if (split[0] == "|")
                     {
                         if (currentMultilineObject is HoldNote holdNote)
                         {
-                            HoldPointRenderType type = split[0] == "|" ? HoldPointRenderType.Visible : HoldPointRenderType.Hidden;
-                            position = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
-                            size = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
+                            HoldPointRenderType type = string2HoldPointRenderType(split[1]);
+                            
+                            position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
+                            size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
                     
                             holdNote.Points.Add(new(timestamp, position, size, holdNote, type));
                         }
@@ -256,13 +267,12 @@ public static class SatV3Reader
                         }
                     }
                     
-                    string[] attributes = split[0].Split('.', StringSplitOptions.RemoveEmptyEntries);
-                    BonusType bonusType = string2BonusType(attributes);
-                    JudgementType judgementType = string2JudgementType(attributes);
-                    position = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
-                    size = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
+                    BonusType bonusType = string2BonusType(split[1]);
+                    JudgementType judgementType = string2JudgementType(split[2]);
+                    position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
+                    size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
                     
-                    if (attributes[0] == "TOUCH")
+                    if (split[0] == "TOUCH")
                     {
                         TouchNote touchNote = new(timestamp, position, size, bonusType, judgementType);
                         setCurrentMultiLineObject(null);
@@ -270,7 +280,7 @@ public static class SatV3Reader
                         currentLayer.Notes.Add(touchNote);
                     }
                     
-                    if (attributes[0] == "SNFWD")
+                    if (split[0] == "SNFWD")
                     {
                         SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, judgementType);
                         setCurrentMultiLineObject(null);
@@ -278,7 +288,7 @@ public static class SatV3Reader
                         currentLayer.Notes.Add(snapForwardNote);
                     }
                     
-                    if (attributes[0] == "SNBWD")
+                    if (split[0] == "SNBWD")
                     {
                         SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, judgementType);
                         setCurrentMultiLineObject(null);
@@ -286,7 +296,7 @@ public static class SatV3Reader
                         currentLayer.Notes.Add(snapBackwardNote);
                     }
                     
-                    if (attributes[0] == "SLCLW")
+                    if (split[0] == "SLCLW")
                     {
                         SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, judgementType);
                         setCurrentMultiLineObject(null);
@@ -294,7 +304,7 @@ public static class SatV3Reader
                         currentLayer.Notes.Add(slideClockwiseNote);
                     }
                     
-                    if (attributes[0] == "SLCCW")
+                    if (split[0] == "SLCCW")
                     {
                         SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, judgementType);
                         setCurrentMultiLineObject(null);
@@ -302,7 +312,7 @@ public static class SatV3Reader
                         currentLayer.Notes.Add(slideCounterclockwiseNote);
                     }
                     
-                    if (attributes[0] == "CHAIN")
+                    if (split[0] == "CHAIN")
                     {
                         ChainNote chainNote = new(timestamp, position, size, bonusType, judgementType);
                         setCurrentMultiLineObject(null);
@@ -310,7 +320,7 @@ public static class SatV3Reader
                         currentLayer.Notes.Add(chainNote);
                     }
                     
-                    if (attributes[0] == "HOLD")
+                    if (split[0] == "HOLD")
                     {
                         HoldNote holdNote = new(bonusType, judgementType);
                         setCurrentMultiLineObject(holdNote);
@@ -318,7 +328,15 @@ public static class SatV3Reader
                         holdNote.Points.Add(new(timestamp, position, size, holdNote, HoldPointRenderType.Visible));
                     }
 
-                    if (attributes[0] == "MLINE")
+                    if (split[0] == "SYNC")
+                    {
+                        SyncNote syncNote = new(timestamp, position, size);
+                        setCurrentMultiLineObject(null);
+
+                        currentLayer.Notes.Add(syncNote);
+                    }
+                    
+                    if (split[0] == "MLINE")
                     {
                         MeasureLineNote measureLineNote = new(timestamp);
                         setCurrentMultiLineObject(null);
@@ -330,45 +348,55 @@ public static class SatV3Reader
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred on this line:\n{line}");
+                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
             }
         }
         
         return chart;
 
-        LaneSweepDirection string2LaneSweepDirection(string[] input)
+        LaneSweepDirection string2LaneSweepDirection(string input)
         {
-            foreach (string s in input)
+            return input switch
             {
-                if (s == "CTR") return LaneSweepDirection.Center;
-                if (s == "CLW") return LaneSweepDirection.Clockwise;
-                if (s == "CCW") return LaneSweepDirection.Counterclockwise;
-            }
-
-            return LaneSweepDirection.Instant;
+                "<" => LaneSweepDirection.Counterclockwise,
+                ">" => LaneSweepDirection.Clockwise,
+                "X" => LaneSweepDirection.Center,
+                "!" => LaneSweepDirection.Instant,
+                _ => LaneSweepDirection.Instant,
+            };
         }
 
-        BonusType string2BonusType(string[] input)
+        BonusType string2BonusType(string input)
         {
-            foreach (string s in input)
+            return input switch
             {
-                if (s == "B") return BonusType.Bonus;
-                if (s == "R") return BonusType.R;
-            }
-
-            return BonusType.Normal;
+                "N" => BonusType.Normal,
+                "B" => BonusType.Bonus,
+                "R" => BonusType.R,
+                _ => BonusType.Normal,
+            };
         }
 
-        JudgementType string2JudgementType(string[] input)
+        JudgementType string2JudgementType(string input)
         {
-            foreach (string s in input)
+            return input switch
             {
-                if (s == "F") return JudgementType.Fake;
-                if (s == "A") return JudgementType.Autoplay;
-            }
+                "N" => JudgementType.Normal,
+                "F" => JudgementType.Fake,
+                "A" => JudgementType.Autoplay,
+                _ => JudgementType.Normal,
+            };
+        }
 
-            return JudgementType.Normal;
+        HoldPointRenderType string2HoldPointRenderType(string input)
+        {
+            return input switch
+            {
+                "V" => HoldPointRenderType.Visible,
+                "H" => HoldPointRenderType.Hidden,
+                _ => HoldPointRenderType.Visible,
+            };
         }
         
         void setCurrentMultiLineObject(ITimeable? newMultilineObject)
@@ -463,7 +491,7 @@ public static class SatV3Reader
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred on this line:\n{line}");
+                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
             }
         }

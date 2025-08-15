@@ -56,7 +56,7 @@ internal static class SatV2Reader
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred on this line:\n{line}");
+                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
             }
         }
@@ -164,7 +164,7 @@ internal static class SatV2Reader
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred on this line:\n{line}");
+                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
             }
         }
@@ -282,7 +282,7 @@ internal static class SatV2Reader
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred on this line:\n{line}");
+                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
             }
         }
@@ -399,7 +399,7 @@ internal static class SatV2Reader
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred on this line:\n{line}");
+                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
             }
         }

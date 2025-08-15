@@ -6,15 +6,15 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current visibility of a layer.
 /// </summary>
-public class InvisibleEffectEvent : Event, ITimeable
+public class VisibilityChangeEvent : Event, ITimeable
 {
-    public InvisibleEffectEvent(InvisibleEffectEvent cloneSource)
+    public VisibilityChangeEvent(VisibilityChangeEvent cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
         Visible = cloneSource.Visible;
     }
     
-    public InvisibleEffectEvent(Timestamp timestamp, bool visible)
+    public VisibilityChangeEvent(Timestamp timestamp, bool visible)
     {
         Timestamp = timestamp;
         Visible = visible;

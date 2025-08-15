@@ -75,15 +75,15 @@ public static class MerWriter
 
         switch (args.WriteMerMusicFilePath)
         {
-            case NotationWriteArgs.WriteMerMusicFilePathOption.None:
+            case WriteMerMusicFilePathOption.None:
                 sb.Append("#MUSIC_FILE_PATH\n");
                 break;
 
-            case NotationWriteArgs.WriteMerMusicFilePathOption.NoExtension:
+            case WriteMerMusicFilePathOption.NoExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileNameWithoutExtension(entry.AudioPath)}\n");
                 break;
 
-            case NotationWriteArgs.WriteMerMusicFilePathOption.WithExtension:
+            case WriteMerMusicFilePathOption.WithExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileName(entry.AudioPath)}\n");
                 break;
         }
@@ -138,7 +138,7 @@ public static class MerWriter
         {
             foreach (Event @event in firstLayer.Events)
             {
-                if (@event is InvisibleEffectEvent) continue;
+                if (@event is VisibilityChangeEvent) continue;
 
                 if (@event is ReverseEffectEvent reverseEffectEvent)
                 {

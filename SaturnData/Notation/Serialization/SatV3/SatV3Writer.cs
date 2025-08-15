@@ -26,7 +26,7 @@ public static class SatV3Writer
         WriteMetadata(sb, entry, args);
         WriteBookmarks(sb, chart, args);
         WriteEvents(sb, chart, args);
-        WriteLanes(sb, chart, args);
+        WriteLaneToggles(sb, chart, args);
         WriteLayers(sb, chart, args);
 
         return sb.ToString();
@@ -155,7 +155,7 @@ public static class SatV3Writer
         sb.Append('\n');
     }
     
-    public static void WriteLanes(StringBuilder sb, Chart chart, NotationWriteArgs args)
+    public static void WriteLaneToggles(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@LANE\n");
 
@@ -163,12 +163,12 @@ public static class SatV3Writer
         {
             if (note is LaneShowNote laneShowNote)
             {
-                sb.Append($"{"SHOW" + direction2String(laneShowNote.Direction),-9} {laneShowNote.Timestamp.Measure,-4} {laneShowNote.Timestamp.Tick,-4} {laneShowNote.Position,-4} {laneShowNote.Size,-4}\n");
+                sb.Append($"SHOW  {direction2String(laneShowNote.Direction)}   {laneShowNote.Timestamp.Measure,-4} {laneShowNote.Timestamp.Tick,-4} {laneShowNote.Position,-4} {laneShowNote.Size,-4}\n");
             }
 
             if (note is LaneHideNote laneHideNote)
             {
-                sb.Append($"{"HIDE" + direction2String(laneHideNote.Direction),-9} {laneHideNote.Timestamp.Measure,-4} {laneHideNote.Timestamp.Tick,-4} {laneHideNote.Position,-4} {laneHideNote.Size,-4}\n");
+                sb.Append($"HIDE  {direction2String(laneHideNote.Direction)}   {laneHideNote.Timestamp.Measure,-4} {laneHideNote.Timestamp.Tick,-4} {laneHideNote.Position,-4} {laneHideNote.Size,-4}\n");
             }
         }
         
@@ -179,10 +179,10 @@ public static class SatV3Writer
         {
             return direction switch
             {
-                LaneSweepDirection.Counterclockwise => ".CCW",
-                LaneSweepDirection.Clockwise => ".CLW",
-                LaneSweepDirection.Center => ".CTR",
-                LaneSweepDirection.Instant => "",
+                LaneSweepDirection.Counterclockwise => "<",
+                LaneSweepDirection.Clockwise => ">",
+                LaneSweepDirection.Center => "X",
+                LaneSweepDirection.Instant => "!",
                 _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null),
             };
         }
@@ -203,9 +203,9 @@ public static class SatV3Writer
                     sb.Append($"{"SPEED",-9} {hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {hiSpeedChangeEvent.HiSpeed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
                 }
 
-                if (@event is InvisibleEffectEvent invisibleEffectEvent)
+                if (@event is VisibilityChangeEvent visibilityChangeEvent)
                 {
-                    sb.Append($"{"INVIS",-9} {invisibleEffectEvent.Timestamp.Measure,-4} {invisibleEffectEvent.Timestamp.Tick,-4} {bool2String(invisibleEffectEvent.Visible),11}\n");
+                    sb.Append($"{"VISIBLE",-9} {visibilityChangeEvent.Timestamp.Measure,-4} {visibilityChangeEvent.Timestamp.Tick,-4} {bool2String(visibilityChangeEvent.Visible),11}\n");
                 }
 
                 if (@event is ReverseEffectEvent reverseEffectEvent)
@@ -230,48 +230,53 @@ public static class SatV3Writer
                 
                 if (note is TouchNote touchNote)
                 {
-                    sb.Append($"{"TOUCH" + attributes2String(touchNote),-9} {touchNote.Timestamp.Measure,-4} {touchNote.Timestamp.Tick,-4} {touchNote.Position,-4} {touchNote.Size,-4}\n");
+                    sb.Append($"{"TOUCH",-5} {bonusType2String(touchNote.BonusType)} {judgementType2String(touchNote.JudgementType)} {touchNote.Timestamp.Measure,-4} {touchNote.Timestamp.Tick,-4} {touchNote.Position,-4} {touchNote.Size,-4}\n");
                 }
 
                 if (note is SnapForwardNote snapForwardNote)
                 {
-                    sb.Append($"{"SNFWD" + attributes2String(snapForwardNote),-9} {snapForwardNote.Timestamp.Measure,-4} {snapForwardNote.Timestamp.Tick,-4} {snapForwardNote.Position,-4} {snapForwardNote.Size,-4}\n");
+                    sb.Append($"{"SNFWD",-5} {bonusType2String(snapForwardNote.BonusType)} {judgementType2String(snapForwardNote.JudgementType)} {snapForwardNote.Timestamp.Measure,-4} {snapForwardNote.Timestamp.Tick,-4} {snapForwardNote.Position,-4} {snapForwardNote.Size,-4}\n");
                 }
 
                 if (note is SnapBackwardNote snapBackwardNote)
                 {
-                    sb.Append($"{"SNBWD" + attributes2String(snapBackwardNote),-9} {snapBackwardNote.Timestamp.Measure,-4} {snapBackwardNote.Timestamp.Tick,-4} {snapBackwardNote.Position,-4} {snapBackwardNote.Size,-4}\n");
+                    sb.Append($"{"SNBWD",-5} {bonusType2String(snapBackwardNote.BonusType)} {judgementType2String(snapBackwardNote.JudgementType)} {snapBackwardNote.Timestamp.Measure,-4} {snapBackwardNote.Timestamp.Tick,-4} {snapBackwardNote.Position,-4} {snapBackwardNote.Size,-4}\n");
                 }
 
                 if (note is SlideClockwiseNote slideClockwiseNote)
                 {
-                    sb.Append($"{"SLCLW" + attributes2String(slideClockwiseNote),-9} {slideClockwiseNote.Timestamp.Measure,-4} {slideClockwiseNote.Timestamp.Tick,-4} {slideClockwiseNote.Position,-4} {slideClockwiseNote.Size,-4}\n");
+                    sb.Append($"{"SLCLW",-5} {bonusType2String(slideClockwiseNote.BonusType)} {judgementType2String(slideClockwiseNote.JudgementType)} {slideClockwiseNote.Timestamp.Measure,-4} {slideClockwiseNote.Timestamp.Tick,-4} {slideClockwiseNote.Position,-4} {slideClockwiseNote.Size,-4}\n");
                 }
 
                 if (note is SlideCounterclockwiseNote slideCounterclockwiseNote)
                 {
-                    sb.Append($"{"SLCCW" + attributes2String(slideCounterclockwiseNote),-9} {slideCounterclockwiseNote.Timestamp.Measure,-4} {slideCounterclockwiseNote.Timestamp.Tick,-4} {slideCounterclockwiseNote.Position,-4} {slideCounterclockwiseNote.Size,-4}\n");
+                    sb.Append($"{"SLCCW",-5} {bonusType2String(slideCounterclockwiseNote.BonusType)} {judgementType2String(slideCounterclockwiseNote.JudgementType)} {slideCounterclockwiseNote.Timestamp.Measure,-4} {slideCounterclockwiseNote.Timestamp.Tick,-4} {slideCounterclockwiseNote.Position,-4} {slideCounterclockwiseNote.Size,-4}\n");
                 }
 
                 if (note is ChainNote chainNote)
                 {
-                    sb.Append($"{"CHAIN" + attributes2String(chainNote),-9} {chainNote.Timestamp.Measure,-4} {chainNote.Timestamp.Tick,-4} {chainNote.Position,-4} {chainNote.Size,-4}\n");
+                    sb.Append($"{"CHAIN",-5} {bonusType2String(chainNote.BonusType)} {judgementType2String(chainNote.JudgementType)} {chainNote.Timestamp.Measure,-4} {chainNote.Timestamp.Tick,-4} {chainNote.Position,-4} {chainNote.Size,-4}\n");
                 }
 
                 if (note is HoldNote holdNote)
                 {
-                    sb.Append($"{"HOLD" + attributes2String(holdNote),-9} {holdNote.Points[0].Timestamp.Measure,-4} {holdNote.Points[0].Timestamp.Tick,-4} {holdNote.Points[0].Position,-4} {holdNote.Points[0].Size,-4}\n");
+                    sb.Append($"{"HOLD",-5} {bonusType2String(holdNote.BonusType)} {judgementType2String(holdNote.JudgementType)} {holdNote.Points[0].Timestamp.Measure,-4} {holdNote.Points[0].Timestamp.Tick,-4} {holdNote.Points[0].Position,-4} {holdNote.Points[0].Size,-4}\n");
 
                     for (int p = 1; p < holdNote.Points.Count; p++)
                     {
                         HoldPointNote point = holdNote.Points[p];
-                        sb.Append($"{(point.RenderType == HoldPointRenderType.Visible ? "|" : "~"),-9} {point.Timestamp.Measure,-4} {point.Timestamp.Tick,-4} {point.Position,-4} {point.Size,-4}\n");
+                        sb.Append($"|     {renderType2String(point.RenderType)} _ {point.Timestamp.Measure,-4} {point.Timestamp.Tick,-4} {point.Position,-4} {point.Size,-4}\n");
                     }
                 }
 
+                if (note is SyncNote syncNote)
+                {
+                    sb.Append($"{"SYNC",-5} _ _ {syncNote.Timestamp.Measure,-4} {syncNote.Timestamp.Tick,-4} {syncNote.Position,-4} {syncNote.Size,-4}\n");
+                }
+                
                 if (note is MeasureLineNote measureLineNote)
                 {
-                    sb.Append($"{"MLINE",-9} {measureLineNote.Timestamp.Measure,-4} {measureLineNote.Timestamp.Tick,-4}\n");
+                    sb.Append($"{"MLINE",-5} _ _ {measureLineNote.Timestamp.Measure,-4} {measureLineNote.Timestamp.Tick,-4}\n");
                 }
 
                 // Remove line break on the very last note.
@@ -295,24 +300,31 @@ public static class SatV3Writer
             return b ? "TRUE" : "FALSE";
         }
 
-        string attributes2String(IPlayable playable)
+        string bonusType2String(BonusType bonusType)
         {
-            string result = playable.BonusType switch
+            return bonusType switch
             {
-                BonusType.Normal => "",
-                BonusType.Bonus => ".B",
-                BonusType.R => ".R",
-                _ => throw new ArgumentOutOfRangeException(),
+                BonusType.Normal => "_",
+                BonusType.Bonus => "B",
+                BonusType.R => "R",
+                _ => "_",
             };
+        }
 
-            result += playable.JudgementType switch
+        string judgementType2String(JudgementType judgementType)
+        {
+            return judgementType switch
             {
-                JudgementType.Normal => "",
-                JudgementType.Autoplay => ".A",
-                JudgementType.Fake => ".F",
-                _ => throw new ArgumentOutOfRangeException(),
+                JudgementType.Normal => "_",
+                JudgementType.Fake => "F",
+                JudgementType.Autoplay => "A",
+                _ => "_",
             };
-            return result;
+        }
+
+        string renderType2String(HoldPointRenderType renderType)
+        {
+            return renderType == HoldPointRenderType.Visible ? "V" : "H";
         }
     }
 }
