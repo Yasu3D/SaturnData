@@ -3,7 +3,7 @@ using System.Reflection;
 namespace SaturnData.Notation.Serialization;
 
 /// <summary>
-/// The file format type and version. Dictates how a chart file is treated.
+/// The file format type and version. Dictates how a chart file is read.
 /// </summary>
 public enum FormatVersion
 {
@@ -33,77 +33,85 @@ public enum FormatVersion
     SatV3 = 3,
 }
 
-public enum WriteMerMusicFilePathOption
-    {
-        /// <summary>
-        /// Don't write the file name at all.
-        /// </summary>
-        /// <code>
-        /// AudioPath = "MUSIC_FILE.wav"
-        /// Output = "#MUSIC_FILE_PATH MUSIC_FILE" 
-        /// </code>
-        None = 0,
+public enum ConvertFakeNotesOption
+{
+    ExcludeFromExport = 0,
+    ConvertToNormalNotes = 1,
+}
 
-        /// <summary>
-        /// Write the file name without the extension.
-        /// </summary>
-        /// <code>
-        /// AudioPath = "MUSIC_FILE.wav"
-        /// Output = "#MUSIC_FILE_PATH MUSIC_FILE" 
-        /// </code>
-        NoExtension = 1,
+public enum ConvertAutoplayNotesOption
+{
+    ExcludeFromExport = 0,
+    ConvertToNormalNotes = 1,
+}
 
-        /// <summary>
-        /// Write the file name with the extension.
-        /// </summary>
-        /// <code>
-        /// AudioPath = "MUSIC_FILE.wav"
-        /// Output = "#MUSIC_FILE_PATH MUSIC_FILE.wav" 
-        /// </code>
-        WithExtension = 2,
-    }
+public enum MergeExtraLayersOption
+{
+    ExcludeFromExport = 0,
+    MergeIntoMainLayer = 1,
+    MergeIntoMainLayerWithoutEvents = 2,
+}
+
+public enum ConvertExtendedBonusTypesOption
+{
+    ConvertToNormal = 0,
+    ConvertToRNote = 1,
+}
+
+public enum WriteMusicFilePathOption
+{
+    /// <summary>
+    /// Don't write the file name at all.
+    /// </summary>
+    /// <code>
+    /// AudioPath = "MUSIC_FILE.wav"
+    /// Output = "#MUSIC_FILE_PATH" 
+    /// </code>
+    None = 0,
+
+    /// <summary>
+    /// Write the file name without the extension.
+    /// </summary>
+    /// <code>
+    /// AudioPath = "MUSIC_FILE.wav"
+    /// Output = "#MUSIC_FILE_PATH MUSIC_FILE" 
+    /// </code>
+    NoExtension = 1,
+
+    /// <summary>
+    /// Write the file name with the extension.
+    /// </summary>
+    /// <code>
+    /// AudioPath = "MUSIC_FILE.wav"
+    /// Output = "#MUSIC_FILE_PATH MUSIC_FILE.wav" 
+    /// </code>
+    WithExtension = 2,
+}
+
 
 public class NotationWriteArgs
 {
     /// <summary>
-    /// A watermark to write at the beginning of the chart file.
-    /// </summary>
-    public string? ExportWatermark { get; set; } = $"Generated with SaturnData v{Assembly.GetExecutingAssembly().GetName().Version}";
-
-    /// <summary>
     /// The file format type and version to write the file in.
     /// </summary>
     public FormatVersion FormatVersion { get; set; } = FormatVersion.SatV3;
-
     
+    /// <summary>
+    /// A watermark to write at the beginning of the chart file.
+    /// </summary>
+    public string? ExportWatermark { get; set; } = $"Generated with SaturnData v{Assembly.GetExecutingAssembly().GetName().Version}";
+    
+    public ConvertFakeNotesOption ConvertFakeNotes { get; set; } = ConvertFakeNotesOption.ExcludeFromExport;
+
+    public ConvertAutoplayNotesOption ConvertAutoplayNotes { get; set; } = ConvertAutoplayNotesOption.ExcludeFromExport;
+
+    public MergeExtraLayersOption MergeExtraLayers { get; set; } = MergeExtraLayersOption.MergeIntoMainLayerWithoutEvents;
+
+    public ConvertExtendedBonusTypesOption ConvertExtendedBonusTypes { get; set; } = ConvertExtendedBonusTypesOption.ConvertToNormal;
     
     /// <summary>
     /// <b>Only affects .MER export!</b><br/>
     /// Determines how the <c>#MUSIC_FILE_PATH</c> tag is written in a Mer format file.
     /// </summary>
-    public WriteMerMusicFilePathOption WriteMerMusicFilePath { get; set; } = WriteMerMusicFilePathOption.NoExtension;
-    
-    
-    
-    /// <summary>
-    /// Determines if hidden interpolated segments are created when exporting.
-    /// </summary>
-    public bool BakeHoldNotes { get; set; } = false;
-
-    /// <summary>
-    /// Determines if lane toggle notes with <c>SweepDirection.Instant</c>
-    /// </summary>
-    public bool BakeInstantLaneToggleNotes { get; set; } = false;
-
-    /// <summary>
-    /// <b>Only affects .SATv1 and .SATv2 export!</b><br/>
-    /// Determines if layer 0 should be implicit, or explicitly written as <c>.L0</c>.
-    /// </summary>
-    public bool ExplicitLayerAttributes { get; set; } = false;
-
-    /// <summary>
-    /// <b>Only affects .SATv1 and .SATv2 export!</b><br/>
-    /// Determines if <c>BonusType.Normal</c> should be implicit, or explicitly written as <c>.NORMAL</c>.
-    /// </summary>
-    public bool ExplicitBonusTypeAttributes { get; set; } = false;
+    public WriteMusicFilePathOption WriteMusicFilePath { get; set; } = WriteMusicFilePathOption.NoExtension;
 }

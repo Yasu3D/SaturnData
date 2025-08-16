@@ -73,17 +73,17 @@ public static class MerWriter
         sb.Append("#MUSIC_SCORE_VERSION 0\n");
         sb.Append("#GAME_VERSION\n");
 
-        switch (args.WriteMerMusicFilePath)
+        switch (args.WriteMusicFilePath)
         {
-            case WriteMerMusicFilePathOption.None:
+            case WriteMusicFilePathOption.None:
                 sb.Append("#MUSIC_FILE_PATH\n");
                 break;
 
-            case WriteMerMusicFilePathOption.NoExtension:
+            case WriteMusicFilePathOption.NoExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileNameWithoutExtension(entry.AudioPath)}\n");
                 break;
 
-            case WriteMerMusicFilePathOption.WithExtension:
+            case WriteMusicFilePathOption.WithExtension:
                 sb.Append($"#MUSIC_FILE_PATH {Path.GetFileName(entry.AudioPath)}\n");
                 break;
         }

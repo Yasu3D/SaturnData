@@ -72,10 +72,10 @@ internal static class NotationUtils
 
     internal static void PreProcessChart(Chart chart, NotationWriteArgs args)
     {
-        if (args.BakeHoldNotes)
-        {
-            // TODO
-        }
+        //if (args.BakeHoldNotes)
+        //{
+        //    // TODO
+        //}
     }
 
     internal static void PreProcessEntry(Entry entry, NotationWriteArgs args)
@@ -83,7 +83,7 @@ internal static class NotationUtils
         entry.Level = MathF.Floor(entry.Level * 10) / 10;
         entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
         
-        if (entry.ChartEnd == null && entry.AutoChartEnd)
+        if (entry.AutoChartEnd)
         {
             // TODO
         }
