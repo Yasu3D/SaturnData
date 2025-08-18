@@ -42,33 +42,6 @@ internal static class NotationUtils
         value = "";
         return false;
     }
-    
-    internal static FormatVersion DetectFormatVersion(string[] lines)
-    {
-        FormatVersion version = FormatVersion.Unknown;
-        foreach (string line in lines)
-        {
-            if (ContainsKey(line, "@SAT_VERSION ", out string value))
-            {
-                version = value switch
-                {
-                    "1" => FormatVersion.SatV1,
-                    "2" => FormatVersion.SatV2,
-                    "3" => FormatVersion.SatV3,
-                    _ => FormatVersion.Unknown,
-                };
-                break;
-            }
-
-            if (line.StartsWith("#BODY"))
-            {
-                version = FormatVersion.Mer;
-                break;
-            }
-        }
-        
-        return version;
-    }
 
     internal static void PreProcessChart(Chart chart, NotationWriteArgs args)
     {
