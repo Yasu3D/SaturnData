@@ -3,17 +3,17 @@ namespace SaturnData.Notation.Serialization;
 public class NotationReadArgs
 {
     /// <summary>
-    /// Determines if all collections should be sorted by timestamp after reading a file.
+    /// Should all objects in collections be sorted by their timestamp?
     /// </summary>
     public bool SortCollections { get; set; } = true;
 
     /// <summary>
-    /// Determines if no-render segments are removed when importing.
+    /// Should hidden hold segments be removed?
     /// </summary>
     public bool OptimizeHoldNotes { get; set; } = true;
 
     /// <summary>
-    /// If the clear threshold should be inferred from the chosen Difficulty instead of the @CLEAR value.
+    /// Should the clear threshold be inferred from the chosen Difficulty instead of the @CLEAR value?
     /// </summary>
     /// <remarks>
     /// This exists because the default value was falsely set to <c>0.83</c> for previous SAT format versions, no matter the difficulty.<br/>
