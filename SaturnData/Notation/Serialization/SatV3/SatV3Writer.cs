@@ -222,7 +222,10 @@ public static class SatV3Writer
                 }
             }
 
-            sb.Append('\n');
+            if (layer.Events.Count != 0)
+            {
+                sb.Append('\n');
+            }
 
             for (int n = 0; n < layer.Notes.Count; n++)
             {
