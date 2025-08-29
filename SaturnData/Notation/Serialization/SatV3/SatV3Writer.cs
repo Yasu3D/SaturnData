@@ -136,17 +136,17 @@ public static class SatV3Writer
 
         foreach (Event @event in chart.Events)
         {
-            if (@event is BpmChangeEvent bpmChangeEvent)
+            if (@event is TempoChangeEvent bpmChangeEvent)
             {
                 sb.Append($"{"TEMPO",-9} {bpmChangeEvent.Timestamp.Measure,-4} {bpmChangeEvent.Timestamp.Tick,-4} {bpmChangeEvent.Bpm.ToString("F6", CultureInfo.InvariantCulture),11}\n");
             }
 
-            if (@event is TimeSignatureChangeEvent timeSignatureChangeEvent)
+            if (@event is MetreChangeEvent timeSignatureChangeEvent)
             {
                 sb.Append($"{"METRE",-9} {timeSignatureChangeEvent.Timestamp.Measure,-4} {timeSignatureChangeEvent.Timestamp.Tick,-4} {timeSignatureChangeEvent.Upper,4}   {timeSignatureChangeEvent.Lower,4}\n");
             }
 
-            if (@event is TutorialTagEvent tutorialTagEvent)
+            if (@event is TutorialMarkerEvent tutorialTagEvent)
             {
                 sb.Append($"{"TUTORIAL",-9} {tutorialTagEvent.Timestamp.Measure,-4} {tutorialTagEvent.Timestamp.Tick,-4} {tutorialTagEvent.Key}");
             }
@@ -198,7 +198,7 @@ public static class SatV3Writer
 
             foreach (Event @event in layer.Events)
             {
-                if (@event is HiSpeedChangeEvent hiSpeedChangeEvent)
+                if (@event is SpeedChangeEvent hiSpeedChangeEvent)
                 {
                     sb.Append($"{"SPEED",-9} {hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {hiSpeedChangeEvent.HiSpeed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
                 }

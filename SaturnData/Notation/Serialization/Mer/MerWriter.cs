@@ -106,7 +106,7 @@ public static class MerWriter
         // Add all global events
         foreach (Event globalEvent in chart.Events)
         {
-            if (globalEvent is BpmChangeEvent bpmChangeEvent)
+            if (globalEvent is TempoChangeEvent bpmChangeEvent)
             {
                 events.Add(new ()
                 {
@@ -118,7 +118,7 @@ public static class MerWriter
                 continue;
             }
 
-            if (globalEvent is TimeSignatureChangeEvent timeSignatureChangeEvent)
+            if (globalEvent is MetreChangeEvent timeSignatureChangeEvent)
             {
                 events.Add(new ()
                 {
@@ -184,7 +184,7 @@ public static class MerWriter
                     continue;
                 }
 
-                if (@event is HiSpeedChangeEvent hiSpeedChangeEvent)
+                if (@event is SpeedChangeEvent hiSpeedChangeEvent)
                 {
                     events.Add(new()
                     {

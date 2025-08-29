@@ -4,18 +4,18 @@ using SaturnData.Notation.Interfaces;
 namespace SaturnData.Notation.Events;
 
 /// <summary>
-/// Changes the current time signature.
+/// Changes the current metre / time signature.
 /// </summary>
-public class TimeSignatureChangeEvent : Event, ITimeable
+public class MetreChangeEvent : Event, ITimeable
 {
-    public TimeSignatureChangeEvent(TimeSignatureChangeEvent cloneSource)
+    public MetreChangeEvent(MetreChangeEvent cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
         Upper = cloneSource.Upper;
         Lower = cloneSource.Lower;
     }
 
-    public TimeSignatureChangeEvent(Timestamp timestamp, int upper, int lower)
+    public MetreChangeEvent(Timestamp timestamp, int upper, int lower)
     {
         Timestamp = timestamp;
         Upper = upper;
@@ -25,17 +25,17 @@ public class TimeSignatureChangeEvent : Event, ITimeable
     public Timestamp Timestamp { get; set; }
 
     /// <summary>
-    /// The upper (numerator) in the time signature to change to.
+    /// The upper (numerator) in the metre to change to.
     /// </summary>
     public int Upper { get; set; }
 
     /// <summary>
-    /// The lower (denominator) in the time signature to change to.
+    /// The lower (denominator) in the metre to change to.
     /// </summary>
     public int Lower { get; set; }
 
     /// <summary>
-    /// The time signature ratio to change to.
+    /// The metre ratio to change to.
     /// </summary>
     public float Ratio => (float)Upper / Lower;
 }

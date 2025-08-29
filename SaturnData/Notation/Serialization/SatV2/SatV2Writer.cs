@@ -109,17 +109,17 @@ public static class SatV2Writer
         int index = 0;
         foreach (Event @event in events)
         {
-            if (@event is BpmChangeEvent bpmChangeEvent)
+            if (@event is TempoChangeEvent bpmChangeEvent)
             {
                 sb.Append($"{bpmChangeEvent.Timestamp.Measure,-4} {bpmChangeEvent.Timestamp.Tick,-4} {index,-4} {"BPM",-16} {bpmChangeEvent.Bpm.ToString("F6", CultureInfo.InvariantCulture),11}\n");
             }
 
-            if (@event is TimeSignatureChangeEvent timeSignatureChangeEvent)
+            if (@event is MetreChangeEvent timeSignatureChangeEvent)
             {
                 sb.Append($"{timeSignatureChangeEvent.Timestamp.Measure,-4} {timeSignatureChangeEvent.Timestamp.Tick,-4} {index,-4} {"TIMESIG",-16} {timeSignatureChangeEvent.Upper,4}   {timeSignatureChangeEvent.Lower,4}\n");
             }
 
-            if (@event is HiSpeedChangeEvent hiSpeedChangeEvent)
+            if (@event is SpeedChangeEvent hiSpeedChangeEvent)
             {
                 int? layer = layerIndices.TryGetValue(hiSpeedChangeEvent, out int value) ? value : null;
                 string layerAttribute = LayerAttribute2String(layer, args);

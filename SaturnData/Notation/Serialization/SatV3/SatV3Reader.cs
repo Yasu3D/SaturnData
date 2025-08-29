@@ -117,8 +117,8 @@ public static class SatV3Reader
                     if (split[0] == "TEMPO")
                     {
                         float bpm = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
-                        BpmChangeEvent bpmChangeEvent = new(timestamp, bpm);
-                        chart.Events.Add(bpmChangeEvent);
+                        TempoChangeEvent tempoChangeEvent = new(timestamp, bpm);
+                        chart.Events.Add(tempoChangeEvent);
                         continue;
                     }
 
@@ -126,16 +126,16 @@ public static class SatV3Reader
                     { 
                         int upper = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
                         int lower = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
-                        TimeSignatureChangeEvent timeSignatureChangeEvent = new(timestamp, upper, lower);
-                        chart.Events.Add(timeSignatureChangeEvent);
+                        MetreChangeEvent metreChangeEvent = new(timestamp, upper, lower);
+                        chart.Events.Add(metreChangeEvent);
                         continue;
                     }
 
                     if (split[0] == "TUTORIAL")
                     {
                         string key = split[3];
-                        TutorialTagEvent tutorialTagEvent = new(timestamp, key);
-                        chart.Events.Add(tutorialTagEvent);
+                        TutorialMarkerEvent tutorialMarkerEvent = new(timestamp, key);
+                        chart.Events.Add(tutorialMarkerEvent);
                         continue;
                     }
                 }
@@ -185,10 +185,10 @@ public static class SatV3Reader
                     if (split[0] == "SPEED")
                     {
                         float speed = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
-                        HiSpeedChangeEvent hiSpeedChangeEvent = new(timestamp, speed);
+                        SpeedChangeEvent speedChangeEvent = new(timestamp, speed);
                         setCurrentMultiLineObject(null);
                         
-                        currentLayer.Events.Add(hiSpeedChangeEvent);
+                        currentLayer.Events.Add(speedChangeEvent);
                         
                         continue;
                     }

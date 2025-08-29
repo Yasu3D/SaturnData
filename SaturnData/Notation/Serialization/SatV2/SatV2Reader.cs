@@ -89,27 +89,27 @@ internal static class SatV2Reader
                 if (type == "BPM" && split.Length == 5)
                 {
                     float bpm = Convert.ToSingle(split[4], CultureInfo.InvariantCulture);
-                    BpmChangeEvent bpmChangeEvent = new(timestamp, bpm);
+                    TempoChangeEvent tempoChangeEvent = new(timestamp, bpm);
 
-                    chart.Events.Add(bpmChangeEvent);
+                    chart.Events.Add(tempoChangeEvent);
                 }
 
                 if (type == "TIMESIG" && split.Length == 6)
                 {
                     int upper = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
                     int lower = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
-                    TimeSignatureChangeEvent timeSignatureChangeEvent = new(timestamp, upper, lower);
+                    MetreChangeEvent metreChangeEvent = new(timestamp, upper, lower);
 
-                    chart.Events.Add(timeSignatureChangeEvent);
+                    chart.Events.Add(metreChangeEvent);
                 }
 
                 if (type == "HISPEED" && split.Length == 5)
                 {
                     float hiSpeed = Convert.ToSingle(split[4], CultureInfo.InvariantCulture);
-                    HiSpeedChangeEvent hiSpeedChangeEvent = new(timestamp, hiSpeed);
+                    SpeedChangeEvent speedChangeEvent = new(timestamp, hiSpeed);
 
                     string layer = attributes2Layer(attributes);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, hiSpeedChangeEvent);
+                    NotationUtils.AddOrCreate(chart.Layers, layer, speedChangeEvent);
                 }
 
                 if (type == "REV_START")

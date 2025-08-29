@@ -170,9 +170,9 @@ public static class MerReader
                 if (objectType is 2)
                 {
                     float bpm = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
-                    BpmChangeEvent bpmChangeEvent = new(timestamp, bpm);
+                    TempoChangeEvent tempoChangeEvent = new(timestamp, bpm);
 
-                    chart.Events.Add(bpmChangeEvent);
+                    chart.Events.Add(tempoChangeEvent);
                 }
 
                 // Time Signature Change Event
@@ -182,18 +182,18 @@ public static class MerReader
                     int lower = split.Length == 4 // Older files can omit the lower. In that case set it to 4.
                         ? 4
                         : Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
-                    TimeSignatureChangeEvent timeSignatureChangeEvent = new(timestamp, upper, lower);
+                    MetreChangeEvent metreChangeEvent = new(timestamp, upper, lower);
 
-                    chart.Events.Add(timeSignatureChangeEvent);
+                    chart.Events.Add(metreChangeEvent);
                 }
 
                 // HiSpeed Change Event
                 if (objectType is 5)
                 {
                     float hiSpeed = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
-                    HiSpeedChangeEvent hiSpeedChangeEvent = new(timestamp, hiSpeed);
+                    SpeedChangeEvent speedChangeEvent = new(timestamp, hiSpeed);
 
-                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", hiSpeedChangeEvent);
+                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", speedChangeEvent);
                 }
 
                 // Reverse Effect Begin Event

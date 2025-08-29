@@ -6,15 +6,15 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current bpm (beats per minute).
 /// </summary>
-public class BpmChangeEvent : Event, ITimeable
+public class TempoChangeEvent : Event, ITimeable
 {
-    public BpmChangeEvent(BpmChangeEvent cloneSource)
+    public TempoChangeEvent(TempoChangeEvent cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
         Bpm = cloneSource.Bpm;
     }
     
-    public BpmChangeEvent(Timestamp timestamp, float bpm)
+    public TempoChangeEvent(Timestamp timestamp, float bpm)
     {
         Timestamp = timestamp;
         Bpm = bpm;

@@ -3,15 +3,15 @@ using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Notation.Events;
 
-public class TutorialTagEvent : Event, ITimeable
+public class TutorialMarkerEvent : Event, ITimeable
 {
-    public TutorialTagEvent(TutorialTagEvent cloneSource)
+    public TutorialMarkerEvent(TutorialMarkerEvent cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
         Key = cloneSource.Key;
     }
     
-    public TutorialTagEvent(Timestamp timestamp, string key)
+    public TutorialMarkerEvent(Timestamp timestamp, string key)
     {
         Timestamp = timestamp;
         Key = key;

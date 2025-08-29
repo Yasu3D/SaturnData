@@ -162,7 +162,19 @@ public class Entry
     /// <summary>
     /// The difficulty category of the chart.
     /// </summary>
-    public Difficulty Difficulty = Difficulty.Normal;
+    public Difficulty Difficulty
+    {
+        get => difficulty;
+        set
+        {
+           if (difficulty != value)
+           {
+               difficulty = value;
+               EntryChanged?.Invoke(null, EventArgs.Empty);
+           }
+        }
+    }
+    private Difficulty difficulty = Difficulty.Normal;
     
     /// <summary>
     /// The level (or constant) of the chart.
