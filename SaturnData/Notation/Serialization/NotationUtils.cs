@@ -45,21 +45,18 @@ internal static class NotationUtils
 
     internal static void PreProcessChart(Chart chart, NotationWriteArgs args)
     {
-        //if (args.BakeHoldNotes)
-        //{
-        //    // TODO
-        //}
+        // TODO bake hold notes
     }
 
     internal static void PreProcessEntry(Entry entry, NotationWriteArgs args)
     {
-        entry.Level = MathF.Floor(entry.Level * 10) / 10;
-        entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
-        
-        if (entry.AutoChartEnd)
-        {
-            // TODO
-        }
+        //entry.Level = MathF.Floor(entry.Level * 10) / 10;
+        //entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
+        //
+        //if (entry.AutoChartEnd)
+        //{
+        //    // TODO
+        //}
     }
     
     internal static void PostProcessChart(Chart chart, NotationReadArgs args)
@@ -96,9 +93,6 @@ internal static class NotationUtils
 
     internal static void PostProcessEntry(Entry entry, NotationReadArgs args)
     {
-        entry.Level = MathF.Floor(entry.Level * 10) / 10;
-        entry.ClearThreshold = MathF.Floor(entry.ClearThreshold * 100) / 100;
-        
         if (args.InferClearThresholdFromDifficulty)
         {
             entry.ClearThreshold = entry.Difficulty switch

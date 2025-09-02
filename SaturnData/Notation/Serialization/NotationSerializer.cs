@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Serialization.Mer;
@@ -39,17 +40,19 @@ public static class NotationSerializer
     /// Reads a file and converts it into a chart.
     /// </summary>
     /// <param name="path">The file to open.</param>
+    /// <param name="args">Arguments for how the data should be read.</param>
     /// <returns></returns>
-    public static Chart ToChart(string path, NotationReadArgs args)
+    public static Chart ToChart(string path, NotationReadArgs args, out List<Exception> exceptions)
     {
         try
         {
             string[] lines = File.ReadAllLines(path);
-            return ToChart(lines, args);
+            return ToChart(lines, args, out exceptions);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            exceptions = [ex];
             return new();
         }
     }
@@ -58,24 +61,28 @@ public static class NotationSerializer
     /// Reads chart data and converts it into a chart.
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
+    /// <param name="args">Arguments for how the data should be read.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationReadArgs args)
+    public static Chart ToChart(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         try
         {
             FormatVersion formatVersion = DetectFormatVersion(lines);
-            return formatVersion switch
+            Chart chart = formatVersion switch
             {
-                FormatVersion.Mer => MerReader.ToChart(lines, args),
-                FormatVersion.SatV1 => SatV1Reader.ToChart(lines, args),
-                FormatVersion.SatV2 => SatV2Reader.ToChart(lines, args),
-                FormatVersion.SatV3 => SatV3Reader.ToChart(lines, args),
+                FormatVersion.Mer => MerReader.ToChart(lines, args, out exceptions),
+                FormatVersion.SatV1 => SatV1Reader.ToChart(lines, args, out exceptions),
+                FormatVersion.SatV2 => SatV2Reader.ToChart(lines, args, out exceptions),
+                FormatVersion.SatV3 => SatV3Reader.ToChart(lines, args, out exceptions),
                 _ => throw new(),
             };
+
+            return chart;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            exceptions = [ex];
             return new();
         }
     }
@@ -84,13 +91,14 @@ public static class NotationSerializer
     /// Reads a file and converts it into an entry.
     /// </summary>
     /// <param name="path">The file to open.</param>
+    /// <param name="args">Arguments for how the data should be read.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string path, NotationReadArgs args)
+    public static Entry ToEntry(string path, NotationReadArgs args, out List<Exception> exceptions)
     {
         try
         {
             string[] lines = File.ReadAllLines(path);
-            Entry entry = ToEntry(lines, args);
+            Entry entry = ToEntry(lines, args, out exceptions);
             entry.ChartPath = path;
             
             return entry;
@@ -98,6 +106,7 @@ public static class NotationSerializer
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            exceptions = [ex];
             return new();
         }
     }
@@ -106,25 +115,27 @@ public static class NotationSerializer
     /// Reads chart data and converts it into an entry.
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
+    /// <param name="args">Arguments for how the data should be read.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines, NotationReadArgs args)
+    public static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         try
         {
             FormatVersion formatVersion = DetectFormatVersion(lines);
-
+            
             return formatVersion switch
             {
-                FormatVersion.Mer => MerReader.ToEntry(lines),
-                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, args),
-                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, args),
-                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines, args),
+                FormatVersion.Mer => MerReader.ToEntry(lines, out exceptions),
+                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, args, out exceptions),
+                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, args, out exceptions),
+                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines, args, out exceptions),
                 _ => throw new(),
             };
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
+            exceptions = [ex];
             return new();
         }
     }

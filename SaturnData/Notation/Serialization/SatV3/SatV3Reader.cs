@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using SaturnData.Notation.Core;
@@ -27,9 +28,10 @@ public static class SatV3Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationReadArgs args)
+    public static Chart ToChart(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         Chart chart = new();
+        exceptions = [];
 
         Region currentRegion = Region.None;
         Layer? currentLayer = null;
@@ -44,6 +46,7 @@ public static class SatV3Reader
                 if (string.IsNullOrWhiteSpace(line)) continue;
                 
                 string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length == 0) continue;
                 
                 // Detect Bookmark Region
                 if (split[0] == "@BOOKMARKS")
@@ -92,50 +95,136 @@ public static class SatV3Reader
                 // Parse Bookmark Region
                 if (currentRegion is Region.Bookmarks)
                 {
-                    Match bookmarkMatch = Regex.Match(line, BookmarkRegexPattern);
-                    if (!bookmarkMatch.Success) continue;
-                    
-                    string color = bookmarkMatch.Groups[1].Value;
-                    int measure = Convert.ToInt32(bookmarkMatch.Groups[2].Value, CultureInfo.InvariantCulture);
-                    int tick = Convert.ToInt32(bookmarkMatch.Groups[3].Value, CultureInfo.InvariantCulture);
-                    Timestamp timestamp = new(measure, tick);
-                    
-                    string message = bookmarkMatch.Groups[4].Value;
+                    try
+                    {
+                        Match bookmarkMatch = Regex.Match(line, BookmarkRegexPattern);
+                        if (!bookmarkMatch.Success)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid bookmark structure could not be detected.");
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        string color = bookmarkMatch.Groups[1].Value;
+                        int measure = Convert.ToInt32(bookmarkMatch.Groups[2].Value, CultureInfo.InvariantCulture);
+                        int tick = Convert.ToInt32(bookmarkMatch.Groups[3].Value, CultureInfo.InvariantCulture);
+                        Timestamp timestamp = new(measure, tick);
+                        
+                        string message = bookmarkMatch.Groups[4].Value;
 
-                    Bookmark bookmark = new(timestamp, color, message);
-                    chart.Bookmarks.Add(bookmark);
-                    continue;
+                        Bookmark bookmark = new(timestamp, color, message);
+                        chart.Bookmarks.Add(bookmark);
+                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is FormatException formatException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+
+                        if (ex is OverflowException overflowException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        // don't throw.
+                        Console.WriteLine(ex);
+                        continue;
+                    }
                 }
                 
                 // Parse Events Region
                 if (currentRegion is Region.Events)
                 {
-                    int measure = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
-                    int tick = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
-                    Timestamp timestamp = new(measure, tick);
+                    try
+                    {
+                        if (split.Length < 4)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid event structure could not be detected.");
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        int measure = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
+                        int tick = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
+                        Timestamp timestamp = new(measure, tick);
+                        
+                        if (split[0] == "TEMPO")
+                        {
+                            float bpm = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
+                            TempoChangeEvent tempoChangeEvent = new(timestamp, bpm);
+                            chart.Events.Add(tempoChangeEvent);
+                            continue;
+                        }
+                        
+                        if (split[0] == "METRE")
+                        {
+                            int upper = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
+                            int lower = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
+                            MetreChangeEvent metreChangeEvent = new(timestamp, upper, lower);
+                            chart.Events.Add(metreChangeEvent);
+                            continue;
+                        }
+                        
+                        if (split[0] == "TUTORIAL")
+                        {
+                            string key = split[3];
+                            TutorialMarkerEvent tutorialMarkerEvent = new(timestamp, key);
+                            chart.Events.Add(tutorialMarkerEvent);
+                            continue;
+                        }
+                        
+                        // Type was not recognized
+                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{split[0]}\" was not recognized..");
+                        exceptions.Add(exception2);
+                        
+                        Console.WriteLine(exception2);
+                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                            exceptions.Add(exception);
                     
-                    if (split[0] == "TEMPO")
-                    {
-                        float bpm = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
-                        TempoChangeEvent tempoChangeEvent = new(timestamp, bpm);
-                        chart.Events.Add(tempoChangeEvent);
-                        continue;
-                    }
-
-                    if (split[0] == "METRE")
-                    { 
-                        int upper = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
-                        int lower = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
-                        MetreChangeEvent metreChangeEvent = new(timestamp, upper, lower);
-                        chart.Events.Add(metreChangeEvent);
-                        continue;
-                    }
-
-                    if (split[0] == "TUTORIAL")
-                    {
-                        string key = split[3];
-                        TutorialMarkerEvent tutorialMarkerEvent = new(timestamp, key);
-                        chart.Events.Add(tutorialMarkerEvent);
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        if (ex is FormatException formatException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        if (ex is OverflowException overflowException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        // don't throw.
+                        Console.WriteLine(ex);
                         continue;
                     }
                 }
@@ -143,28 +232,80 @@ public static class SatV3Reader
                 // Parse Lane Toggle Region
                 if (currentRegion is Region.Lane)
                 {
-                    LaneSweepDirection direction = string2LaneSweepDirection(split[1]);
-                    
-                    int measure = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
-                    int tick = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
-                    Timestamp timestamp = new(measure, tick);
-                    
-                    int position = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
-                    int size = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
-                    
-                    if (split[0] == "SHOW")
+                    try
                     {
-                        LaneShowNote laneShowNote = new(timestamp, position, size, direction);
-                        chart.LaneToggles.Add(laneShowNote);
-                    }
+                        if (split.Length < 6)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid lane toggle structure could not be detected.");
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        LaneSweepDirection direction = string2LaneSweepDirection(split[1]);
 
-                    if (split[0] == "HIDE")
+                        int measure = Convert.ToInt32(split[2], CultureInfo.InvariantCulture);
+                        int tick = Convert.ToInt32(split[3], CultureInfo.InvariantCulture);
+                        Timestamp timestamp = new(measure, tick);
+
+                        int position = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
+                        int size = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
+
+                        if (split[0] == "SHOW")
+                        {
+                            LaneShowNote laneShowNote = new(timestamp, position, size, direction);
+                            chart.LaneToggles.Add(laneShowNote);
+                            continue;
+                        }
+
+                        if (split[0] == "HIDE")
+                        {
+                            LaneHideNote laneHideNote = new(timestamp, position, size, direction);
+                            chart.LaneToggles.Add(laneHideNote);
+                            continue;
+                        }
+
+                        // Type was not recognized
+                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{split[0]}\" was not recognized..");
+                        exceptions.Add(exception2);
+
+                        Console.WriteLine(exception2);
+                        continue;
+                    }
+                    catch (Exception ex)
                     {
-                        LaneHideNote laneHideNote = new(timestamp, position, size, direction);
-                        chart.LaneToggles.Add(laneHideNote);
-                    }
+                        if (ex is IndexOutOfRangeException argumentOutOfRangeException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", argumentOutOfRangeException);
+                            exceptions.Add(exception);
 
-                    continue;
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        if (ex is FormatException formatException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        if (ex is OverflowException overflowException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        // don't throw.
+                        Console.WriteLine(ex);
+                        continue;
+                    }
                 }
                 
                 // Parse Layer Region
@@ -172,184 +313,259 @@ public static class SatV3Reader
                 {
                     if (currentLayer == null)
                     {
-                        throw new("No active layer found while attempting to add items to layers.");
-                    }
-
-                    bool isEvent = split[0] is "SPEED" or "VISIBLE" or "REVERSE" or "STOP" 
-                                   || (split[0] == "|" && currentMultilineObject is ReverseEffectEvent or StopEffectEvent);
-                    
-                    Timestamp timestamp = isEvent
-                        ? new(Convert.ToInt32(split[1], CultureInfo.InvariantCulture), Convert.ToInt32(split[2], CultureInfo.InvariantCulture))
-                        : new(Convert.ToInt32(split[3], CultureInfo.InvariantCulture), Convert.ToInt32(split[4], CultureInfo.InvariantCulture));
-                    
-                    if (split[0] == "SPEED")
-                    {
-                        float speed = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
-                        SpeedChangeEvent speedChangeEvent = new(timestamp, speed);
-                        setCurrentMultiLineObject(null);
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : No active layer was found while attempting to add objects to layers.");
+                        exceptions.Add(exception);
                         
-                        currentLayer.Events.Add(speedChangeEvent);
-                        
+                        Console.WriteLine(exception);
                         continue;
                     }
 
-                    if (split[0] == "VISIBLE")
+                    try
                     {
-                        bool visible = split[3] == "TRUE";
-                        VisibilityChangeEvent visibilityChangeEvent = new(timestamp, visible);
-                        setCurrentMultiLineObject(null);
-                        
-                        currentLayer.Events.Add(visibilityChangeEvent);
-                        
-                        continue;
-                    }
-
-                    if (split[0] == "REVERSE")
-                    {
-                        ReverseEffectEvent reverseEffectEvent = new();
-                        reverseEffectEvent.SubEvents[0] = new(timestamp, reverseEffectEvent);
-                        setCurrentMultiLineObject(reverseEffectEvent);
-                        
-                        continue;
-                    }
-
-                    if (split[0] == "STOP")
-                    {
-                        StopEffectEvent stopEffectEvent = new();
-                        stopEffectEvent.SubEvents[0] = new(timestamp, stopEffectEvent);
-                        setCurrentMultiLineObject(stopEffectEvent);
-                        
-                        continue;
-                    }
-
-                    int position;
-                    int size;
-                    
-                    if (split[0] == "|")
-                    {
-                        if (currentMultilineObject is HoldNote holdNote)
+                        if (split.Length < 3)
                         {
-                            HoldPointRenderType type = string2HoldPointRenderType(split[1]);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid object structure could not be detected.");
+                            exceptions.Add(exception);
                             
-                            position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
-                            size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
-                    
-                            holdNote.Points.Add(new(timestamp, position, size, holdNote, type));
+                            Console.WriteLine(exception);
+                            continue;
                         }
-
-                        if (currentMultilineObject is ReverseEffectEvent reverseEffectEvent)
+                        
+                        bool isEvent = split[0] is "SPEED" or "VISIBLE" or "REVERSE" or "STOP" 
+                                       || (split[0] == "|" && currentMultilineObject is ReverseEffectEvent or StopEffectEvent);
+                    
+                        Timestamp timestamp = isEvent
+                            ? new(Convert.ToInt32(split[1], CultureInfo.InvariantCulture), Convert.ToInt32(split[2], CultureInfo.InvariantCulture))
+                            : new(Convert.ToInt32(split[3], CultureInfo.InvariantCulture), Convert.ToInt32(split[4], CultureInfo.InvariantCulture));
+                    
+                        if (split[0] == "SPEED")
                         {
-                            if (reverseEffectEvent?.SubEvents[0] == null) continue;
-                            if (reverseEffectEvent.SubEvents[1] == null!)
-                            {
-                                reverseEffectEvent.SubEvents[1] = new(timestamp, reverseEffectEvent);
-                                continue;
-                            }
-
-                            if (reverseEffectEvent.SubEvents[2] == null!)
-                            {
-                                reverseEffectEvent.SubEvents[2] = new(timestamp, reverseEffectEvent);
-                                setCurrentMultiLineObject(null);
-                                continue;
-                            }
+                            float speed = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
+                            SpeedChangeEvent speedChangeEvent = new(timestamp, speed);
+                            setCurrentMultiLineObject(null);
+                        
+                            currentLayer.Events.Add(speedChangeEvent);
+                        
+                            continue;
                         }
 
-                        if (currentMultilineObject is StopEffectEvent stopEffectEvent)
+                        if (split[0] == "VISIBLE")
                         {
-                            if (stopEffectEvent?.SubEvents[0] == null) continue;
+                            bool visible = split[3] == "TRUE";
+                            VisibilityChangeEvent visibilityChangeEvent = new(timestamp, visible);
+                            setCurrentMultiLineObject(null);
+                        
+                            currentLayer.Events.Add(visibilityChangeEvent);
+                        
+                            continue;
+                        }
 
-                            if (stopEffectEvent.SubEvents[1] == null!)
+                        if (split[0] == "REVERSE")
+                        {
+                            ReverseEffectEvent reverseEffectEvent = new();
+                            reverseEffectEvent.SubEvents[0] = new(timestamp, reverseEffectEvent);
+                            setCurrentMultiLineObject(reverseEffectEvent);
+                        
+                            continue;
+                        }
+
+                        if (split[0] == "STOP")
+                        {
+                            StopEffectEvent stopEffectEvent = new();
+                            stopEffectEvent.SubEvents[0] = new(timestamp, stopEffectEvent);
+                            setCurrentMultiLineObject(stopEffectEvent);
+                        
+                            continue;
+                        }
+
+                        int position;
+                        int size;
+                    
+                        if (split[0] == "|")
+                        {
+                            if (currentMultilineObject is null)
                             {
-                                stopEffectEvent.SubEvents[1] = new(timestamp, stopEffectEvent);
-                                setCurrentMultiLineObject(null);
+                                Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A sub-object cannot be defined when no parent object exists.");
+                                exceptions.Add(exception);
+                                
+                                Console.WriteLine(exception);
+                                continue;
+                            }
+                            
+                            if (currentMultilineObject is HoldNote holdNote)
+                            {
+                                HoldPointRenderType type = string2HoldPointRenderType(split[1]);
+                            
+                                position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
+                                size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
+                    
+                                holdNote.Points.Add(new(timestamp, position, size, holdNote, type));
+                                continue;
+                            }
+
+                            if (currentMultilineObject is ReverseEffectEvent reverseEffectEvent)
+                            {
+                                if (reverseEffectEvent?.SubEvents[0] == null) continue;
+                                if (reverseEffectEvent.SubEvents[1] == null!)
+                                {
+                                    reverseEffectEvent.SubEvents[1] = new(timestamp, reverseEffectEvent);
+                                    continue;
+                                }
+
+                                if (reverseEffectEvent.SubEvents[2] == null!)
+                                {
+                                    reverseEffectEvent.SubEvents[2] = new(timestamp, reverseEffectEvent);
+                                    setCurrentMultiLineObject(null);
+                                    continue;
+                                }
+                                continue;
+                            }
+
+                            if (currentMultilineObject is StopEffectEvent stopEffectEvent)
+                            {
+                                if (stopEffectEvent?.SubEvents[0] == null) continue;
+
+                                if (stopEffectEvent.SubEvents[1] == null!)
+                                {
+                                    stopEffectEvent.SubEvents[1] = new(timestamp, stopEffectEvent);
+                                    setCurrentMultiLineObject(null);
+                                    continue;
+                                }
                                 continue;
                             }
                         }
-                    }
                     
-                    BonusType bonusType = string2BonusType(split[1]);
-                    JudgementType judgementType = string2JudgementType(split[2]);
-                    position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
-                    size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
+                        BonusType bonusType = string2BonusType(split[1]);
+                        JudgementType judgementType = string2JudgementType(split[2]);
+                        position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
+                        size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
                     
-                    if (split[0] == "TOUCH")
-                    {
-                        TouchNote touchNote = new(timestamp, position, size, bonusType, judgementType);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "TOUCH")
+                        {
+                            TouchNote touchNote = new(timestamp, position, size, bonusType, judgementType);
+                            setCurrentMultiLineObject(null);
                         
-                        currentLayer.Notes.Add(touchNote);
-                    }
+                            currentLayer.Notes.Add(touchNote);
+                            continue;
+                        }
                     
-                    if (split[0] == "SNFWD")
-                    {
-                        SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, judgementType);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "SNFWD")
+                        {
+                            SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, judgementType);
+                            setCurrentMultiLineObject(null);
                         
-                        currentLayer.Notes.Add(snapForwardNote);
-                    }
+                            currentLayer.Notes.Add(snapForwardNote);
+                            continue;
+                        }
                     
-                    if (split[0] == "SNBWD")
-                    {
-                        SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, judgementType);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "SNBWD")
+                        {
+                            SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, judgementType);
+                            setCurrentMultiLineObject(null);
                         
-                        currentLayer.Notes.Add(snapBackwardNote);
-                    }
+                            currentLayer.Notes.Add(snapBackwardNote);
+                            continue;
+                        }
                     
-                    if (split[0] == "SLCLW")
-                    {
-                        SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, judgementType);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "SLCLW")
+                        {
+                            SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, judgementType);
+                            setCurrentMultiLineObject(null);
                         
-                        currentLayer.Notes.Add(slideClockwiseNote);
-                    }
+                            currentLayer.Notes.Add(slideClockwiseNote);
+                            continue;
+                        }
                     
-                    if (split[0] == "SLCCW")
-                    {
-                        SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, judgementType);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "SLCCW")
+                        {
+                            SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, judgementType);
+                            setCurrentMultiLineObject(null);
                         
-                        currentLayer.Notes.Add(slideCounterclockwiseNote);
-                    }
+                            currentLayer.Notes.Add(slideCounterclockwiseNote);
+                            continue;
+                        }
                     
-                    if (split[0] == "CHAIN")
-                    {
-                        ChainNote chainNote = new(timestamp, position, size, bonusType, judgementType);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "CHAIN")
+                        {
+                            ChainNote chainNote = new(timestamp, position, size, bonusType, judgementType);
+                            setCurrentMultiLineObject(null);
                         
-                        currentLayer.Notes.Add(chainNote);
-                    }
+                            currentLayer.Notes.Add(chainNote);
+                            continue;
+                        }
                     
-                    if (split[0] == "HOLD")
-                    {
-                        HoldNote holdNote = new(bonusType, judgementType);
-                        setCurrentMultiLineObject(holdNote);
+                        if (split[0] == "HOLD")
+                        {
+                            HoldNote holdNote = new(bonusType, judgementType);
+                            setCurrentMultiLineObject(holdNote);
                         
-                        holdNote.Points.Add(new(timestamp, position, size, holdNote, HoldPointRenderType.Visible));
-                    }
+                            holdNote.Points.Add(new(timestamp, position, size, holdNote, HoldPointRenderType.Visible));
+                            continue;
+                        }
 
-                    if (split[0] == "SYNC")
-                    {
-                        SyncNote syncNote = new(timestamp, position, size);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "SYNC")
+                        {
+                            SyncNote syncNote = new(timestamp, position, size);
+                            setCurrentMultiLineObject(null);
 
-                        currentLayer.Notes.Add(syncNote);
-                    }
+                            currentLayer.Notes.Add(syncNote);
+                            continue;
+                        }
                     
-                    if (split[0] == "MLINE")
-                    {
-                        MeasureLineNote measureLineNote = new(timestamp);
-                        setCurrentMultiLineObject(null);
+                        if (split[0] == "MLINE")
+                        {
+                            MeasureLineNote measureLineNote = new(timestamp);
+                            setCurrentMultiLineObject(null);
                         
-                        currentLayer.Notes.Add(measureLineNote);
+                            currentLayer.Notes.Add(measureLineNote);
+                            continue;
+                        }
+                        
+                        // Type was not recognized
+                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{split[0]}\" was not recognized.");
+                        exceptions.Add(exception2);
+                        
+                        Console.WriteLine(exception2);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                            exceptions.Add(exception);
+
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        if (ex is FormatException formatException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        if (ex is OverflowException overflowException)
+                        {
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            exceptions.Add(exception);
+                            
+                            Console.WriteLine(exception);
+                            continue;
+                        }
+                        
+                        // don't throw.
+                        Console.WriteLine(ex);
+                        continue;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred here: {line}");
                 // don't throw.
+                Console.WriteLine(ex);
             }
         }
         
@@ -400,36 +616,36 @@ public static class SatV3Reader
         }
         
         void setCurrentMultiLineObject(ITimeable? newMultilineObject)
-                {
-                    if (currentLayer == null)
-                    {
-                        currentMultilineObject = newMultilineObject;
-                        return;
-                    }
+        {
+            if (currentLayer == null)
+            {
+                currentMultilineObject = newMultilineObject;
+                return;
+            }
                     
-                    if (currentMultilineObject is StopEffectEvent stopEffectEvent 
-                        && stopEffectEvent.SubEvents[0] != null! 
-                        && stopEffectEvent.SubEvents[1] != null!)
-                    {
-                        currentLayer.Events.Add(stopEffectEvent);
-                    }
+            if (currentMultilineObject is StopEffectEvent stopEffectEvent 
+                && stopEffectEvent.SubEvents[0] != null! 
+                && stopEffectEvent.SubEvents[1] != null!)
+            {
+                currentLayer.Events.Add(stopEffectEvent);
+            }
 
-                    if (currentMultilineObject is ReverseEffectEvent reverseEffectEvent
-                        && reverseEffectEvent.SubEvents[0] != null!
-                        && reverseEffectEvent.SubEvents[1] != null!
-                        && reverseEffectEvent.SubEvents[2] != null!)
-                    {
-                        currentLayer.Events.Add(reverseEffectEvent);
-                    }
+            if (currentMultilineObject is ReverseEffectEvent reverseEffectEvent
+                && reverseEffectEvent.SubEvents[0] != null!
+                && reverseEffectEvent.SubEvents[1] != null!
+                && reverseEffectEvent.SubEvents[2] != null!)
+            {
+                currentLayer.Events.Add(reverseEffectEvent);
+            }
 
-                    if (currentMultilineObject is HoldNote holdNote
-                        && holdNote.Points.Count > 1)
-                    {
-                        currentLayer.Notes.Add(holdNote);
-                    }
+            if (currentMultilineObject is HoldNote holdNote
+                && holdNote.Points.Count > 1)
+            {
+                currentLayer.Notes.Add(holdNote);
+            }
                     
-                    currentMultilineObject = newMultilineObject;
-                }
+            currentMultilineObject = newMultilineObject;
+        }
     }
 
     /// <summary>
@@ -437,9 +653,10 @@ public static class SatV3Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Entry ToEntry(string[] lines, NotationReadArgs args)
+    internal static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         Entry entry = new();
+        exceptions = [];
 
         foreach (string line in lines)
         {
@@ -490,9 +707,35 @@ public static class SatV3Reader
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred here: {line}");
+                if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A required value could not be found.", indexOutOfRangeException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is FormatException formatException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is OverflowException overflowException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
                 // don't throw.
+                Console.WriteLine(ex);
             }
         }
 

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Serialization.SatV2;
 
@@ -10,10 +12,10 @@ public static class SatV1Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationReadArgs args)
+    public static Chart ToChart(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         // SatV2 is an extension of SatV1 and fully backwards-compatible.
-        return SatV2Reader.ToChart(lines, args);
+        return SatV2Reader.ToChart(lines, args, out exceptions);
     }
 
     /// <summary>
@@ -21,9 +23,9 @@ public static class SatV1Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines, NotationReadArgs args)
+    public static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         // SatV2 is an extension of SatV1 and fully backwards-compatible.
-        return SatV2Reader.ToEntry(lines, args);
+        return SatV2Reader.ToEntry(lines, args, out exceptions);
     }
 }

@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SaturnData.Notation.Core;
@@ -22,15 +22,23 @@ internal static class SatV2Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Chart ToChart(string[] lines, NotationReadArgs args)
+    internal static Chart ToChart(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         Chart chart = new();
+        exceptions = [];
 
         int bookmarkIndex = Array.IndexOf(lines, "@COMMENTS");
         int eventIndex = Array.IndexOf(lines, "@GIMMICKS");
         int objectIndex = Array.IndexOf(lines, "@OBJECTS");
 
-        if (bookmarkIndex == -1 || eventIndex == -1 || objectIndex == -1) return chart;
+        if (bookmarkIndex == -1 || eventIndex == -1 || objectIndex == -1)
+        {
+            Exception exception = new("Error SAT001 : A valid chart structure could not be detected. Please make sure all header tags exist and are defined in the correct order: @COMMENTS - @GIMMICKS - @OBJECTS");
+            exceptions.Add(exception);
+            
+            Console.WriteLine(exception);
+            return chart;
+        }
 
         string[] bookmarks = lines[(bookmarkIndex + 1)..eventIndex];
         string[] events = lines[(eventIndex + 1)..objectIndex];
@@ -40,10 +48,18 @@ internal static class SatV2Reader
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(line)) continue;
                 if (line.StartsWith('#')) continue;
 
                 Match match = Regex.Match(line, BookmarkRegExPattern);
-                if (!match.Success) continue;
+                if (!match.Success)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid bookmark structure could not be detected.");
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
 
                 // match 3 is the index and can be ignored.
                 int measure = Convert.ToInt32(match.Groups[1].Value, CultureInfo.InvariantCulture);
@@ -55,9 +71,26 @@ internal static class SatV2Reader
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred here: {line}");
+                if (ex is FormatException formatException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is OverflowException overflowException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
                 // don't throw.
+                Console.WriteLine(ex);
             }
         }
 
@@ -75,15 +108,29 @@ internal static class SatV2Reader
                 if (line.StartsWith('#')) continue;
 
                 string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length < 4) continue;
+                if (split.Length < 4)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid event structure.");
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
 
                 int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
                 int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
                 Timestamp timestamp = new(measure, tick);
 
                 string[] attributes = split[3].Split('.', StringSplitOptions.RemoveEmptyEntries);
-                if (attributes.Length == 0) continue;
-
+                if (attributes.Length == 0) 
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid event attributes.");
+                    exceptions.Add(exception);
+                
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
                 string type = attributes[0];
 
                 if (type == "BPM" && split.Length == 5)
@@ -92,6 +139,7 @@ internal static class SatV2Reader
                     TempoChangeEvent tempoChangeEvent = new(timestamp, bpm);
 
                     chart.Events.Add(tempoChangeEvent);
+                    continue;
                 }
 
                 if (type == "TIMESIG" && split.Length == 6)
@@ -101,6 +149,7 @@ internal static class SatV2Reader
                     MetreChangeEvent metreChangeEvent = new(timestamp, upper, lower);
 
                     chart.Events.Add(metreChangeEvent);
+                    continue;
                 }
 
                 if (type == "HISPEED" && split.Length == 5)
@@ -110,62 +159,177 @@ internal static class SatV2Reader
 
                     string layer = attributes2Layer(attributes);
                     NotationUtils.AddOrCreate(chart.Layers, layer, speedChangeEvent);
+                    continue;
                 }
 
                 if (type == "REV_START")
                 {
+                    if (tempReverseEvent != null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Warning SAT000 : The last defined reverse effect event was incomplete and has been discarded.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                    }
+                    
                     tempReverseEvent = new();
                     tempReverseLayer = attributes2Layer(attributes);
                     
                     tempReverseEvent.SubEvents[0] = new(timestamp, tempReverseEvent);
+                    continue;
                 }
 
                 if (type == "REV_END")
                 {
-                    if (tempReverseEvent?.SubEvents[0] == null) continue;
-                    if (tempReverseEvent.SubEvents[0].Timestamp > timestamp) continue;
+                    if (tempReverseEvent?.SubEvents[0] == null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A reverse effect event must begin with REV_START.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
+                    
+                    if (tempReverseEvent.SubEvents[0].Timestamp >= timestamp)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_END event cannot have an earlier timestamp than REV_START.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
 
                     tempReverseEvent.SubEvents[1] = new(timestamp, tempReverseEvent);
+                    continue;
                 }
 
                 if (type == "REV_ZONE_END")
                 {
-                    if (tempReverseEvent?.SubEvents[0] == null) continue;
-                    if (tempReverseEvent?.SubEvents[1] == null) continue;
-                    if (tempReverseEvent.SubEvents[0].Timestamp > timestamp) continue;
-                    if (tempReverseEvent.SubEvents[1].Timestamp > timestamp) continue;
+                    if (tempReverseEvent?.SubEvents[0] == null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A reverse effect event must begin with REV_START.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
+                    
+                    if (tempReverseEvent?.SubEvents[1] == null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_ZONE_END event must be preceded by REV_END.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
+                    
+                    if (tempReverseEvent.SubEvents[0].Timestamp > timestamp)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_END event cannot have an earlier timestamp than REV_START.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
+                    
+                    if (tempReverseEvent.SubEvents[1].Timestamp > timestamp)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_ZONE_END event cannot have an earlier timestamp than REV_END.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
 
                     tempReverseEvent.SubEvents[2] = new(timestamp, tempReverseEvent);
                     NotationUtils.AddOrCreate(chart.Layers, tempReverseLayer, tempReverseEvent);
 
                     tempReverseEvent = null;
                     tempReverseLayer = "Layer 0";
+                    continue;
                 }
 
                 if (type == "STOP_START")
                 {
+                    if (tempStopEvent != null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Warning SAT000 : The last defined stop effect event was incomplete and has been discarded.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                    }
+                    
                     tempStopEvent = new();
                     tempStopEvent.SubEvents[0] = new(timestamp, tempStopEvent);
                     tempStopLayer = attributes2Layer(attributes);
+                    continue;
                 }
 
                 if (type == "STOP_END")
                 {
-                    if (tempStopEvent?.SubEvents[0] == null) continue;
-                    if (tempStopEvent.SubEvents[0].Timestamp > timestamp) continue;
+                    if (tempStopEvent?.SubEvents[0] == null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A stop effect event must begin with STOP_START.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
+                    
+                    if (tempStopEvent.SubEvents[0].Timestamp > timestamp)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A STOP_END event cannot have an earlier timestamp than STOP_START.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
 
                     tempStopEvent.SubEvents[1] = new(timestamp, tempStopEvent);
                     NotationUtils.AddOrCreate(chart.Layers, tempStopLayer, tempStopEvent);
 
                     tempStopEvent = null;
                     tempStopLayer = "Layer 0";
+                    continue;
                 }
+                
+                // Type was not recognized
+                Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{type}\" was not recognized.");
+                exceptions.Add(exception2);
+                    
+                Console.WriteLine(exception2);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred here: {line}");
+                if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
+                if (ex is FormatException formatException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value was not in the valid format.", formatException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is OverflowException overflowException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value is outside of the valid range.", overflowException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
                 // don't throw.
+                Console.WriteLine(ex);
             }
         }
 
@@ -180,7 +344,14 @@ internal static class SatV2Reader
                 if (line.StartsWith('#')) continue;
                 
                 string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (split.Length < 6) continue;
+                if (split.Length < 6)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid object structure.");
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
                 
                 int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
                 int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
@@ -190,7 +361,14 @@ internal static class SatV2Reader
                 int size = Convert.ToInt32(split[4], CultureInfo.InvariantCulture);
                 
                 string[] attributes = split[5].Split('.', StringSplitOptions.RemoveEmptyEntries);
-                if (attributes.Length == 0) continue;
+                if (attributes.Length == 0)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid object attributes.");
+                    exceptions.Add(exception);
+                
+                    Console.WriteLine(exception);
+                    continue;
+                }
                 
                 string type = attributes[0];
                 string layer = attributes2Layer(attributes);
@@ -234,6 +412,14 @@ internal static class SatV2Reader
                 
                 if (type == "HOLD_START")
                 {
+                    if (tempHoldNote != null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Warning SAT000 : The last defined hold note was incomplete and has been discarded.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                    }
+                    
                     tempHoldNote = new(bonusType, JudgementType.Normal);
                     tempHoldNoteLayer = layer;
 
@@ -243,7 +429,14 @@ internal static class SatV2Reader
                 
                 if (type == "HOLD_POINT")
                 {
-                    if (tempHoldNote == null) continue;
+                    if (tempHoldNote == null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : No previously defined hold note was found.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
                     
                     HoldPointRenderType renderType = attributes2RenderBehaviour(attributes);
                     tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderType));
@@ -251,7 +444,14 @@ internal static class SatV2Reader
                 
                 if (type == "HOLD_END")
                 {
-                    if (tempHoldNote == null) continue;
+                    if (tempHoldNote == null)
+                    {
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : No previously defined hold note was found.");
+                        exceptions.Add(exception);
+                        
+                        Console.WriteLine(exception);
+                        continue;
+                    }
                     
                     HoldPointRenderType renderType = attributes2RenderBehaviour(attributes);
                     tempHoldNote.Points.Add(new(timestamp, position, size, tempHoldNote, renderType));
@@ -281,9 +481,35 @@ internal static class SatV2Reader
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred here: {line}");
+                if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
+                if (ex is FormatException formatException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value was not in the valid format.", formatException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is OverflowException overflowException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value is outside of the valid range.", overflowException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
                 // don't throw.
+                Console.WriteLine(ex);
             }
         }
 
@@ -350,9 +576,10 @@ internal static class SatV2Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Entry ToEntry(string[] lines, NotationReadArgs args)
+    internal static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         Entry entry = new();
+        exceptions = [];
 
         foreach (string line in lines)
         {
@@ -398,9 +625,35 @@ internal static class SatV2Reader
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred here: {line}");
+                if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A required value could not be found.", indexOutOfRangeException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is FormatException formatException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is OverflowException overflowException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
                 // don't throw.
+                Console.WriteLine(ex);
             }
         }
 

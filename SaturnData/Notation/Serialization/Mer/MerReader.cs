@@ -35,9 +35,10 @@ public static class MerReader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Chart ToChart(string[] lines, NotationReadArgs args)
+    internal static Chart ToChart(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         Chart chart = new();
+        exceptions = [];
         
         ReverseEffectEvent? tempReverseEvent = null;
         StopEffectEvent? tempStopEvent = null;
@@ -47,7 +48,13 @@ public static class MerReader
         HashSet<MerReaderHoldNote> checkedMerHoldNotes = [];
 
         int startIndex = Array.IndexOf(lines, "#BODY");
-        if (startIndex == -1) return chart;
+        if (startIndex == -1)
+        {
+            Exception exception = new("Error MER001 : No #BODY declaration was found.");
+            Console.WriteLine(exception);
+            exceptions.Add(exception);
+            return chart;
+        }
         
         for (int i = startIndex + 1; i < lines.Length; i++)
         {
@@ -247,9 +254,35 @@ public static class MerReader
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
-                Console.WriteLine($"Error occurred here: {line}");
+                if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER002 : A required value could not be found.", indexOutOfRangeException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is FormatException formatException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER003 : A provided value was not in the valid format.", formatException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is OverflowException overflowException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER004 : A provided value is outside of the valid range.", overflowException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
                 // don't throw.
+                Console.WriteLine(ex);
             }
         }
 
@@ -305,9 +338,10 @@ public static class MerReader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Entry ToEntry(string[] lines)
+    internal static Entry ToEntry(string[] lines, out List<Exception> exceptions)
     {
         Entry entry = new();
+        exceptions = [];
 
         bool bodyReached = false;
         foreach (string line in lines)
@@ -370,8 +404,35 @@ public static class MerReader
             }
             catch (Exception ex)
             {
+                if (ex is IndexOutOfRangeException indexOutOfRangeException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER002 : A required value could not be found.", indexOutOfRangeException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is FormatException formatException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER003 : A provided value was not in the valid format.", formatException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+
+                if (ex is OverflowException overflowException)
+                {
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER004 : A provided value is outside of the valid range.", overflowException);
+                    exceptions.Add(exception);
+                    
+                    Console.WriteLine(exception);
+                    continue;
+                }
+                
+                // don't throw.
                 Console.WriteLine(ex);
-                // ignored, continue
             }
         }
         
