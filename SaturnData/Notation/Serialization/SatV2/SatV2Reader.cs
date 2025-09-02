@@ -33,7 +33,7 @@ internal static class SatV2Reader
 
         if (bookmarkIndex == -1 || eventIndex == -1 || objectIndex == -1)
         {
-            Exception exception = new("Error SAT001 : A valid chart structure could not be detected. Please make sure all header tags exist and are defined in the correct order: @COMMENTS - @GIMMICKS - @OBJECTS");
+            Exception exception = new(ErrorList.ErrorSat201);
             exceptions.Add(exception);
             
             Console.WriteLine(exception);
@@ -54,7 +54,7 @@ internal static class SatV2Reader
                 Match match = Regex.Match(line, BookmarkRegExPattern);
                 if (!match.Success)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid bookmark structure could not be detected.");
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat006}");
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -73,7 +73,7 @@ internal static class SatV2Reader
             {
                 if (ex is FormatException formatException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -82,7 +82,7 @@ internal static class SatV2Reader
 
                 if (ex is OverflowException overflowException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -110,7 +110,7 @@ internal static class SatV2Reader
                 string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (split.Length < 4)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid event structure.");
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat001}");
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -124,7 +124,7 @@ internal static class SatV2Reader
                 string[] attributes = split[3].Split('.', StringSplitOptions.RemoveEmptyEntries);
                 if (attributes.Length == 0) 
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid event attributes.");
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat002}");
                     exceptions.Add(exception);
                 
                     Console.WriteLine(exception);
@@ -166,7 +166,7 @@ internal static class SatV2Reader
                 {
                     if (tempReverseEvent != null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Warning SAT000 : The last defined reverse effect event was incomplete and has been discarded.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.WarningSat020}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -183,7 +183,7 @@ internal static class SatV2Reader
                 {
                     if (tempReverseEvent?.SubEvents[0] == null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A reverse effect event must begin with REV_START.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat013}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -192,7 +192,7 @@ internal static class SatV2Reader
                     
                     if (tempReverseEvent.SubEvents[0].Timestamp >= timestamp)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_END event cannot have an earlier timestamp than REV_START.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat014}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -207,7 +207,7 @@ internal static class SatV2Reader
                 {
                     if (tempReverseEvent?.SubEvents[0] == null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A reverse effect event must begin with REV_START.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat013}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -216,7 +216,7 @@ internal static class SatV2Reader
                     
                     if (tempReverseEvent?.SubEvents[1] == null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_ZONE_END event must be preceded by REV_END.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat015}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -225,7 +225,7 @@ internal static class SatV2Reader
                     
                     if (tempReverseEvent.SubEvents[0].Timestamp > timestamp)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_END event cannot have an earlier timestamp than REV_START.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat014}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -234,7 +234,7 @@ internal static class SatV2Reader
                     
                     if (tempReverseEvent.SubEvents[1].Timestamp > timestamp)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A REV_ZONE_END event cannot have an earlier timestamp than REV_END.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat016}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -253,7 +253,7 @@ internal static class SatV2Reader
                 {
                     if (tempStopEvent != null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Warning SAT000 : The last defined stop effect event was incomplete and has been discarded.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.WarningSat021}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -269,7 +269,7 @@ internal static class SatV2Reader
                 {
                     if (tempStopEvent?.SubEvents[0] == null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A stop effect event must begin with STOP_START.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat017}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -278,7 +278,7 @@ internal static class SatV2Reader
                     
                     if (tempStopEvent.SubEvents[0].Timestamp > timestamp)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A STOP_END event cannot have an earlier timestamp than STOP_START.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat018}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -294,7 +294,7 @@ internal static class SatV2Reader
                 }
                 
                 // Type was not recognized
-                Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{type}\" was not recognized.");
+                Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat010(type)}");
                 exceptions.Add(exception2);
                     
                 Console.WriteLine(exception2);
@@ -303,7 +303,7 @@ internal static class SatV2Reader
             {
                 if (ex is IndexOutOfRangeException indexOutOfRangeException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat007}", indexOutOfRangeException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -312,7 +312,7 @@ internal static class SatV2Reader
                 
                 if (ex is FormatException formatException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value was not in the valid format.", formatException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -321,7 +321,7 @@ internal static class SatV2Reader
 
                 if (ex is OverflowException overflowException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value is outside of the valid range.", overflowException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -346,7 +346,7 @@ internal static class SatV2Reader
                 string[] split = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (split.Length < 6)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid object structure.");
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat003}");
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -363,7 +363,7 @@ internal static class SatV2Reader
                 string[] attributes = split[5].Split('.', StringSplitOptions.RemoveEmptyEntries);
                 if (attributes.Length == 0)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Invalid object attributes.");
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat004}");
                     exceptions.Add(exception);
                 
                     Console.WriteLine(exception);
@@ -414,7 +414,7 @@ internal static class SatV2Reader
                 {
                     if (tempHoldNote != null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Warning SAT000 : The last defined hold note was incomplete and has been discarded.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.WarningSat022}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -431,7 +431,7 @@ internal static class SatV2Reader
                 {
                     if (tempHoldNote == null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : No previously defined hold note was found.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat019}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -446,7 +446,7 @@ internal static class SatV2Reader
                 {
                     if (tempHoldNote == null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : No previously defined hold note was found.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat019}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -483,7 +483,7 @@ internal static class SatV2Reader
             {
                 if (ex is IndexOutOfRangeException indexOutOfRangeException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat007}", indexOutOfRangeException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -492,7 +492,7 @@ internal static class SatV2Reader
                 
                 if (ex is FormatException formatException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value was not in the valid format.", formatException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -501,7 +501,7 @@ internal static class SatV2Reader
 
                 if (ex is OverflowException overflowException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A provided value is outside of the valid range.", overflowException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -627,7 +627,7 @@ internal static class SatV2Reader
             {
                 if (ex is IndexOutOfRangeException indexOutOfRangeException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A required value could not be found.", indexOutOfRangeException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat007}", indexOutOfRangeException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -636,7 +636,7 @@ internal static class SatV2Reader
 
                 if (ex is FormatException formatException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -645,7 +645,7 @@ internal static class SatV2Reader
 
                 if (ex is OverflowException overflowException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);

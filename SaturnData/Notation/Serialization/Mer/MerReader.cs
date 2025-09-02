@@ -50,7 +50,7 @@ public static class MerReader
         int startIndex = Array.IndexOf(lines, "#BODY");
         if (startIndex == -1)
         {
-            Exception exception = new("Error MER001 : No #BODY declaration was found.");
+            Exception exception = new(ErrorList.ErrorMer001);
             Console.WriteLine(exception);
             exceptions.Add(exception);
             return chart;
@@ -256,7 +256,7 @@ public static class MerReader
             {
                 if (ex is IndexOutOfRangeException indexOutOfRangeException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER002 : A required value could not be found.", indexOutOfRangeException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorMer002}", indexOutOfRangeException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -265,7 +265,7 @@ public static class MerReader
 
                 if (ex is FormatException formatException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER003 : A provided value was not in the valid format.", formatException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorMer003}", formatException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -274,7 +274,7 @@ public static class MerReader
 
                 if (ex is OverflowException overflowException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER004 : A provided value is outside of the valid range.", overflowException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorMer004}", overflowException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -406,7 +406,7 @@ public static class MerReader
             {
                 if (ex is IndexOutOfRangeException indexOutOfRangeException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER002 : A required value could not be found.", indexOutOfRangeException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorMer002}", indexOutOfRangeException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -415,7 +415,7 @@ public static class MerReader
 
                 if (ex is FormatException formatException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER003 : A provided value was not in the valid format.", formatException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorMer003}", formatException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -424,7 +424,7 @@ public static class MerReader
 
                 if (ex is OverflowException overflowException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error MER004 : A provided value is outside of the valid range.", overflowException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorMer004}", overflowException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);

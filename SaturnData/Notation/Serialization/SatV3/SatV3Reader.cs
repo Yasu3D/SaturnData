@@ -100,7 +100,7 @@ public static class SatV3Reader
                         Match bookmarkMatch = Regex.Match(line, BookmarkRegexPattern);
                         if (!bookmarkMatch.Success)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid bookmark structure could not be detected.");
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat006}");
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -122,7 +122,7 @@ public static class SatV3Reader
                     {
                         if (ex is FormatException formatException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -131,7 +131,7 @@ public static class SatV3Reader
 
                         if (ex is OverflowException overflowException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -151,7 +151,7 @@ public static class SatV3Reader
                     {
                         if (split.Length < 4)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid event structure could not be detected.");
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat001}");
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -188,7 +188,7 @@ public static class SatV3Reader
                         }
                         
                         // Type was not recognized
-                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{split[0]}\" was not recognized..");
+                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat010(split[0])}");
                         exceptions.Add(exception2);
                         
                         Console.WriteLine(exception2);
@@ -198,7 +198,7 @@ public static class SatV3Reader
                     {
                         if (ex is IndexOutOfRangeException indexOutOfRangeException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat007}", indexOutOfRangeException);
                             exceptions.Add(exception);
                     
                             Console.WriteLine(exception);
@@ -207,7 +207,7 @@ public static class SatV3Reader
                         
                         if (ex is FormatException formatException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -216,7 +216,7 @@ public static class SatV3Reader
                         
                         if (ex is OverflowException overflowException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -236,7 +236,7 @@ public static class SatV3Reader
                     {
                         if (split.Length < 6)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid lane toggle structure could not be detected.");
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat005}");
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -267,7 +267,7 @@ public static class SatV3Reader
                         }
 
                         // Type was not recognized
-                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{split[0]}\" was not recognized..");
+                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat010(split[0])}");
                         exceptions.Add(exception2);
 
                         Console.WriteLine(exception2);
@@ -277,7 +277,7 @@ public static class SatV3Reader
                     {
                         if (ex is IndexOutOfRangeException argumentOutOfRangeException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", argumentOutOfRangeException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat007}", argumentOutOfRangeException);
                             exceptions.Add(exception);
 
                             Console.WriteLine(exception);
@@ -286,7 +286,7 @@ public static class SatV3Reader
                         
                         if (ex is FormatException formatException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -295,7 +295,7 @@ public static class SatV3Reader
                         
                         if (ex is OverflowException overflowException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -313,7 +313,7 @@ public static class SatV3Reader
                 {
                     if (currentLayer == null)
                     {
-                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : No active layer was found while attempting to add objects to layers.");
+                        Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat011}");
                         exceptions.Add(exception);
                         
                         Console.WriteLine(exception);
@@ -324,7 +324,7 @@ public static class SatV3Reader
                     {
                         if (split.Length < 3)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A valid object structure could not be detected.");
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat003}");
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -385,7 +385,7 @@ public static class SatV3Reader
                         {
                             if (currentMultilineObject is null)
                             {
-                                Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A sub-object cannot be defined when no parent object exists.");
+                                Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat012}");
                                 exceptions.Add(exception);
                                 
                                 Console.WriteLine(exception);
@@ -522,7 +522,7 @@ public static class SatV3Reader
                         }
                         
                         // Type was not recognized
-                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : Type \"{split[0]}\" was not recognized.");
+                        Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat010(split[0])}");
                         exceptions.Add(exception2);
                         
                         Console.WriteLine(exception2);
@@ -531,7 +531,7 @@ public static class SatV3Reader
                     {
                         if (ex is IndexOutOfRangeException indexOutOfRangeException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT000 : A required value could not be found.", indexOutOfRangeException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat007}", indexOutOfRangeException);
                             exceptions.Add(exception);
 
                             Console.WriteLine(exception);
@@ -540,7 +540,7 @@ public static class SatV3Reader
                         
                         if (ex is FormatException formatException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -549,7 +549,7 @@ public static class SatV3Reader
                         
                         if (ex is OverflowException overflowException)
                         {
-                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                            Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                             exceptions.Add(exception);
                             
                             Console.WriteLine(exception);
@@ -709,7 +709,7 @@ public static class SatV3Reader
             {
                 if (ex is IndexOutOfRangeException indexOutOfRangeException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT002 : A required value could not be found.", indexOutOfRangeException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat007}", indexOutOfRangeException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -718,7 +718,7 @@ public static class SatV3Reader
 
                 if (ex is FormatException formatException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT003 : A provided value was not in the valid format.", formatException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat008}", formatException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
@@ -727,7 +727,7 @@ public static class SatV3Reader
 
                 if (ex is OverflowException overflowException)
                 {
-                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : Error SAT004 : A provided value is outside of the valid range.", overflowException);
+                    Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat009}", overflowException);
                     exceptions.Add(exception);
                     
                     Console.WriteLine(exception);
