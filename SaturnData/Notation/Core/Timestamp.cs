@@ -106,12 +106,12 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <summary>
     /// Timestamp in milliseconds.
     /// </summary>
-    public float Time { get; internal set; }
+    public float Time { get; set; }
 
     /// <summary>
     /// Pseudo-Timestamp in milliseconds, scaled by scroll speed events.
     /// </summary>
-    public float ScaledTime { get; internal set; }
+    public float ScaledTime { get; set; }
 
     /// <summary>
     /// Returns the larger Timestamp.

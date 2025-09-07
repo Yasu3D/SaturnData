@@ -293,6 +293,8 @@ internal static class SatV2Reader
                     continue;
                 }
                 
+                if (type == "CHART_END") continue; // Handled in entry read.
+                
                 // Type was not recognized
                 Exception exception2 = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat010(type)}");
                 exceptions.Add(exception2);
