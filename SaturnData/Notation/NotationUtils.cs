@@ -4,10 +4,11 @@ using System.Linq;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
+using SaturnData.Notation.Serialization;
 
-namespace SaturnData.Notation.Serialization;
+namespace SaturnData.Notation;
 
-internal static class NotationUtils
+public static class NotationUtils
 {
     internal static void AddOrCreate(List<Layer> layers, string key, Note note)
     {
@@ -106,5 +107,60 @@ internal static class NotationUtils
                 _ => 0.45f,
             };
         }  
+    }
+
+    
+    
+    public static void CalculateTime(Chart chart)
+    {
+        foreach (Event @event in chart.Events)
+        {
+            if (@event is not ITimeable timeable) continue;
+            timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+        }
+        
+        foreach (Bookmark bookmark in chart.Bookmarks)
+        {
+            bookmark.Timestamp = bookmark.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, bookmark.Timestamp) };
+        }
+
+        foreach (Note laneToggle in chart.LaneToggles)
+        {
+            if (laneToggle is not ITimeable timeable) continue;
+            timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+        }
+
+        foreach (Layer layer in chart.Layers)
+        {
+            foreach (Event @event in layer.Events)
+            {
+                if (@event is not ITimeable timeable) continue;
+                timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+            }
+            
+            foreach (Note note in layer.Notes)
+            {
+                if (note is not ITimeable timeable) continue;
+                timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+            }
+        }
+    }
+
+    public static void CalculateScaledTime(Chart chart)
+    {
+        foreach (Layer layer in chart.Layers)
+        {
+            foreach (Event @event in layer.Events)
+            {
+                if (@event is not ITimeable timeable) continue;
+                timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+            }
+            
+            foreach (Note note in layer.Notes)
+            {
+                if (note is not ITimeable timeable) continue;
+                timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+            }
+        }
     }
 }

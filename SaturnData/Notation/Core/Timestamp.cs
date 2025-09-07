@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using SaturnData.Notation.Events;
 
 namespace SaturnData.Notation.Core;
 
@@ -22,8 +24,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
 
         FullTick = measure * 1920 + tick;
             
-        Time = null;
-        ScaledTime = null;
+        Time = 0;
+        ScaledTime = 0;
     }
 
     /// <summary>
@@ -39,8 +41,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
             
         FullTick = fullTick;
             
-        Time = null;
-        ScaledTime = null;
+        Time = 0;
+        ScaledTime = 0;
     }
     
     /// <summary>
@@ -104,12 +106,12 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <summary>
     /// Timestamp in milliseconds.
     /// </summary>
-    public float? Time { get; internal set; }
+    public float Time { get; internal set; }
 
     /// <summary>
     /// Pseudo-Timestamp in milliseconds, scaled by scroll speed events.
     /// </summary>
-    public float? ScaledTime { get; internal set; }
+    public float ScaledTime { get; internal set; }
 
     /// <summary>
     /// Returns the larger Timestamp.
@@ -150,4 +152,74 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
         if (obj is not Timestamp timestamp) return 1;
         return FullTick.CompareTo(timestamp.FullTick);
     }
+
+    /// <summary>
+    /// Converts millisecond time to a timestamp struct based on all tempo and metre changes in a chart.
+    /// </summary>
+    /// <param name="chart">The chart to reference tempo and metre changes off of.</param>
+    /// <param name="time">The time to convert in milliseconds.</param>
+    /// <param name="division">The beat division to round the result to (optional)</param>
+    /// <returns></returns>
+    public static Timestamp TimestampFromTime(Chart chart, float time, int division = 1920)
+    {
+        TempoChangeEvent? tempo = chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time < time) as TempoChangeEvent;
+        MetreChangeEvent? metre = chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp.Time < time) as MetreChangeEvent;
+        if (tempo == null || metre == null) return Zero;
+        
+        Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
+
+        float timeDifference = time - last.Time;
+        int tickDifference = (int)(timeDifference / TimePerTick(tempo.Tempo, metre.Ratio));
+
+        if (division != 1920)
+        {
+            tickDifference = (int)(Math.Floor(tickDifference / (1920.0f / division)) * (1920.0f / division));
+        }
+        
+        return new(last.FullTick + tickDifference);
+    }
+    
+    /// <summary>
+    /// Converts a timestamp struct to millisecond time based on all tempo and metre changes in a chart.
+    /// </summary>
+    /// <param name="chart">The chart to reference tempo and metre changes off of.</param>
+    /// <param name="timestamp">The timestamp struct to convert.</param>
+    /// <returns></returns>
+    public static float TimeFromTimestamp(Chart chart, Timestamp timestamp)
+    {
+        TempoChangeEvent? tempo = chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp < timestamp) as TempoChangeEvent;
+        MetreChangeEvent? metre = chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp < timestamp) as MetreChangeEvent;
+        if (tempo == null || metre == null) return 0;
+        
+        Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
+
+        int tickDifference = timestamp.FullTick - last.FullTick;
+        float timeDifference = tickDifference * TimePerTick(tempo.Tempo, metre.Ratio);
+        return last.Time + timeDifference;
+    }
+
+    /// <summary>
+    /// Converts millisecond time into scaled time based on all speed changes in a layer.
+    /// </summary>
+    /// <param name="layer">The layer to reference speed changes off of.</param>
+    /// <param name="time">The time to convert in milliseconds.</param>
+    /// <returns></returns>
+    public static float ScaledTimeFromTime(Layer layer, float time)
+    {
+        SpeedChangeEvent? speed = layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time < time) as SpeedChangeEvent;
+        if (speed == null) return time; // This is fine, just means there are no speed changes.
+
+        float timeDifference = time - speed.Timestamp.Time;
+        float scaledTimeDifference = timeDifference * speed.HiSpeed;
+        
+        return speed.Timestamp.ScaledTime + scaledTimeDifference;
+    }
+
+    /// <summary>
+    /// The length of a tick (1/1920th of a measure) in milliseconds at a specific tempo and metre.
+    /// </summary>
+    /// <param name="tempo">The tempo to use.</param>
+    /// <param name="ratio">The metre ratio use.</param>
+    /// <returns></returns>
+    public static float TimePerTick(float tempo, float ratio) => (240.0f / tempo * ratio / 1920.0f) * 1000.0f;
 }

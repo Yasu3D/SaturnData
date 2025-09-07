@@ -11,13 +11,13 @@ public class TempoChangeEvent : Event, ITimeable
     public TempoChangeEvent(TempoChangeEvent cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
-        Bpm = cloneSource.Bpm;
+        Tempo = cloneSource.Tempo;
     }
     
-    public TempoChangeEvent(Timestamp timestamp, float bpm)
+    public TempoChangeEvent(Timestamp timestamp, float tempo)
     {
         Timestamp = timestamp;
-        Bpm = bpm;
+        Tempo = tempo;
     }
     
     public Timestamp Timestamp { get; set; }
@@ -25,5 +25,5 @@ public class TempoChangeEvent : Event, ITimeable
     /// <summary>
     /// The new bpm value this event changes to.
     /// </summary>
-    public float Bpm { get; set; }
+    public float Tempo { get; set; }
 }

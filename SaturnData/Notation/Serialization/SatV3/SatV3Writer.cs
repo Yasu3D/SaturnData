@@ -138,7 +138,7 @@ public static class SatV3Writer
         {
             if (@event is TempoChangeEvent bpmChangeEvent)
             {
-                sb.Append($"{"TEMPO",-9} {bpmChangeEvent.Timestamp.Measure,-4} {bpmChangeEvent.Timestamp.Tick,-4} {bpmChangeEvent.Bpm.ToString("F6", CultureInfo.InvariantCulture),11}\n");
+                sb.Append($"{"TEMPO",-9} {bpmChangeEvent.Timestamp.Measure,-4} {bpmChangeEvent.Timestamp.Tick,-4} {bpmChangeEvent.Tempo.ToString("F6", CultureInfo.InvariantCulture),11}\n");
             }
 
             if (@event is MetreChangeEvent timeSignatureChangeEvent)

@@ -112,7 +112,7 @@ public static class MerWriter
                 {
                     Timestamp = bpmChangeEvent.Timestamp,
                     ObjectType = 2,
-                    FloatValue = bpmChangeEvent.Bpm,
+                    FloatValue = bpmChangeEvent.Tempo,
                 });
                 
                 continue;
