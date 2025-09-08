@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Events;
@@ -653,9 +654,9 @@ public static class SatV3Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
+    internal static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions, string path = "")
     {
-        Entry entry = new();
+        Entry entry = new() { ChartPath = path };
         exceptions = [];
 
         foreach (string line in lines)
@@ -684,9 +685,9 @@ public static class SatV3Reader
                 if (NotationUtils.ContainsKey(line, "@PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
 
-                if (NotationUtils.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketPath = value; }
-                if (NotationUtils.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioPath = value; }
-                if (NotationUtils.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoPath = value; }
+                if (NotationUtils.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketPath = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
+                if (NotationUtils.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioPath  = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
+                if (NotationUtils.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoPath  = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
                 if (NotationUtils.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 

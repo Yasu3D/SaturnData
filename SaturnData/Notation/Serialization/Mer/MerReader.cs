@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Events;
@@ -338,9 +339,9 @@ public static class MerReader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    internal static Entry ToEntry(string[] lines, out List<Exception> exceptions)
+    internal static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions, string path = "")
     {
-        Entry entry = new();
+        Entry entry = new() { ChartPath = path, };
         exceptions = [];
 
         bool bodyReached = false;
@@ -356,7 +357,7 @@ public static class MerReader
                     // BAKKA COMPATIBILITY
                     if (NotationUtils.ContainsKey(line, "#X_BAKKA_MUSIC_FILENAME ", out value)) { entry.AudioPath = value; }
                 
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioPath = value; }
+                    if (NotationUtils.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioPath = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
                     if (NotationUtils.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                     if (NotationUtils.ContainsKey(line, "#EDITOR_AUTHOR ",          out value)) { entry.NotesDesigner = value; }
                     if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
@@ -366,13 +367,13 @@ public static class MerReader
             
                     // WACK COMPATIBILITY
                     if (NotationUtils.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value); }
-                    if (NotationUtils.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioPath = value; }
+                    if (NotationUtils.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioPath = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
                     if (NotationUtils.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
                     if (NotationUtils.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                     if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
                     // MER COMPATIBILITY
-                    if (NotationUtils.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioPath = value; }
+                    if (NotationUtils.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioPath = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
                     if (NotationUtils.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                     if (NotationUtils.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
@@ -381,7 +382,7 @@ public static class MerReader
                     if (NotationUtils.ContainsKey(line, "#MUSIC_NAME_RUBY @JPN ",          out value)) { entry.Reading = value; }
                     if (NotationUtils.ContainsKey(line, "#ARTIST_NAME @JPN ",              out value)) { entry.Artist = value; }
                     if (NotationUtils.ContainsKey(line, "#MUSIC_SCORE_CREATOR_NAME @JPN ", out value)) { entry.NotesDesigner = value; }
-                    if (NotationUtils.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketPath = value; }
+                    if (NotationUtils.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketPath = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
                     if (NotationUtils.ContainsKey(line, "#DIFFICULTY ",                    out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                     if (NotationUtils.ContainsKey(line, "#DISPLAY_BPM ",                   out value)) { entry.BpmMessage = value; }
                     if (NotationUtils.ContainsKey(line, "#CREAR_NORMA_RATE ",              out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
@@ -435,6 +436,8 @@ public static class MerReader
                 Console.WriteLine(ex);
             }
         }
+        
+        NotationUtils.PostProcessEntry(entry, args);
         
         return entry;
     }

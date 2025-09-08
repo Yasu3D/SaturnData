@@ -23,9 +23,9 @@ public static class SatV1Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
+    public static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions, string path = "")
     {
         // SatV2 is an extension of SatV1 and fully backwards-compatible.
-        return SatV2Reader.ToEntry(lines, args, out exceptions);
+        return SatV2Reader.ToEntry(lines, args, out exceptions, path);
     }
 }

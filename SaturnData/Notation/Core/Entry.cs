@@ -63,11 +63,10 @@ public class Entry
         get => title;
         set
         {
-            if (title != value)
-            {
-                title = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (title == value) return;
+            
+            title = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string title = "";
@@ -80,11 +79,10 @@ public class Entry
         get => reading;
         set
         {
-            if (reading != value)
-            {
-                reading = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (reading == value) return;
+            
+            reading = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string reading = "";
@@ -97,11 +95,10 @@ public class Entry
         get => artist;
         set
         {
-            if (artist != value)
-            {
-                artist = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (artist == value) return;
+            
+            artist = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string artist = "";
@@ -114,11 +111,10 @@ public class Entry
         get => bpmMessage;
         set
         {
-            if (bpmMessage != value)
-            {
-                bpmMessage = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (bpmMessage == value) return;
+            
+            bpmMessage = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string bpmMessage = "";
@@ -133,11 +129,10 @@ public class Entry
         get => revision;
         set
         {
-           if (revision != value)
-           {
-               revision = value;
-               EntryChanged?.Invoke(null, EventArgs.Empty);
-           }
+            if (revision == value) return;
+            
+            revision = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string revision = "";
@@ -150,11 +145,10 @@ public class Entry
         get => notesDesigner;
         set
         {
-           if (notesDesigner != value)
-           {
-               notesDesigner = value;
-               EntryChanged?.Invoke(null, EventArgs.Empty);
-           }
+            if (notesDesigner == value) return;
+            
+            notesDesigner = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string notesDesigner = "";
@@ -167,11 +161,10 @@ public class Entry
         get => difficulty;
         set
         {
-           if (difficulty != value)
-           {
-               difficulty = value;
-               EntryChanged?.Invoke(null, EventArgs.Empty);
-           }
+            if (difficulty == value) return;
+            
+            difficulty = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private Difficulty difficulty = Difficulty.Normal;
@@ -184,11 +177,10 @@ public class Entry
         get => level;
         set
         {
-            if (level != value)
-            {
-                level = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (level == value) return;
+            
+            level = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private float level = 0;
@@ -201,11 +193,10 @@ public class Entry
         get => clearThreshold;
         set
         {
-            if (clearThreshold != value)
-            {
-                clearThreshold = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (clearThreshold == value) return;
+            
+            clearThreshold = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private float clearThreshold = 0.45f;
@@ -220,11 +211,10 @@ public class Entry
         get => previewBegin;
         set
         {
-            if (previewBegin != value)
-            {
-                previewBegin = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (previewBegin == value) return;
+            
+            previewBegin = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private float previewBegin = 0;
@@ -237,11 +227,10 @@ public class Entry
         get => previewLength;
         set
         {
-            if (previewLength != value)
-            {
-                previewLength = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (previewLength == value) return;
+            
+            previewLength = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private float previewLength = 10000;
@@ -254,11 +243,10 @@ public class Entry
         get => background;
         set
         {
-            if (background != value)
-            {
-                background = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (background == value) return;
+            
+            background = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private BackgroundOption background = BackgroundOption.Auto;
@@ -273,11 +261,10 @@ public class Entry
         get => chartPath;
         set
         {
-           if (chartPath != value)
-           {
-               chartPath = value;
-               EntryChanged?.Invoke(null, EventArgs.Empty);
-           }
+            if (chartPath == value) return;
+            
+            chartPath = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string chartPath = "";
@@ -290,11 +277,10 @@ public class Entry
         get => audioPath;
         set
         {
-           if (audioPath != value)
-           {
-               audioPath = value;
-               EntryChanged?.Invoke(null, EventArgs.Empty);
-           }
+            if (audioPath == value) return;
+            
+            audioPath = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string audioPath = "";
@@ -307,11 +293,10 @@ public class Entry
         get => videoPath;
         set
         {
-           if (videoPath != value)
-           {
-               videoPath = value;
-               EntryChanged?.Invoke(null, EventArgs.Empty);
-           }
+            if (videoPath == value) return;
+            
+            videoPath = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string videoPath = "";
@@ -324,11 +309,10 @@ public class Entry
         get => jacketPath;
         set
         {
-           if (jacketPath != value)
-           {
-               jacketPath = value;
-               EntryChanged?.Invoke(null, EventArgs.Empty);
-           }
+            if (jacketPath == value) return;
+            
+            jacketPath = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private string jacketPath = "";
@@ -341,11 +325,10 @@ public class Entry
         get => audioOffset;
         set
         {
-            if (audioOffset != value)
-            {
-                audioOffset = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (audioOffset == value) return;
+            
+            audioOffset = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private float audioOffset = 0;
@@ -358,11 +341,10 @@ public class Entry
         get => videoOffset;
         set
         {
-            if (videoOffset != value)
-            {
-                videoOffset = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (videoOffset == value) return;
+            
+            videoOffset = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private float videoOffset = 0;
@@ -375,11 +357,10 @@ public class Entry
         get => chartEnd;
         set
         {
-            if (chartEnd != value)
-            {
-                chartEnd = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (chartEnd == value) return;
+            
+            chartEnd = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private Timestamp chartEnd = Timestamp.Zero;
@@ -394,11 +375,10 @@ public class Entry
         get => tutorialMode;
         set
         {
-            if (tutorialMode != value)
-            {
-                tutorialMode = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (tutorialMode == value) return;
+            
+            tutorialMode = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private bool tutorialMode = false;
@@ -411,11 +391,10 @@ public class Entry
         get => autoReading;
         set
         {
-            if (autoReading != value)
-            {
-                autoReading = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (autoReading == value) return;
+            
+            autoReading = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private bool autoReading = false;
@@ -428,11 +407,10 @@ public class Entry
         get => autoBpmMessage;
         set
         {
-            if (autoBpmMessage != value)
-            {
-                autoBpmMessage = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (autoBpmMessage == value) return;
+            
+            autoBpmMessage = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private bool autoBpmMessage = false;
@@ -445,11 +423,10 @@ public class Entry
         get => autoClearThreshold;
         set
         {
-            if (autoClearThreshold != value)
-            {
-                autoClearThreshold = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (autoClearThreshold == value) return;
+            
+            autoClearThreshold = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private bool autoClearThreshold = true;
@@ -462,11 +439,10 @@ public class Entry
         get => autoChartEnd;
         set
         {
-            if (autoChartEnd != value)
-            {
-                autoChartEnd = value;
-                EntryChanged?.Invoke(null, EventArgs.Empty);
-            }
+            if (autoChartEnd == value) return;
+            
+            autoChartEnd = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private bool autoChartEnd = true;

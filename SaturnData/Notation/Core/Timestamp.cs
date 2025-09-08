@@ -65,11 +65,12 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
         readonly get => measure;
         set
         {
+            if (measure == value) return;
+
             measure = value;
             fullTick = measure * 1920 + Tick;
         }
     }
-
     private int measure;
 
     /// <summary>
@@ -80,11 +81,12 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
         readonly get => tick;
         set
         {
+            if (tick == value) return;
+
             tick = value;
             fullTick = measure * 1920 + tick;
         }
     }
-
     private int tick;
 
     /// <summary>
@@ -95,12 +97,13 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
         get => fullTick;
         set
         {
+            if (fullTick == value) return;
+
             fullTick = value;
             measure = fullTick / 1920;
             tick = fullTick - measure * 1920;
         }
     }
-
     private int fullTick;
         
     /// <summary>
@@ -126,7 +129,7 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="t">The interpolation value between the two Timestamps.</param>
     public static Timestamp Lerp(Timestamp a, Timestamp b, float t) => new((int)((1 - t) * a.FullTick + t * b.FullTick));
 
-    public bool Equals(Timestamp other) => FullTick == other.FullTick;
+    public bool Equals(Timestamp other) => FullTick == other.FullTick && Time == other.Time && ScaledTime == other.ScaledTime;
     public override bool Equals(object? obj) => obj is Timestamp timestamp && Equals(timestamp);
     public override int GetHashCode() => HashCode.Combine(Measure, Tick, FullTick, Time, ScaledTime);
 

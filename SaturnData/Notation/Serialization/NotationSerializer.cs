@@ -98,10 +98,7 @@ public static class NotationSerializer
         try
         {
             string[] lines = File.ReadAllLines(path);
-            Entry entry = ToEntry(lines, args, out exceptions);
-            entry.ChartPath = path;
-            
-            return entry;
+            return ToEntry(lines, args, out exceptions, path);
         }
         catch (Exception ex)
         {
@@ -117,7 +114,7 @@ public static class NotationSerializer
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <param name="args">Arguments for how the data should be read.</param>
     /// <returns></returns>
-    public static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
+    public static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions, string path = "")
     {
         try
         {
@@ -125,10 +122,10 @@ public static class NotationSerializer
             
             return formatVersion switch
             {
-                FormatVersion.Mer => MerReader.ToEntry(lines, out exceptions),
-                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, args, out exceptions),
-                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, args, out exceptions),
-                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines, args, out exceptions),
+                FormatVersion.Mer => MerReader.ToEntry(lines, args, out exceptions, path),
+                FormatVersion.SatV1 => SatV1Reader.ToEntry(lines, args, out exceptions, path),
+                FormatVersion.SatV2 => SatV2Reader.ToEntry(lines, args, out exceptions, path),
+                FormatVersion.SatV3 => SatV3Reader.ToEntry(lines, args, out exceptions, path),
                 _ => throw new(),
             };
         }
