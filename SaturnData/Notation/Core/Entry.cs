@@ -261,7 +261,7 @@ public class Entry
         get => chartPath;
         set
         {
-            if (chartPath == value) return;
+            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
             
             chartPath = value;
             EntryChanged?.Invoke(null, EventArgs.Empty);
@@ -277,7 +277,7 @@ public class Entry
         get => audioPath;
         set
         {
-            if (audioPath == value) return;
+            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
             
             audioPath = value;
             EntryChanged?.Invoke(null, EventArgs.Empty);
@@ -293,7 +293,7 @@ public class Entry
         get => videoPath;
         set
         {
-            if (videoPath == value) return;
+            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
             
             videoPath = value;
             EntryChanged?.Invoke(null, EventArgs.Empty);
@@ -309,7 +309,7 @@ public class Entry
         get => jacketPath;
         set
         {
-            if (jacketPath == value) return;
+            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
             
             jacketPath = value;
             EntryChanged?.Invoke(null, EventArgs.Empty);
