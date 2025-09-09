@@ -111,7 +111,7 @@ public static class NotationUtils
 
     
     
-    public static void CalculateTime(Chart chart)
+    public static void CalculateTime(Entry entry, Chart chart)
     {
         foreach (Event @event in chart.Events)
         {
@@ -144,6 +144,8 @@ public static class NotationUtils
                 timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
             }
         }
+
+        entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(chart, entry.ChartEnd) };
     }
 
     public static void CalculateScaledTime(Chart chart)
