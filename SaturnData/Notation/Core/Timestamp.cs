@@ -179,7 +179,7 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
             tickDifference = (int)(Math.Floor(tickDifference / (1920.0f / division)) * (1920.0f / division));
         }
         
-        return new(last.FullTick + tickDifference);
+        return new(last.FullTick + tickDifference) { Time = time };
     }
     
     /// <summary>
