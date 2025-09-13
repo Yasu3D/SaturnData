@@ -47,6 +47,9 @@ public enum BackgroundOption
 public class Entry
 {
     public event EventHandler? EntryChanged;
+    public event EventHandler? JacketChanged;
+    public event EventHandler? AudioChanged;
+    public event EventHandler? VideoChanged;
     
     /// <summary>
     /// The unique identifier of the chart.
@@ -251,71 +254,124 @@ public class Entry
     }
     private BackgroundOption background = BackgroundOption.Auto;
 
+
+
+    /// <summary>
+    /// The directory that all chart-related files are in.
+    /// </summary>
+    public string RootDirectory
+    {
+        get => rootDirectory;
+        set
+        {
+            if (rootDirectory == value) return;
+
+            rootDirectory = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
+            
+            // Invoke all media change events since all filepaths changed.
+            JacketChanged?.Invoke(null, EventArgs.Empty);
+            AudioChanged?.Invoke(null, EventArgs.Empty);
+            VideoChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    private string rootDirectory = "";
     
+    /// <summary>
+    /// File name of the chart file that defined this entry.
+    /// </summary>
+    public string ChartFile
+    {
+        get => chartFile;
+        set
+        {
+            if (chartFile == value) return;
+            
+            chartFile = value;
+            EntryChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    private string chartFile = "";
     
     /// <summary>
-    /// Absolute filepath to the chart file that defined this entry.
+    /// File name of the background audio file.
     /// </summary>
-    public string ChartPath
+    public string AudioFile
     {
-        get => chartPath;
+        get => audioFile;
         set
         {
-            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
+            if (audioFile != value)
+            {
+                audioFile = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
             
-            chartPath = value;
-            EntryChanged?.Invoke(null, EventArgs.Empty);
+            // Always invoke AudioChanged when a filepath changes to allow for reloading the same file.
+            AudioChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private string chartPath = "";
+    private string audioFile = "";
 
     /// <summary>
-    /// Absolute filepath to the background audio file.
+    /// File name of the background video file.
     /// </summary>
-    public string AudioPath
+    public string VideoFile
     {
-        get => audioPath;
+        get => videoFile;
         set
         {
-            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
-            
-            audioPath = value;
-            EntryChanged?.Invoke(null, EventArgs.Empty);
+            if (videoFile != value)
+            {
+                videoFile = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
+
+            // Always invoke VideoChanged when a filepath changes to allow for reloading the same file.
+            VideoChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private string audioPath = "";
+    private string videoFile = "";
 
     /// <summary>
-    /// Absolute filepath to the background video file.
+    /// File name of the jacket image file.
     /// </summary>
-    public string VideoPath
+    public string JacketFile
     {
-        get => videoPath;
+        get => jacketFile;
         set
         {
-            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
+            if (jacketFile != value)
+            {
+                jacketFile = value;
+                EntryChanged?.Invoke(null, EventArgs.Empty);
+            }
             
-            videoPath = value;
-            EntryChanged?.Invoke(null, EventArgs.Empty);
+            // Always invoke JacketChanged when a filepath changes to allow for reloading the same file.
+            JacketChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private string videoPath = "";
+    private string jacketFile = "";
+    
+    /// <summary>
+    /// Absolute file path to the chart file that defined this entry.
+    /// </summary>
+    public string ChartPath => Path.Combine(RootDirectory, ChartFile);
 
     /// <summary>
-    /// Absolute filepath to the jacket image file.
+    /// Absolute file path to the background audio file.
     /// </summary>
-    public string JacketPath
-    {
-        get => jacketPath;
-        set
-        {
-            // Always invoke EntryChanged when a filepath changes to allow for reloading the same file.
-            
-            jacketPath = value;
-            EntryChanged?.Invoke(null, EventArgs.Empty);
-        }
-    }
-    private string jacketPath = "";
+    public string AudioPath => Path.Combine(RootDirectory, AudioFile);
+
+    /// <summary>
+    /// Absolute file path to the background video file.
+    /// </summary>
+    public string VideoPath => Path.Combine(RootDirectory, VideoFile);
+
+    /// <summary>
+    /// Absolute file path to the jacket image file.
+    /// </summary>
+    public string JacketPath => Path.Combine(RootDirectory, JacketFile);
 
     /// <summary>
     /// Audio offset <b>in milliseconds</b>
@@ -452,7 +508,7 @@ public class Entry
     /// <summary>
     /// Does a file exist at <c>VideoPath</c>?
     /// </summary>
-    public bool VideoExists => File.Exists(VideoPath);
+    public bool VideoExists => File.Exists(VideoFile);
     
     /// <summary>
     /// Returns the integer part of the level, and adds a + if the decimal part is >= 0.7.

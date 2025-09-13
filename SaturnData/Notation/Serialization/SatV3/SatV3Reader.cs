@@ -656,7 +656,11 @@ public static class SatV3Reader
     /// <returns></returns>
     internal static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions, string path = "")
     {
-        Entry entry = new() { ChartPath = path };
+        Entry entry = new()
+        {
+            RootDirectory = Path.GetDirectoryName(path) ?? "",
+            ChartFile = Path.GetFileName(path),
+        };
         exceptions = [];
 
         foreach (string line in lines)
@@ -685,9 +689,9 @@ public static class SatV3Reader
                 if (NotationUtils.ContainsKey(line, "@PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
 
-                if (NotationUtils.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketPath = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
-                if (NotationUtils.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioPath  = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
-                if (NotationUtils.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoPath  = value == "" ? "" : Path.Combine(Path.GetDirectoryName(entry.ChartPath) ?? "", value); }
+                if (NotationUtils.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketFile = value; }
+                if (NotationUtils.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioFile  = value; }
+                if (NotationUtils.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoFile  = value; }
                 if (NotationUtils.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (NotationUtils.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
