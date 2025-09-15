@@ -109,8 +109,53 @@ public static class NotationUtils
         }  
     }
 
+    /// <summary>
+    /// Calculates the ideal chart end timestamp, based on all objects in a chart and the length of audio.
+    /// </summary>
+    /// <param name="chart">The chart to base the timestamp off of.</param>
+    /// <param name="audioLength">The length of the audio file in milliseconds.(optional)</param>
+    /// <returns></returns>
+    public static Timestamp CalculateIdealChartEnd(Chart chart, float audioLength = 0)
+    {
+        Timestamp audioEnd = Timestamp.TimestampFromTime(chart, audioLength, 1920);
+        Timestamp chartEnd = Timestamp.Zero;
+
+        foreach (Layer layer in chart.Layers)
+        foreach (Note note in layer.Notes)
+        {
+            if (note is not ITimeable timeable) continue;
+            if (note is not IPlayable playable) continue;
+
+            if (playable.JudgementType is JudgementType.Fake) continue; // Allow for fake notes behind end
+            
+            chartEnd = Timestamp.Max(chartEnd, timeable.Timestamp);
+        }
+        
+        chartEnd = Timestamp.TimestampFromTime(chart, chartEnd.Time + 2000, 1920);
+        
+        // Round up to next measure.
+        if (chartEnd.Tick != 0)
+        {
+            chartEnd.Measure += 1;
+            chartEnd.Tick = 0;
+            chartEnd.Time = Timestamp.TimeFromTimestamp(chart, chartEnd);
+        }
+        
+        if (audioEnd.Tick != 0)
+        {
+            audioEnd.Measure += 1;
+            audioEnd.Tick = 0;
+            audioEnd.Time = Timestamp.TimeFromTimestamp(chart, audioEnd);
+        }
+
+        return Timestamp.Max(chartEnd, audioEnd);
+    }
     
-    
+    /// <summary>
+    /// Calculates millisecond timestamps for all objects in an entry and a chart.
+    /// </summary>
+    /// <param name="entry">The entry to calculate timestamps for.</param>
+    /// <param name="chart">The chart to calculate timestamps for.</param>
     public static void CalculateTime(Entry entry, Chart chart)
     {
         foreach (Event @event in chart.Events)
@@ -148,6 +193,10 @@ public static class NotationUtils
         entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(chart, entry.ChartEnd) };
     }
 
+    /// <summary>
+    /// Calculates millisecond timestamps scaled by speed changes for all objects in a chart.
+    /// </summary>
+    /// <param name="chart">The chart to calculate timestamps for.</param>
     public static void CalculateScaledTime(Chart chart)
     {
         foreach (Layer layer in chart.Layers)
