@@ -165,8 +165,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <returns></returns>
     public static Timestamp TimestampFromTime(Chart chart, float time, int division = 1920)
     {
-        TempoChangeEvent? tempo = chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time < time) as TempoChangeEvent;
-        MetreChangeEvent? metre = chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp.Time < time) as MetreChangeEvent;
+        TempoChangeEvent? tempo = NotationUtils.LastTempoChange(chart, time);
+        MetreChangeEvent? metre = NotationUtils.LastMetreChange(chart, time);
         if (tempo == null || metre == null) return Zero;
         
         Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
@@ -190,8 +190,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <returns></returns>
     public static float TimeFromTimestamp(Chart chart, Timestamp timestamp)
     {
-        TempoChangeEvent? tempo = chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp < timestamp) as TempoChangeEvent;
-        MetreChangeEvent? metre = chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp < timestamp) as MetreChangeEvent;
+        TempoChangeEvent? tempo = NotationUtils.LastTempoChange(chart, timestamp);
+        MetreChangeEvent? metre = NotationUtils.LastMetreChange(chart, timestamp);
         if (tempo == null || metre == null) return 0;
         
         Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
@@ -209,7 +209,7 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <returns></returns>
     public static float ScaledTimeFromTime(Layer layer, float time)
     {
-        SpeedChangeEvent? speed = layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time < time) as SpeedChangeEvent;
+        SpeedChangeEvent? speed = NotationUtils.LastSpeedChange(layer, time);
         if (speed == null) return time; // This is fine, just means there are no speed changes.
 
         float timeDifference = time - speed.Timestamp.Time;

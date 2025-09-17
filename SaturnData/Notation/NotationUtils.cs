@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SaturnData.Notation.Core;
+using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
 using SaturnData.Notation.Serialization;
@@ -109,6 +110,31 @@ public static class NotationUtils
         }  
     }
 
+    public static TempoChangeEvent? LastTempoChange(Chart chart, Timestamp timestamp)
+    {
+        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp < timestamp) as TempoChangeEvent;
+    }
+    
+    public static TempoChangeEvent? LastTempoChange(Chart chart, float time)
+    {
+        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time < time) as TempoChangeEvent;
+    }
+
+    public static MetreChangeEvent? LastMetreChange(Chart chart, Timestamp timestamp)
+    {
+        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp < timestamp) as MetreChangeEvent;
+    }
+
+    public static MetreChangeEvent? LastMetreChange(Chart chart, float time)
+    {
+        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp.Time < time) as MetreChangeEvent;
+    }
+
+    public static SpeedChangeEvent? LastSpeedChange(Layer layer, float time)
+    {
+        return layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time < time) as SpeedChangeEvent;
+    }
+    
     /// <summary>
     /// Calculates the ideal chart end timestamp, based on all objects in a chart and the length of audio.
     /// </summary>
@@ -186,7 +212,18 @@ public static class NotationUtils
             foreach (Note note in layer.Notes)
             {
                 if (note is not ITimeable timeable) continue;
-                timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+
+                if (note is HoldNote holdNote)
+                {
+                    foreach (HoldPointNote point in holdNote.Points)
+                    {
+                        point.Timestamp = point.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, point.Timestamp) };
+                    }
+                }
+                else
+                {
+                    timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+                }
             }
         }
 
@@ -210,7 +247,19 @@ public static class NotationUtils
             foreach (Note note in layer.Notes)
             {
                 if (note is not ITimeable timeable) continue;
-                timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+                
+                if (note is HoldNote holdNote)
+                {
+                    foreach (HoldPointNote point in holdNote.Points)
+                    {
+                        point.Timestamp = point.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, point.Timestamp.Time) };
+                    }
+                }
+                else
+                {
+                    timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+                }
+                
             }
         }
     }
