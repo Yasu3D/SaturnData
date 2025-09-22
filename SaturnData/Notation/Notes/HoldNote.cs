@@ -7,7 +7,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by tapping and holding down within its area at the right time.
 /// </summary>
-public class HoldNote : Note, ITimeable, IPlayable
+public class HoldNote : Note, ITimeable, IPositionable, IPlayable
 { 
     public HoldNote(HoldNote cloneSource)
     {
@@ -30,8 +30,8 @@ public class HoldNote : Note, ITimeable, IPlayable
     }
     
     /// <summary>
-    /// The timestamp when the reverse effect begins.<br/>
-    /// Modifying this timestamp will move all sub-events as well.
+    /// The timestamp when the hold note begins.<br/>
+    /// Modifying this timestamp will move all points as well.
     /// </summary>
     public Timestamp Timestamp
     {
@@ -40,13 +40,41 @@ public class HoldNote : Note, ITimeable, IPlayable
         {
             if (Points.Count == 0) return;
             
-            // Move all sub-events equally when setting timestamp.
+            // Move all points equally when setting timestamp.
             Timestamp delta = value - Points[0].Timestamp;
 
             foreach (HoldPointNote point in Points)
             {
                 point.Timestamp += delta;
             }
+        }
+    }
+
+    public int Position
+    {
+        get => Points.Count == 0 ? -1 : Points[0].Position;
+        set
+        {
+            if (Points.Count == 0) return;
+            
+            // Move all points equally when setting timestamp.
+            int delta = value - Points[0].Position;
+
+            foreach (HoldPointNote point in Points)
+            {
+                point.Position += delta;
+            }
+        }
+    }
+
+    public int Size
+    {
+        get => Points.Count == 0 ? -1 : Points[0].Size;
+        set
+        {
+            if (Points.Count == 0) return;
+
+            Points[0].Size = value;
         }
     }
     
