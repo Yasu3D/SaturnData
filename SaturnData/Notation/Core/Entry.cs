@@ -175,7 +175,7 @@ public class Entry
     /// <summary>
     /// The level (or constant) of the chart.
     /// </summary>
-    public float Level
+    public double Level
     {
         get => level;
         set
@@ -186,7 +186,7 @@ public class Entry
             EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private float level = 0;
+    private double level = 0;
 
     /// <summary>
     /// The percentage of the clear bar that needs to be reached to clear a song.
