@@ -112,27 +112,52 @@ public static class NotationUtils
 
     public static TempoChangeEvent? LastTempoChange(Chart chart, Timestamp timestamp)
     {
-        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp <= timestamp) as TempoChangeEvent;
+        if (timestamp.FullTick == 0)
+        {
+            return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.FullTick == 0) as TempoChangeEvent;
+        }
+        
+        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp < timestamp) as TempoChangeEvent;
     }
     
     public static TempoChangeEvent? LastTempoChange(Chart chart, float time)
     {
-        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time <= time) as TempoChangeEvent;
+        if (time == 0)
+        {
+            return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time == 0) as TempoChangeEvent;
+        }
+        
+        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time < time) as TempoChangeEvent;
     }
 
     public static MetreChangeEvent? LastMetreChange(Chart chart, Timestamp timestamp)
     {
-        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp <= timestamp) as MetreChangeEvent;
+        if (timestamp.FullTick == 0)
+        {
+            return chart.Events.LastOrDefault(x => x is MetreChangeEvent t && t.Timestamp.FullTick == 0) as MetreChangeEvent;
+        }
+        
+        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp < timestamp) as MetreChangeEvent;
     }
 
     public static MetreChangeEvent? LastMetreChange(Chart chart, float time)
     {
-        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp.Time <= time) as MetreChangeEvent;
+        if (time == 0)
+        {
+            return chart.Events.LastOrDefault(x => x is MetreChangeEvent t && t.Timestamp.Time == 0) as MetreChangeEvent;
+        }
+        
+        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp.Time < time) as MetreChangeEvent;
     }
 
     public static SpeedChangeEvent? LastSpeedChange(Layer layer, float time)
     {
-        return layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time <= time) as SpeedChangeEvent;
+        if (time == 0)
+        {
+            return layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time == 0) as SpeedChangeEvent;
+        }
+        
+        return layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time < time) as SpeedChangeEvent;
     }
     
     /// <summary>

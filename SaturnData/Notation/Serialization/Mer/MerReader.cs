@@ -82,7 +82,7 @@ public static class MerReader
 
                     BonusType bonusType = noteType switch
                     {
-                        2 or 3 or 6 or 8 => BonusType.Bonus,
+                        2 or 6 or 8 => BonusType.Bonus,
                         20 or 21 or 22 or 23 or 24 or 25 or 26 => BonusType.R,
                         _ => BonusType.Normal,
                     };
@@ -149,7 +149,7 @@ public static class MerReader
                             Index = index,
                             Position = position,
                             Size = size,
-                            BonusType = noteType == 25 ? BonusType.R : BonusType.Normal,
+                            BonusType = bonusType,
                             Render = render,
                             Reference = reference,
                         };
