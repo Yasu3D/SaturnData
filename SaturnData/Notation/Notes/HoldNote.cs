@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Interfaces;
 
@@ -88,4 +89,9 @@ public class HoldNote : Note, ITimeable, IPositionable, IPlayable
     /// The individual points defining the shape and path a hold note takes.
     /// </summary>
     public List<HoldPointNote> Points { get; set; } = [];
+
+    /// <summary>
+    /// The size of the largest point in the hold note.
+    /// </summary>
+    public int MaxSize => Points.Max(x => x.Size);
 }

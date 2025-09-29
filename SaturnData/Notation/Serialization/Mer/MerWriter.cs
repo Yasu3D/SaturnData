@@ -10,6 +10,7 @@ using SaturnData.Notation.Notes;
 
 namespace SaturnData.Notation.Serialization.Mer;
 
+// TODO: Implement NotationWriteArgs properly in MerWriter.
 public static class MerWriter
 {
     private class MerWriterNote
@@ -410,7 +411,7 @@ public static class MerWriter
         }
         
         // Add all lane toggle notes.
-        foreach (Note laneToggle in chart.LaneToggles)
+        foreach (ILaneToggle laneToggle in chart.LaneToggles)
         {
             if (laneToggle is LaneShowNote laneShowNote)
             {

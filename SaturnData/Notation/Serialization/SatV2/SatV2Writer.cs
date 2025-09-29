@@ -146,11 +146,7 @@ public static class SatV2Writer
             index++;
         }
 
-        if (entry.ChartEnd != null)
-        {
-            sb.Append($"{entry.ChartEnd.Measure,-4} {entry.ChartEnd.Tick,-4} {index,-4} {"CHART_END",-16}\n");
-        }
-        
+        sb.Append($"{entry.ChartEnd.Measure,-4} {entry.ChartEnd.Tick,-4} {index,-4} {"CHART_END",-16}\n");
         sb.Append('\n');
     }
     

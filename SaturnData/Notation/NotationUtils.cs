@@ -159,6 +159,16 @@ public static class NotationUtils
         
         return layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time < time) as SpeedChangeEvent;
     }
+
+    public static VisibilityChangeEvent? LastVisibilityChange(Layer layer, float time)
+    {
+        if (time == 0)
+        {
+            return layer.Events.LastOrDefault(x => x is VisibilityChangeEvent s && s.Timestamp.Time == 0) as VisibilityChangeEvent;
+        }
+        
+        return layer.Events.LastOrDefault(x => x is VisibilityChangeEvent s && s.Timestamp.Time < time) as VisibilityChangeEvent;
+    }
     
     /// <summary>
     /// Calculates the ideal chart end timestamp, based on all objects in a chart and the length of audio.
@@ -287,5 +297,28 @@ public static class NotationUtils
                 
             }
         }
+    }
+    
+    /// <summary>
+    /// Determines if two notes should have a "Sync" outline or not.
+    /// </summary>
+    public static bool IsSync(Note current, Note? other)
+    {
+        if (other == null) return false;
+
+        if (current is ChainNote chain0 && chain0.BonusType != BonusType.R) return false;
+        if (other is ChainNote chain1 && chain1.BonusType != BonusType.R) return false;
+
+        if (current is not IPositionable pos0) return false;
+        if (other is not IPositionable pos1) return false;
+
+        if (pos0.Position == pos1.Position && pos0.Size == pos1.Size) return false;
+
+        if (current is not ITimeable time0) return false;
+        if (other is not ITimeable time1) return false;
+
+        if (time0.Timestamp != time1.Timestamp) return false;
+
+        return true;
     }
 }
