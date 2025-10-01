@@ -260,6 +260,13 @@ public static class NotationUtils
                     timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
                 }
             }
+
+            foreach (Note note in layer.GeneratedNotes)
+            {
+                if (note is not ITimeable timeable) continue;
+                
+                timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+            }
         }
 
         entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(chart, entry.ChartEnd) };
@@ -296,6 +303,13 @@ public static class NotationUtils
                 }
                 
             }
+            
+            foreach (Note note in layer.GeneratedNotes)
+            {
+                if (note is not ITimeable timeable) continue;
+                
+                timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+            }
         }
     }
     
@@ -320,5 +334,64 @@ public static class NotationUtils
         if (time0.Timestamp != time1.Timestamp) return false;
 
         return true;
+    }
+
+    public static void GenerateAllMeasureLineAndSyncNotes(Chart chart, Timestamp end)
+    {
+        if (chart.Layers.Count == 0) return;
+        
+        foreach (Layer layer in chart.Layers)
+        {
+            layer.GeneratedNotes.Clear();
+        }
+        
+        GenerateMeasureLineNotes(chart.Layers[0], end);
+
+        foreach (Layer layer in chart.Layers)
+        {
+            GenerateSyncNotes(layer);
+            
+            layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => ((ITimeable)x).Timestamp).ToList();
+        }
+    }
+    
+    public static void GenerateMeasureLineNotes(Layer layer, Timestamp end)
+    {
+        for (int i = 0; i < end.Measure; i++)
+        {
+            layer.GeneratedNotes.Add(new MeasureLineNote(new Timestamp(i, 0)));
+        }
+    }
+
+    public static void GenerateSyncNotes(Layer layer)
+    {
+        for (int i = 1; i < layer.Notes.Count; i++)
+        {
+            Note current = layer.Notes[i];
+            Note previous = layer.Notes[i - 1];
+
+            
+            if (!IsSync(current, previous)) continue;
+            if (current is not IPositionable currentPositionable) continue;
+            if (previous is not IPositionable previousPositionable) continue;
+
+            if (current is not ITimeable currentTimeable) continue;
+
+            // -1 + 60
+            // => + 59
+            int position0 = (currentPositionable.Position + currentPositionable.Size + 59) % 60;
+            int position1 = (previousPositionable.Position + previousPositionable.Size + 59) % 60;
+
+            int size0 = ((previousPositionable.Position - position0 + 60) % 60) + 1;
+            int size1 = ((currentPositionable.Position - position1 + 60) % 60) + 1;
+
+            int finalPosition = size0 < size1 ? position0 : position1;
+            int finalSize = Math.Min(size0, size1);
+
+            if (finalSize > 30) continue;
+
+            SyncNote syncNote = new(currentTimeable.Timestamp, finalPosition, finalSize);
+            layer.GeneratedNotes.Add(syncNote);
+        }
     }
 }
