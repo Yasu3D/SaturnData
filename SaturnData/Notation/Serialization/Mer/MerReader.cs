@@ -353,9 +353,10 @@ public static class MerReader
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                
                 if (!bodyReached)
                 {
-                    if (string.IsNullOrWhiteSpace(line)) continue;
                     string value;
                 
                     // BAKKA COMPATIBILITY
