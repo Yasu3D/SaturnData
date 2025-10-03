@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current metre / time signature.
 /// </summary>
-public class MetreChangeEvent : Event, ITimeable
+public class MetreChangeEvent : Event
 {
     public MetreChangeEvent(MetreChangeEvent cloneSource)
     {
@@ -21,8 +21,6 @@ public class MetreChangeEvent : Event, ITimeable
         Upper = upper;
         Lower = lower;
     }
-    
-    public Timestamp Timestamp { get; set; }
 
     /// <summary>
     /// The upper (numerator) in the metre to change to.

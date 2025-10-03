@@ -8,7 +8,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by tapping and holding down within its area at the right time.
 /// </summary>
-public class HoldNote : Note, ITimeable, IPositionable, IPlayable
+public class HoldNote : Note, IPositionable, IPlayable
 { 
     public HoldNote(HoldNote cloneSource)
     {
@@ -34,7 +34,7 @@ public class HoldNote : Note, ITimeable, IPositionable, IPlayable
     /// The timestamp when the hold note begins.<br/>
     /// Modifying this timestamp will move all points as well.
     /// </summary>
-    public Timestamp Timestamp
+    public sealed override Timestamp Timestamp
     {
         get => Points.Count == 0 ? new() : Points[0].Timestamp;
         set

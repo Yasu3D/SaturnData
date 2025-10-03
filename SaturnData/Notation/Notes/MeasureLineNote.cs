@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A measure line to help keep time.
 /// </summary>
-public class MeasureLineNote : Note, ITimeable
+public class MeasureLineNote : Note
 {
     public MeasureLineNote(MeasureLineNote cloneSource)
     {
@@ -17,6 +17,4 @@ public class MeasureLineNote : Note, ITimeable
     {
         Timestamp = timestamp;
     }
-    
-    public Timestamp Timestamp { get; set; }
 }

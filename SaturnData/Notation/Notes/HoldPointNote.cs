@@ -12,7 +12,7 @@ public enum HoldPointRenderType
 /// <summary>
 /// A point defining the shape and path of a hold note.
 /// </summary>
-public class HoldPointNote : Note, ITimeable, IPositionable
+public class HoldPointNote : Note, IPositionable
 {
     public HoldPointNote(Timestamp timestamp, int position, int size, HoldNote parent, HoldPointRenderType renderType)
     {
@@ -22,8 +22,6 @@ public class HoldPointNote : Note, ITimeable, IPositionable
         Parent = parent;
         RenderType = renderType;
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     public int Position { get; set; }
     

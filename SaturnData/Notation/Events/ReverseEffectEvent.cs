@@ -7,7 +7,7 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Scrolls a set of notes on a layer backwards.
 /// </summary>
-public class ReverseEffectEvent : Event, ITimeable
+public class ReverseEffectEvent : Event
 {
     public ReverseEffectEvent(ReverseEffectEvent cloneSource)
     {
@@ -26,7 +26,7 @@ public class ReverseEffectEvent : Event, ITimeable
     /// The timestamp when the reverse effect begins.<br/>
     /// Modifying this timestamp will move all sub-events as well.
     /// </summary>
-    public Timestamp Timestamp
+    public sealed override Timestamp Timestamp
     {
         get => SubEvents[0].Timestamp;
         set

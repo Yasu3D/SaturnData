@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by tapping within its area at the right time.
 /// </summary>
-public class TouchNote : Note, ITimeable, IPositionable, IPlayable
+public class TouchNote : Note, IPositionable, IPlayable
 {
     public TouchNote(TouchNote cloneSource)
     {
@@ -27,8 +27,6 @@ public class TouchNote : Note, ITimeable, IPositionable, IPlayable
         JudgementType = judgementType;
         TimingWindow = new(-6, -5, -3, -1, 1, 3, 5, 6);
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     public int Position { get; set; }
     

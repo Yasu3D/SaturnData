@@ -8,15 +8,13 @@ namespace SaturnData.Notation.Events;
 /// Used for any kind of event that requires
 /// multiple timestamps, such as reverses and stops.
 /// </summary>
-public class EffectSubEvent : Event, ITimeable
+public class EffectSubEvent : Event
 {
     public EffectSubEvent(Timestamp timestamp, Event parent)
     {
         Timestamp = timestamp;
         Parent = parent;
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     public Event Parent { get; }
 }

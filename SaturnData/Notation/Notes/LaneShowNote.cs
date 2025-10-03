@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note that shows the tunnel lanes it occupies once it reaches the judgement line.
 /// </summary>
-public class LaneShowNote : Note, ITimeable, IPositionable, ILaneToggle
+public class LaneShowNote : Note, IPositionable, ILaneToggle
 {
     public LaneShowNote(LaneShowNote cloneSource)
     {
@@ -23,8 +23,6 @@ public class LaneShowNote : Note, ITimeable, IPositionable, ILaneToggle
         Size = size;
         Direction = direction;
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     public int Position { get; set; }
     

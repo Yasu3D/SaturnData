@@ -3,7 +3,7 @@ using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Notation.Events;
 
-public class TutorialMarkerEvent : Event, ITimeable
+public class TutorialMarkerEvent : Event
 {
     public TutorialMarkerEvent(TutorialMarkerEvent cloneSource)
     {
@@ -16,8 +16,6 @@ public class TutorialMarkerEvent : Event, ITimeable
         Timestamp = timestamp;
         Key = key;
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     /// <summary>
     /// The key of the tutorial message to display.

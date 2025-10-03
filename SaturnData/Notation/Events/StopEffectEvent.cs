@@ -8,7 +8,7 @@ namespace SaturnData.Notation.Events;
 /// Changes the scroll speed of a layer to 0 for its duration.<br/>
 /// Effectively the same as two HiSpeed events.
 /// </summary>
-public class StopEffectEvent : Event, ITimeable
+public class StopEffectEvent : Event
 {
     public StopEffectEvent(StopEffectEvent cloneSource)
     {
@@ -34,7 +34,7 @@ public class StopEffectEvent : Event, ITimeable
     /// The timestamp when the stop effect begins.<br/>
     /// Modifying this timestamp will move all sub-events as well.
     /// </summary>
-    public Timestamp Timestamp
+    public sealed override Timestamp Timestamp
     {
         get => SubEvents[0].Timestamp;
         set

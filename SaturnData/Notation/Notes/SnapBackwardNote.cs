@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by flicking backwards within its area at the right time.
 /// </summary>
-public class SnapBackwardNote : Note, ITimeable, IPositionable, IPlayable
+public class SnapBackwardNote : Note, IPositionable, IPlayable
 {
     public SnapBackwardNote(SnapBackwardNote cloneSource)
     {
@@ -27,8 +27,6 @@ public class SnapBackwardNote : Note, ITimeable, IPositionable, IPlayable
         JudgementType = judgementType;
         TimingWindow = new(-10, -10, -7, -1, 1, 5, 8, 10);
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     public int Position { get; set; }
     

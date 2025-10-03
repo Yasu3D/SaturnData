@@ -19,13 +19,13 @@ public struct TimingWindow
     /// <exception cref="ArgumentException">Thrown when the early window is later the late window.</exception>
     public TimingWindow(int goodEarly, int greatEarly, int marvelousEarly, int marvelousPerfectEarly, int marvelousPerfectLate,  int marvelousLate,  int greatLate, int goodLate)
     {
-        bool order = goodEarly <= greatEarly;
-        order = order && greatEarly <= marvelousEarly;
-        order = order && marvelousEarly <= marvelousPerfectEarly;
-        order = order && marvelousPerfectEarly <= marvelousPerfectLate;
-        order = order && marvelousPerfectLate <= marvelousLate;
-        order = order && marvelousLate <= greatLate;
-        order = order && greatLate <= goodLate;
+        bool order = goodEarly             <= greatEarly
+                  && greatEarly            <= marvelousEarly
+                  && marvelousEarly        <= marvelousPerfectEarly
+                  && marvelousPerfectEarly <= marvelousPerfectLate
+                  && marvelousPerfectLate  <= marvelousLate
+                  && marvelousLate         <= greatLate
+                  && greatLate             <= goodLate;
 
         if (!order)
         {

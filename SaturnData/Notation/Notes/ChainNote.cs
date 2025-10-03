@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by holding down within its area at any time.
 /// </summary>
-public class ChainNote : Note, ITimeable, IPositionable, IPlayable
+public class ChainNote : Note, IPositionable, IPlayable
 {
     public ChainNote(ChainNote cloneSource)
     {
@@ -27,8 +27,6 @@ public class ChainNote : Note, ITimeable, IPositionable, IPlayable
         JudgementType = judgementType;
         TimingWindow = new(-4, -4, -4, -4, 4, 4, 4, 4);
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     public int Position { get; set; }
     

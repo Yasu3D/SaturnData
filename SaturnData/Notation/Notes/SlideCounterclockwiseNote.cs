@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by flicking counterclockwise within its area at the right time.
 /// </summary>
-public class SlideCounterclockwiseNote : Note, ITimeable, IPositionable, IPlayable
+public class SlideCounterclockwiseNote : Note, IPositionable, IPlayable
 {
     public SlideCounterclockwiseNote(SlideCounterclockwiseNote cloneSource)
     {
@@ -27,8 +27,6 @@ public class SlideCounterclockwiseNote : Note, ITimeable, IPositionable, IPlayab
         JudgementType = judgementType;
         TimingWindow = new(-10, -8, -5, -1, 1, 7, 10, 10);
     }
-    
-    public Timestamp Timestamp { get; set; }
     
     public int Position { get; set; }
     
