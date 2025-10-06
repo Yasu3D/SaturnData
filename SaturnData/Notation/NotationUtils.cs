@@ -311,6 +311,23 @@ public static class NotationUtils
                 timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
             }
         }
+        
+        if (chart.Layers.Count == 0)
+        {
+            foreach (Event @event in chart.Events)
+            {
+                if (@event is not ITimeable timeable) continue;
+                timeable.Timestamp = timeable.Timestamp with { ScaledTime = timeable.Timestamp.Time };
+            }
+        }
+        else
+        {
+            foreach (Event @event in chart.Events)
+            {
+                if (@event is not ITimeable timeable) continue;
+                timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(chart.Layers[0], timeable.Timestamp.Time) };
+            }
+        }
     }
     
     /// <summary>
