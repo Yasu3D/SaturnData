@@ -363,6 +363,7 @@ public static class NotationUtils
         }
         
         GenerateMeasureLineNotes(chart.Layers[0], end);
+        GenerateBeatLineNotes(chart, chart.Layers[0], end);
 
         foreach (Layer layer in chart.Layers)
         {
@@ -376,7 +377,28 @@ public static class NotationUtils
     {
         for (int i = 0; i < end.Measure; i++)
         {
-            layer.GeneratedNotes.Add(new MeasureLineNote(new Timestamp(i, 0)));
+            layer.GeneratedNotes.Add(new MeasureLineNote(new(i, 0), false));
+        }
+    }
+
+    public static void GenerateBeatLineNotes(Chart chart, Layer layer, Timestamp end)
+    {
+        List<MetreChangeEvent> metreChangeEvents = chart.Events.OfType<MetreChangeEvent>().ToList();
+
+        for (int i = 0; i < metreChangeEvents.Count; i++)
+        {
+            int startTick = metreChangeEvents[i].Timestamp.FullTick;
+            int endTick = i == metreChangeEvents.Count - 1
+                ? end.FullTick
+                : metreChangeEvents[i + 1].Timestamp.FullTick;
+
+            int step = 1920 / metreChangeEvents[i].Upper;
+            
+            for (int j = startTick; j < endTick; j += step)
+            {
+                if (j % 1920 == 0) continue;
+                layer.GeneratedNotes.Add(new MeasureLineNote(new(j), true));
+            }
         }
     }
 

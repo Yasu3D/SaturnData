@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current scroll speed of a layer.
 /// </summary>
-public class SpeedChangeEvent : Event
+public sealed class SpeedChangeEvent : Event
 {
     public SpeedChangeEvent(SpeedChangeEvent cloneSource)
     {

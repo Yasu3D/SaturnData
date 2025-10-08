@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by holding down within its area at any time.
 /// </summary>
-public class ChainNote : Note, IPositionable, IPlayable
+public sealed class ChainNote : Note, IPositionable, IPlayable
 {
     public ChainNote(ChainNote cloneSource)
     {

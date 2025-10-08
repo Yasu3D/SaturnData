@@ -3,7 +3,7 @@ using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Notation.Events;
 
-public class TutorialMarkerEvent : Event
+public sealed class TutorialMarkerEvent : Event
 {
     public TutorialMarkerEvent(TutorialMarkerEvent cloneSource)
     {

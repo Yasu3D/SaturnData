@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by tapping within its area at the right time.
 /// </summary>
-public class TouchNote : Note, IPositionable, IPlayable
+public sealed class TouchNote : Note, IPositionable, IPlayable
 {
     public TouchNote(TouchNote cloneSource)
     {

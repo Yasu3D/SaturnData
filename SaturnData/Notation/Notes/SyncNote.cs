@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A connector that appears between simultaneous notes.
 /// </summary>
-public class SyncNote : Note, IPositionable
+public sealed class SyncNote : Note, IPositionable
 {
     public SyncNote(SyncNote cloneSource)
     {

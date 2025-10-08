@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by flicking backwards within its area at the right time.
 /// </summary>
-public class SnapBackwardNote : Note, IPositionable, IPlayable
+public sealed class SnapBackwardNote : Note, IPositionable, IPlayable
 {
     public SnapBackwardNote(SnapBackwardNote cloneSource)
     {

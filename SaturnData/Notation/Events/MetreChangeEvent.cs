@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current metre / time signature.
 /// </summary>
-public class MetreChangeEvent : Event
+public sealed class MetreChangeEvent : Event
 {
     public MetreChangeEvent(MetreChangeEvent cloneSource)
     {

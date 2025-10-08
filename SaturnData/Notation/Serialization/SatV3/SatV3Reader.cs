@@ -515,7 +515,7 @@ public static class SatV3Reader
                     
                         if (split[0] == "MLINE")
                         {
-                            MeasureLineNote measureLineNote = new(timestamp);
+                            MeasureLineNote measureLineNote = new(timestamp, false);
                             setCurrentMultiLineObject(null);
                         
                             currentLayer.Notes.Add(measureLineNote);

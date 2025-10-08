@@ -6,7 +6,7 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current visibility of a layer.
 /// </summary>
-public class VisibilityChangeEvent : Event
+public sealed class VisibilityChangeEvent : Event
 {
     public VisibilityChangeEvent(VisibilityChangeEvent cloneSource)
     {
