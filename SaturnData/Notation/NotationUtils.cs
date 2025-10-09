@@ -114,60 +114,60 @@ public static class NotationUtils
     {
         if (timestamp.FullTick == 0)
         {
-            return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.FullTick == 0) as TempoChangeEvent;
+            return chart.Events.LastOrDefault(x => x is TempoChangeEvent && x.Timestamp.FullTick == 0) as TempoChangeEvent;
         }
         
-        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp < timestamp) as TempoChangeEvent;
+        return chart.Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is TempoChangeEvent && x.Timestamp < timestamp) as TempoChangeEvent;
     }
     
     public static TempoChangeEvent? LastTempoChange(Chart chart, float time)
     {
         if (time == 0)
         {
-            return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time == 0) as TempoChangeEvent;
+            return chart.Events.LastOrDefault(x => x is TempoChangeEvent && x.Timestamp.Time == 0) as TempoChangeEvent;
         }
         
-        return chart.Events.LastOrDefault(x => x is TempoChangeEvent t && t.Timestamp.Time < time) as TempoChangeEvent;
+        return chart.Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is TempoChangeEvent && x.Timestamp.Time < time) as TempoChangeEvent;
     }
 
     public static MetreChangeEvent? LastMetreChange(Chart chart, Timestamp timestamp)
     {
         if (timestamp.FullTick == 0)
         {
-            return chart.Events.LastOrDefault(x => x is MetreChangeEvent t && t.Timestamp.FullTick == 0) as MetreChangeEvent;
+            return chart.Events.LastOrDefault(x => x is MetreChangeEvent && x.Timestamp.FullTick == 0) as MetreChangeEvent;
         }
         
-        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp < timestamp) as MetreChangeEvent;
+        return chart.Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is MetreChangeEvent && x.Timestamp < timestamp) as MetreChangeEvent;
     }
 
     public static MetreChangeEvent? LastMetreChange(Chart chart, float time)
     {
         if (time == 0)
         {
-            return chart.Events.LastOrDefault(x => x is MetreChangeEvent t && t.Timestamp.Time == 0) as MetreChangeEvent;
+            return chart.Events.LastOrDefault(x => x is MetreChangeEvent && x.Timestamp.Time == 0) as MetreChangeEvent;
         }
         
-        return chart.Events.LastOrDefault(x => x is MetreChangeEvent m && m.Timestamp.Time < time) as MetreChangeEvent;
+        return chart.Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is MetreChangeEvent && x.Timestamp.Time < time) as MetreChangeEvent;
     }
 
     public static SpeedChangeEvent? LastSpeedChange(Layer layer, float time)
     {
         if (time == 0)
         {
-            return layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time == 0) as SpeedChangeEvent;
+            return layer.Events.LastOrDefault(x => x is SpeedChangeEvent && x.Timestamp.Time == 0) as SpeedChangeEvent;
         }
         
-        return layer.Events.LastOrDefault(x => x is SpeedChangeEvent s && s.Timestamp.Time < time) as SpeedChangeEvent;
+        return layer.Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is SpeedChangeEvent && x.Timestamp.Time < time) as SpeedChangeEvent;
     }
 
     public static VisibilityChangeEvent? LastVisibilityChange(Layer layer, float time)
     {
         if (time == 0)
         {
-            return layer.Events.LastOrDefault(x => x is VisibilityChangeEvent s && s.Timestamp.Time == 0) as VisibilityChangeEvent;
+            return layer.Events.LastOrDefault(x => x is VisibilityChangeEvent && x.Timestamp.Time == 0) as VisibilityChangeEvent;
         }
         
-        return layer.Events.LastOrDefault(x => x is VisibilityChangeEvent s && s.Timestamp.Time < time) as VisibilityChangeEvent;
+        return layer.Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is VisibilityChangeEvent && x.Timestamp.Time < time) as VisibilityChangeEvent;
     }
     
     /// <summary>
@@ -221,8 +221,7 @@ public static class NotationUtils
     {
         foreach (Event @event in chart.Events)
         {
-            if (@event is not ITimeable timeable) continue;
-            timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+            @event.Timestamp = @event.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, @event.Timestamp) };
         }
         
         foreach (Bookmark bookmark in chart.Bookmarks)
@@ -232,22 +231,35 @@ public static class NotationUtils
 
         foreach (Note laneToggle in chart.LaneToggles)
         {
-            if (laneToggle is not ITimeable timeable) continue;
-            timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+            laneToggle.Timestamp = laneToggle.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, laneToggle.Timestamp) };
         }
 
         foreach (Layer layer in chart.Layers)
         {
             foreach (Event @event in layer.Events)
             {
-                if (@event is not ITimeable timeable) continue;
-                timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+                if (@event is StopEffectEvent stopEffectEvent)
+                {
+                    foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
+                    {
+                        subEvent.Timestamp = subEvent.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, subEvent.Timestamp) };
+                    }
+                }
+                else if (@event is ReverseEffectEvent reverseEffectEvent)
+                {
+                    foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
+                    {
+                        subEvent.Timestamp = subEvent.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, subEvent.Timestamp) };
+                    }
+                }
+                else
+                {
+                    @event.Timestamp = @event.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, @event.Timestamp) };
+                }
             }
             
             foreach (Note note in layer.Notes)
             {
-                if (note is not ITimeable timeable) continue;
-
                 if (note is HoldNote holdNote)
                 {
                     foreach (HoldPointNote point in holdNote.Points)
@@ -257,15 +269,13 @@ public static class NotationUtils
                 }
                 else
                 {
-                    timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+                    note.Timestamp = note.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, note.Timestamp) };
                 }
             }
 
             foreach (Note note in layer.GeneratedNotes)
             {
-                if (note is not ITimeable timeable) continue;
-                
-                timeable.Timestamp = timeable.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, timeable.Timestamp) };
+                note.Timestamp = note.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, note.Timestamp) };
             }
         }
 
@@ -282,14 +292,28 @@ public static class NotationUtils
         {
             foreach (Event @event in layer.Events)
             {
-                if (@event is not ITimeable timeable) continue;
-                timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+                if (@event is StopEffectEvent stopEffectEvent)
+                {
+                    foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
+                    {
+                        subEvent.Timestamp = subEvent.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time) };
+                    }
+                }
+                else if (@event is ReverseEffectEvent reverseEffectEvent)
+                {
+                    foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
+                    {
+                        subEvent.Timestamp = subEvent.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time) };
+                    }
+                }
+                else
+                {
+                    @event.Timestamp = @event.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, @event.Timestamp.Time) };
+                }
             }
             
             foreach (Note note in layer.Notes)
             {
-                if (note is not ITimeable timeable) continue;
-                
                 if (note is HoldNote holdNote)
                 {
                     foreach (HoldPointNote point in holdNote.Points)
@@ -299,9 +323,8 @@ public static class NotationUtils
                 }
                 else
                 {
-                    timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+                    note.Timestamp = note.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, note.Timestamp.Time) };
                 }
-                
             }
             
             foreach (Note note in layer.GeneratedNotes)
@@ -316,16 +339,14 @@ public static class NotationUtils
         {
             foreach (Event @event in chart.Events)
             {
-                if (@event is not ITimeable timeable) continue;
-                timeable.Timestamp = timeable.Timestamp with { ScaledTime = timeable.Timestamp.Time };
+                @event.Timestamp = @event.Timestamp with { ScaledTime = @event.Timestamp.Time };
             }
         }
         else
         {
             foreach (Event @event in chart.Events)
             {
-                if (@event is not ITimeable timeable) continue;
-                timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(chart.Layers[0], timeable.Timestamp.Time) };
+                @event.Timestamp = @event.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(chart.Layers[0], @event.Timestamp.Time) };
             }
         }
     }
