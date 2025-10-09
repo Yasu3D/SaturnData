@@ -26,19 +26,7 @@ public class ReverseEffectEvent : Event
     /// The timestamp when the reverse effect begins.<br/>
     /// Modifying this timestamp will move all sub-events as well.
     /// </summary>
-    public sealed override Timestamp Timestamp
-    {
-        get => SubEvents[0].Timestamp;
-        set
-        { 
-            // Move all sub-events equally when setting timestamp.
-            Timestamp delta = value - SubEvents[0].Timestamp;
-            
-            SubEvents[0].Timestamp += delta;
-            SubEvents[1].Timestamp += delta;
-            SubEvents[2].Timestamp += delta;
-        }
-    }
+    public sealed override Timestamp Timestamp => SubEvents[0].Timestamp;
 
     /// <summary>
     /// Sub-events that define specific sections of the reverse effect.<br/>

@@ -34,22 +34,7 @@ public class HoldNote : Note, IPositionable, IPlayable
     /// The timestamp when the hold note begins.<br/>
     /// Modifying this timestamp will move all points as well.
     /// </summary>
-    public sealed override Timestamp Timestamp
-    {
-        get => Points.Count == 0 ? new() : Points[0].Timestamp;
-        set
-        {
-            if (Points.Count == 0) return;
-            
-            // Move all points equally when setting timestamp.
-            Timestamp delta = value - Points[0].Timestamp;
-
-            foreach (HoldPointNote point in Points)
-            {
-                point.Timestamp += delta;
-            }
-        }
-    }
+    public sealed override Timestamp Timestamp => Points.Count == 0 ? new() : Points[0].Timestamp;
 
     public int Position
     {
