@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using SaturnData.Notation.Events;
@@ -124,6 +125,8 @@ public class Chart
     
     public void Build()
     {
+        throw new NotImplementedException();
+
         /*
         /// <summary>
         /// Calculates millisecond timestamps for all objects in an entry and a chart.
@@ -136,7 +139,7 @@ public class Chart
             {
                 @event.Timestamp = @event.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, @event.Timestamp) };
             }
-            
+
             foreach (Bookmark bookmark in chart.Bookmarks)
             {
                 bookmark.Timestamp = bookmark.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, bookmark.Timestamp) };
@@ -170,7 +173,7 @@ public class Chart
                         @event.Timestamp = @event.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, @event.Timestamp) };
                     }
                 }
-                
+
                 foreach (Note note in layer.Notes)
                 {
                     if (note is HoldNote holdNote)
@@ -224,7 +227,7 @@ public class Chart
                         @event.Timestamp = @event.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, @event.Timestamp.Time) };
                     }
                 }
-                
+
                 foreach (Note note in layer.Notes)
                 {
                     if (note is HoldNote holdNote)
@@ -239,15 +242,15 @@ public class Chart
                         note.Timestamp = note.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, note.Timestamp.Time) };
                     }
                 }
-                
+
                 foreach (Note note in layer.GeneratedNotes)
                 {
                     if (note is not ITimeable timeable) continue;
-                    
+
                     timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
                 }
             }
-            
+
             if (chart.Layers.Count == 0)
             {
                 foreach (Event @event in chart.Events)
@@ -263,27 +266,27 @@ public class Chart
                 }
             }
         }
-        
+
         public static void GenerateAllMeasureLineAndSyncNotes(Chart chart, Timestamp end)
         {
             if (chart.Layers.Count == 0) return;
-            
+
             foreach (Layer layer in chart.Layers)
             {
                 layer.GeneratedNotes.Clear();
             }
-            
+
             GenerateMeasureLineNotes(chart.Layers[0], end);
             GenerateBeatLineNotes(chart, chart.Layers[0], end);
 
             foreach (Layer layer in chart.Layers)
             {
                 GenerateSyncNotes(layer);
-                
+
                 layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => ((ITimeable)x).Timestamp).ToList();
             }
         }
-        
+
         public static void GenerateMeasureLineNotes(Layer layer, Timestamp end)
         {
             for (int i = 0; i < end.Measure; i++)
@@ -304,7 +307,7 @@ public class Chart
                     : metreChangeEvents[i + 1].Timestamp.FullTick;
 
                 int step = 1920 / metreChangeEvents[i].Upper;
-                
+
                 for (int j = startTick; j < endTick; j += step)
                 {
                     if (j % 1920 == 0) continue;
@@ -319,7 +322,7 @@ public class Chart
             {
                 Note current = layer.Notes[i];
                 Note previous = layer.Notes[i - 1];
-                
+
                 if (!current.IsSync(previous)) continue;
                 if (current is not IPositionable currentPositionable) continue;
                 if (previous is not IPositionable previousPositionable) continue;
@@ -340,6 +343,6 @@ public class Chart
                 SyncNote syncNote = new(current.Timestamp, finalPosition, finalSize);
                 layer.GeneratedNotes.Add(syncNote);
             }
-        }*/    
+        }*/
     }
 }

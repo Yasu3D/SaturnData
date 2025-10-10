@@ -363,6 +363,7 @@ public static class MerWriter
                 if (note is HoldNote holdNote)
                 {
                     // TODO: Bake Holds here.
+                    holdNote = new(holdNote);
 
                     MerWriterNote? lastNoteToReference = null;
 
@@ -378,16 +379,15 @@ public static class MerWriter
                             Size = point.Size,
                         };
 
-                        // Hold End
                         if (j == holdNote.Points.Count - 1)
                         {
+                            // Hold End
                             merWriterNote.NoteType = 11;
                             merWriterNote.Render = 1;
                         }
-
-                        // Hold Start
                         else if (j == 0)
                         {
+                            // Hold Start
                             merWriterNote.NoteType = holdNote.BonusType switch
                             {
                                 BonusType.Normal => 9,
@@ -398,10 +398,9 @@ public static class MerWriter
                             merWriterNote.Render = 1;
                             merWriterNote.Reference = lastNoteToReference;
                         }
-
-                        // Hold Points
                         else
                         {
+                            // Hold Points
                             merWriterNote.NoteType = 10;
                             merWriterNote.Render = (int)point.RenderType;
                             merWriterNote.Reference = lastNoteToReference;
