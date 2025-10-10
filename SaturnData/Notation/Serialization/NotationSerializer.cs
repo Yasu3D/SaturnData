@@ -156,7 +156,7 @@ public static class NotationSerializer
         FormatVersion version = FormatVersion.Unknown;
         foreach (string line in lines)
         {
-            if (NotationUtils.ContainsKey(line, "@SAT_VERSION ", out string value))
+            if (NotationHelpers.ContainsKey(line, "@SAT_VERSION ", out string value))
             {
                 version = value switch
                 {

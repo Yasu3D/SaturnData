@@ -162,11 +162,10 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="chart">The chart to reference tempo and metre changes off of.</param>
     /// <param name="time">The time to convert in milliseconds.</param>
     /// <param name="division">The beat division to round the result to (optional)</param>
-    /// <returns></returns>
     public static Timestamp TimestampFromTime(Chart chart, float time, int division = 1920)
     {
-        TempoChangeEvent? tempo = NotationUtils.LastTempoChange(chart, time);
-        MetreChangeEvent? metre = NotationUtils.LastMetreChange(chart, time);
+        TempoChangeEvent? tempo = chart.LastTempoChange(time);
+        MetreChangeEvent? metre = chart.LastMetreChange(time);
         if (tempo == null || metre == null) return Zero;
         
         Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
@@ -187,11 +186,10 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// </summary>
     /// <param name="chart">The chart to reference tempo and metre changes off of.</param>
     /// <param name="timestamp">The timestamp struct to convert.</param>
-    /// <returns></returns>
     public static float TimeFromTimestamp(Chart chart, Timestamp timestamp)
     {
-        TempoChangeEvent? tempo = NotationUtils.LastTempoChange(chart, timestamp);
-        MetreChangeEvent? metre = NotationUtils.LastMetreChange(chart, timestamp);
+        TempoChangeEvent? tempo = chart.LastTempoChange(timestamp);
+        MetreChangeEvent? metre = chart.LastMetreChange(timestamp);
         if (tempo == null || metre == null) return 0;
         
         Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
@@ -206,10 +204,9 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// </summary>
     /// <param name="layer">The layer to reference speed changes off of.</param>
     /// <param name="time">The time to convert in milliseconds.</param>
-    /// <returns></returns>
     public static float ScaledTimeFromTime(Layer layer, float time)
     {
-        SpeedChangeEvent? speed = NotationUtils.LastSpeedChange(layer, time);
+        SpeedChangeEvent? speed = layer.LastSpeedChange(time);
         if (speed == null) return time; // This is fine, just means there are no speed changes.
 
         float timeDifference = time - speed.Timestamp.Time;
@@ -223,6 +220,5 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// </summary>
     /// <param name="tempo">The tempo to use.</param>
     /// <param name="ratio">The metre ratio use.</param>
-    /// <returns></returns>
     public static float TimePerTick(float tempo, float ratio) => (240.0f / tempo * ratio / 1920.0f) * 1000.0f;
 }

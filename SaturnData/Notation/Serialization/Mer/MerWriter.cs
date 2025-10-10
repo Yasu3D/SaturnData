@@ -10,7 +10,6 @@ using SaturnData.Notation.Notes;
 
 namespace SaturnData.Notation.Serialization.Mer;
 
-// TODO: Implement NotationWriteArgs properly in MerWriter.
 public static class MerWriter
 {
     private class MerWriterNote
@@ -52,8 +51,6 @@ public static class MerWriter
     public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
-        NotationUtils.PreProcessEntry(entry, args);
-        NotationUtils.PreProcessChart(chart, args);
 
         WriteMetadata(sb, entry, args);
         WriteEvents(sb, chart, args);
@@ -128,16 +125,15 @@ public static class MerWriter
                     IntValue1 = timeSignatureChangeEvent.Upper,
                     IntValue2 = timeSignatureChangeEvent.Lower,
                 });
-                
-                continue;
             }
         }
 
-        // Add all layer-specific events from the first layer
-        Layer? firstLayer = chart.Layers.FirstOrDefault();
-        if (firstLayer != null)
+        // Add all layer-specific events
+        for (int i = 0; i < chart.Layers.Count; i++)
         {
-            foreach (Event @event in firstLayer.Events)
+            if (i > 0 && args.MergeExtraLayers is MergeExtraLayersOption.ExcludeFromExport or MergeExtraLayersOption.MergeIntoMainLayerWithoutEvents) break;
+            
+            foreach (Event @event in chart.Layers[i].Events)
             {
                 if (@event is VisibilityChangeEvent) continue;
 
@@ -193,8 +189,6 @@ public static class MerWriter
                         ObjectType = 5,
                         FloatValue = hiSpeedChangeEvent.HiSpeed,
                     });
-                    
-                    continue;
                 }
             }
         }
@@ -234,186 +228,196 @@ public static class MerWriter
         List<MerWriterNote> notes = [];
         
         // Add all note layers.
-        foreach (Layer layer in chart.Layers)
-        foreach (Note note in layer.Notes)
+        for (int i = 0; i < chart.Layers.Count; i++)
         {
-            if (note is TouchNote touchNote)
-            {
-                notes.Add(new()
-                {
-                    Timestamp = touchNote.Timestamp,
-                    NoteType = touchNote.BonusType switch
-                    {
-                        BonusType.Normal => 1,
-                        BonusType.Bonus => 2,
-                        BonusType.R => 20,
-                        _ => 1,
-                    },
-                    Position = touchNote.Position,
-                    Size = touchNote.Size,
-                    Render = 1,
-                });
-
-                continue;
-            }
+            if (i > 0 && args.MergeExtraLayers is MergeExtraLayersOption.ExcludeFromExport) break;
             
-            if (note is SnapForwardNote snapForwardNote)
+            foreach (Note note in chart.Layers[i].Notes)
             {
-                notes.Add(new()
+                if (note is IPlayable playable)
                 {
-                    Timestamp = snapForwardNote.Timestamp,
-                    NoteType = snapForwardNote.BonusType switch
-                    {
-                        BonusType.Normal => 3,
-                        BonusType.Bonus => 3,
-                        BonusType.R => 21,
-                        _ => 3,
-                    },
-                    Position = snapForwardNote.Position,
-                    Size = snapForwardNote.Size,
-                    Render = 1,
-                });
-
-                continue;
-            }
-            
-            if (note is SnapBackwardNote snapBackwardNote)
-            {
-                notes.Add(new()
+                    if (args.ConvertFakeNotes == ConvertFakeNotesOption.ExcludeFromExport && playable.JudgementType == JudgementType.Fake) continue;
+                    if (args.ConvertAutoplayNotes == ConvertAutoplayNotesOption.ExcludeFromExport && playable.JudgementType == JudgementType.Autoplay) continue;
+                }
+                
+                if (note is TouchNote touchNote)
                 {
-                    Timestamp = snapBackwardNote.Timestamp,
-                    NoteType = snapBackwardNote.BonusType switch
+                    notes.Add(new()
                     {
-                        BonusType.Normal => 4,
-                        BonusType.Bonus => 4,
-                        BonusType.R => 22,
-                        _ => 4,
-                    },
-                    Position = snapBackwardNote.Position,
-                    Size = snapBackwardNote.Size,
-                    Render = 1,
-                });
-
-                continue;
-            }
-            
-            if (note is SlideClockwiseNote slideClockwiseNote)
-            {
-                notes.Add(new()
-                {
-                    Timestamp = slideClockwiseNote.Timestamp,
-                    NoteType = slideClockwiseNote.BonusType switch
-                    {
-                        BonusType.Normal => 5,
-                        BonusType.Bonus => 6,
-                        BonusType.R => 23,
-                        _ => 5,
-                    },
-                    Position = slideClockwiseNote.Position,
-                    Size = slideClockwiseNote.Size,
-                    Render = 1,
-                });
-
-                continue;
-            }
-            
-            if (note is SlideCounterclockwiseNote slideCounterclockwiseNote)
-            {
-                notes.Add(new()
-                {
-                    Timestamp = slideCounterclockwiseNote.Timestamp,
-                    NoteType = slideCounterclockwiseNote.BonusType switch
-                    {
-                        BonusType.Normal => 7,
-                        BonusType.Bonus => 8,
-                        BonusType.R => 24,
-                        _ => 7,
-                    },
-                    Position = slideCounterclockwiseNote.Position,
-                    Size = slideCounterclockwiseNote.Size,
-                    Render = 1,
-                });
-
-                continue;
-            }
-            
-            if (note is ChainNote chainNote)
-            {
-                notes.Add(new()
-                {
-                    Timestamp = chainNote.Timestamp,
-                    NoteType = chainNote.BonusType switch
-                    {
-                        BonusType.Normal => 16,
-                        BonusType.Bonus => 16,
-                        BonusType.R => 26,
-                        _ => 16,
-                    },
-                    Position = chainNote.Position,
-                    Size = chainNote.Size,
-                    Render = 1,
-                });
-
-                continue;
-            }
-
-            if (note is HoldNote holdNote)
-            {
-                MerWriterNote? lastNoteToReference = null;
-
-                // Loop from end to start to easily get "next" reference.
-                for (int i = holdNote.Points.Count - 1; i >= 0; i--)
-                {
-                    HoldPointNote point = holdNote.Points[i];
-
-                    MerWriterNote merWriterNote = new()
-                    {
-                        Timestamp = point.Timestamp,
-                        Position = point.Position,
-                        Size = point.Size,
-                    };
-
-                    // Hold End
-                    if (i == holdNote.Points.Count - 1)
-                    {
-                        merWriterNote.NoteType = 11;
-                        merWriterNote.Render = 1;
-                    }
-
-                    // Hold Start
-                    else if (i == 0)
-                    {
-                        merWriterNote.NoteType = holdNote.BonusType switch
+                        Timestamp = touchNote.Timestamp,
+                        NoteType = touchNote.BonusType switch
                         {
-                            BonusType.Normal => 9,
-                            BonusType.Bonus => 9,
-                            BonusType.R => 25,
-                            _ => 9,
-                        };
-                        merWriterNote.Render = 1;
-                        merWriterNote.Reference = lastNoteToReference;
-                    }
+                            BonusType.Normal => 1,
+                            BonusType.Bonus => 2,
+                            BonusType.R => 20,
+                            _ => 1,
+                        },
+                        Position = touchNote.Position,
+                        Size = touchNote.Size,
+                        Render = 1,
+                    });
 
-                    // Hold Points
-                    else
-                    {
-                        merWriterNote.NoteType = 10;
-                        merWriterNote.Render = (int)point.RenderType;
-                        merWriterNote.Reference = lastNoteToReference;
-                    }
-
-                    notes.Add(merWriterNote);
-                    lastNoteToReference = merWriterNote;
+                    continue;
                 }
 
-                continue;
+                if (note is SnapForwardNote snapForwardNote)
+                {
+                    notes.Add(new()
+                    {
+                        Timestamp = snapForwardNote.Timestamp,
+                        NoteType = snapForwardNote.BonusType switch
+                        {
+                            BonusType.Normal => 3,
+                            BonusType.Bonus => args.ConvertExtendedBonusTypes == ConvertExtendedBonusTypesOption.ConvertToNormal ? 3 : 21,
+                            BonusType.R => 21,
+                            _ => 3,
+                        },
+                        Position = snapForwardNote.Position,
+                        Size = snapForwardNote.Size,
+                        Render = 1,
+                    });
+
+                    continue;
+                }
+
+                if (note is SnapBackwardNote snapBackwardNote)
+                {
+                    notes.Add(new()
+                    {
+                        Timestamp = snapBackwardNote.Timestamp,
+                        NoteType = snapBackwardNote.BonusType switch
+                        {
+                            BonusType.Normal => 4,
+                            BonusType.Bonus => args.ConvertExtendedBonusTypes == ConvertExtendedBonusTypesOption.ConvertToNormal ? 4 : 22,
+                            BonusType.R => 22,
+                            _ => 4,
+                        },
+                        Position = snapBackwardNote.Position,
+                        Size = snapBackwardNote.Size,
+                        Render = 1,
+                    });
+
+                    continue;
+                }
+
+                if (note is SlideClockwiseNote slideClockwiseNote)
+                {
+                    notes.Add(new()
+                    {
+                        Timestamp = slideClockwiseNote.Timestamp,
+                        NoteType = slideClockwiseNote.BonusType switch
+                        {
+                            BonusType.Normal => 5,
+                            BonusType.Bonus => 6,
+                            BonusType.R => 23,
+                            _ => 5,
+                        },
+                        Position = slideClockwiseNote.Position,
+                        Size = slideClockwiseNote.Size,
+                        Render = 1,
+                    });
+
+                    continue;
+                }
+
+                if (note is SlideCounterclockwiseNote slideCounterclockwiseNote)
+                {
+                    notes.Add(new()
+                    {
+                        Timestamp = slideCounterclockwiseNote.Timestamp,
+                        NoteType = slideCounterclockwiseNote.BonusType switch
+                        {
+                            BonusType.Normal => 7,
+                            BonusType.Bonus => 8,
+                            BonusType.R => 24,
+                            _ => 7,
+                        },
+                        Position = slideCounterclockwiseNote.Position,
+                        Size = slideCounterclockwiseNote.Size,
+                        Render = 1,
+                    });
+
+                    continue;
+                }
+
+                if (note is ChainNote chainNote)
+                {
+                    notes.Add(new()
+                    {
+                        Timestamp = chainNote.Timestamp,
+                        NoteType = chainNote.BonusType switch
+                        {
+                            BonusType.Normal => 16,
+                            BonusType.Bonus => args.ConvertExtendedBonusTypes == ConvertExtendedBonusTypesOption.ConvertToNormal ? 16 : 26,
+                            BonusType.R => 26,
+                            _ => 16,
+                        },
+                        Position = chainNote.Position,
+                        Size = chainNote.Size,
+                        Render = 1,
+                    });
+
+                    continue;
+                }
+
+                if (note is HoldNote holdNote)
+                {
+                    // TODO: Bake Holds here.
+
+                    MerWriterNote? lastNoteToReference = null;
+
+                    // Loop from end to start to easily get "next" reference.
+                    for (int j = holdNote.Points.Count - 1; j >= 0; j--)
+                    {
+                        HoldPointNote point = holdNote.Points[j];
+
+                        MerWriterNote merWriterNote = new()
+                        {
+                            Timestamp = point.Timestamp,
+                            Position = point.Position,
+                            Size = point.Size,
+                        };
+
+                        // Hold End
+                        if (j == holdNote.Points.Count - 1)
+                        {
+                            merWriterNote.NoteType = 11;
+                            merWriterNote.Render = 1;
+                        }
+
+                        // Hold Start
+                        else if (j == 0)
+                        {
+                            merWriterNote.NoteType = holdNote.BonusType switch
+                            {
+                                BonusType.Normal => 9,
+                                BonusType.Bonus => args.ConvertExtendedBonusTypes == ConvertExtendedBonusTypesOption.ConvertToNormal ? 9 : 25,
+                                BonusType.R => 25,
+                                _ => 9,
+                            };
+                            merWriterNote.Render = 1;
+                            merWriterNote.Reference = lastNoteToReference;
+                        }
+
+                        // Hold Points
+                        else
+                        {
+                            merWriterNote.NoteType = 10;
+                            merWriterNote.Render = (int)point.RenderType;
+                            merWriterNote.Reference = lastNoteToReference;
+                        }
+
+                        notes.Add(merWriterNote);
+                        lastNoteToReference = merWriterNote;
+                    }
+                }
             }
         }
-        
+
         // Add all lane toggle notes.
-        foreach (ILaneToggle laneToggle in chart.LaneToggles)
+        foreach (Note note in chart.LaneToggles)
         {
-            if (laneToggle is LaneShowNote laneShowNote)
+            if (note is LaneShowNote laneShowNote)
             {
                 notes.Add(new()
                 {
@@ -428,7 +432,7 @@ public static class MerWriter
                 continue;
             }
 
-            if (laneToggle is LaneHideNote laneHideNote)
+            if (note is LaneHideNote laneHideNote)
             {
                 notes.Add(new()
                 {
@@ -438,9 +442,7 @@ public static class MerWriter
                     Size = laneHideNote.Size,
                     Render = 1,
                     Direction = (int)laneHideNote.Direction,
-                });
-
-                continue;
+                }); 
             }
         }
         

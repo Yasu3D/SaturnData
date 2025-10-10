@@ -91,42 +91,42 @@ public static class MerReader
                     if (noteType is 1 or 2 or 20)
                     {
                         TouchNote touchNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", touchNote);
+                        NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", touchNote);
                     }
 
                     // Snap Forward Note
                     if (noteType is 3 or 21)
                     {
                         SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", snapForwardNote);
+                        NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", snapForwardNote);
                     }
 
                     // Snap Backward Note
                     if (noteType is 4 or 22)
                     {
                         SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", snapBackwardNote);
+                        NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", snapBackwardNote);
                     }
 
                     // Slide Clockwise
                     if (noteType is 5 or 6 or 23)
                     {
                         SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", slideClockwiseNote);
+                        NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", slideClockwiseNote);
                     }
 
                     // Slide Counterclockwise
                     if (noteType is 7 or 8 or 24)
                     {
                         SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", slideCounterclockwiseNote);
+                        NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", slideCounterclockwiseNote);
                     }
 
                     // Chain
                     if (noteType is 16 or 26)
                     {
                         ChainNote chainNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                        NotationUtils.AddOrCreate(chart.Layers, "Layer 0", chainNote);
+                        NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", chainNote);
                     }
                     
                     // End of Chart handled in ToEntry().
@@ -201,7 +201,7 @@ public static class MerReader
                     float hiSpeed = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
                     SpeedChangeEvent speedChangeEvent = new(timestamp, hiSpeed);
 
-                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", speedChangeEvent);
+                    NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", speedChangeEvent);
                 }
 
                 // Reverse Effect Begin Event
@@ -223,13 +223,13 @@ public static class MerReader
                 // Reverse Note Capture End Event
                 if (objectType is 8)
                 {
-                    if (tempReverseEvent?.SubEvents[0] == null) continue;
-                    if (tempReverseEvent?.SubEvents[1] == null) continue;
+                    if (tempReverseEvent?.SubEvents[0] == null!) continue;
+                    if (tempReverseEvent.SubEvents[1] == null!) continue;
                     if (tempReverseEvent.SubEvents[0].Timestamp > timestamp) continue;
                     if (tempReverseEvent.SubEvents[1].Timestamp > timestamp) continue;
 
                     tempReverseEvent.SubEvents[2] = new(timestamp, tempReverseEvent);
-                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", tempReverseEvent);
+                    NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", tempReverseEvent);
 
                     tempReverseEvent = null;
                 }
@@ -248,7 +248,7 @@ public static class MerReader
                     if (tempStopEvent.SubEvents[0].Timestamp > timestamp) continue;
 
                     tempStopEvent.SubEvents[1] = new(timestamp, tempStopEvent);
-                    NotationUtils.AddOrCreate(chart.Layers, "Layer 0", tempStopEvent);
+                    NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", tempStopEvent);
 
                     tempStopEvent = null;
                 }
@@ -326,10 +326,10 @@ public static class MerReader
                 .OrderBy(x => x.Timestamp)
                 .ToList();
             
-            NotationUtils.AddOrCreate(chart.Layers, "Layer 0", holdNote);
+            NotationHelpers.AddOrCreate(chart.Layers, "Layer 0", holdNote);
         }
 
-        NotationUtils.PostProcessChart(chart, args);
+        NotationHelpers.PostProcessChart(chart, args);
         
         return chart;
     }
@@ -360,37 +360,37 @@ public static class MerReader
                     string value;
                 
                     // BAKKA COMPATIBILITY
-                    if (NotationUtils.ContainsKey(line, "#X_BAKKA_MUSIC_FILENAME ", out value)) { entry.AudioFile = value; }
+                    if (NotationHelpers.ContainsKey(line, "#X_BAKKA_MUSIC_FILENAME ", out value)) { entry.AudioFile = value; }
                 
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioFile = value; }
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_AUTHOR ",          out value)) { entry.NotesDesigner = value; }
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                    if (NotationUtils.ContainsKey(line, "#EDITOR_MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioFile = value; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_AUTHOR ",          out value)) { entry.NotesDesigner = value; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
             
                     // WACK COMPATIBILITY
-                    if (NotationUtils.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value); }
-                    if (NotationUtils.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioFile = value; }
-                    if (NotationUtils.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
-                    if (NotationUtils.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                    if (NotationUtils.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value); }
+                    if (NotationHelpers.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioFile = value; }
+                    if (NotationHelpers.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
+                    if (NotationHelpers.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
                     // MER COMPATIBILITY
-                    if (NotationUtils.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioFile = value; }
-                    if (NotationUtils.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                    if (NotationUtils.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioFile = value; }
+                    if (NotationHelpers.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
                     // PROTOTYPE MER COMPATIBILITY
-                    if (NotationUtils.ContainsKey(line, "#MUSIC_NAME @JPN ",               out value)) { entry.Title = value; }
-                    if (NotationUtils.ContainsKey(line, "#MUSIC_NAME_RUBY @JPN ",          out value)) { entry.Reading = value; }
-                    if (NotationUtils.ContainsKey(line, "#ARTIST_NAME @JPN ",              out value)) { entry.Artist = value; }
-                    if (NotationUtils.ContainsKey(line, "#MUSIC_SCORE_CREATOR_NAME @JPN ", out value)) { entry.NotesDesigner = value; }
-                    if (NotationUtils.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketFile = value; }
-                    if (NotationUtils.ContainsKey(line, "#DIFFICULTY ",                    out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                    if (NotationUtils.ContainsKey(line, "#DISPLAY_BPM ",                   out value)) { entry.BpmMessage = value; }
-                    if (NotationUtils.ContainsKey(line, "#CREAR_NORMA_RATE ",              out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                    if (NotationHelpers.ContainsKey(line, "#MUSIC_NAME @JPN ",               out value)) { entry.Title = value; }
+                    if (NotationHelpers.ContainsKey(line, "#MUSIC_NAME_RUBY @JPN ",          out value)) { entry.Reading = value; }
+                    if (NotationHelpers.ContainsKey(line, "#ARTIST_NAME @JPN ",              out value)) { entry.Artist = value; }
+                    if (NotationHelpers.ContainsKey(line, "#MUSIC_SCORE_CREATOR_NAME @JPN ", out value)) { entry.NotesDesigner = value; }
+                    if (NotationHelpers.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketFile = value; }
+                    if (NotationHelpers.ContainsKey(line, "#DIFFICULTY ",                    out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                    if (NotationHelpers.ContainsKey(line, "#DISPLAY_BPM ",                   out value)) { entry.BpmMessage = value; }
+                    if (NotationHelpers.ContainsKey(line, "#CREAR_NORMA_RATE ",              out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 
                     bodyReached = line.StartsWith("#BODY");
                     continue;
@@ -442,7 +442,7 @@ public static class MerReader
             }
         }
         
-        NotationUtils.PostProcessEntry(entry, args);
+        NotationHelpers.PostProcessEntry(entry, args);
         
         return entry;
     }

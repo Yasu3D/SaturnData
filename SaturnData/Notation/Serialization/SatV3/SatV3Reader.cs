@@ -406,7 +406,7 @@ public static class SatV3Reader
 
                             if (currentMultilineObject is ReverseEffectEvent reverseEffectEvent)
                             {
-                                if (reverseEffectEvent?.SubEvents[0] == null) continue;
+                                if (reverseEffectEvent.SubEvents[0] == null!) continue;
                                 if (reverseEffectEvent.SubEvents[1] == null!)
                                 {
                                     reverseEffectEvent.SubEvents[1] = new(timestamp, reverseEffectEvent);
@@ -417,20 +417,18 @@ public static class SatV3Reader
                                 {
                                     reverseEffectEvent.SubEvents[2] = new(timestamp, reverseEffectEvent);
                                     setCurrentMultiLineObject(null);
-                                    continue;
                                 }
                                 continue;
                             }
 
                             if (currentMultilineObject is StopEffectEvent stopEffectEvent)
                             {
-                                if (stopEffectEvent?.SubEvents[0] == null) continue;
+                                if (stopEffectEvent.SubEvents[0] == null!) continue;
 
                                 if (stopEffectEvent.SubEvents[1] == null!)
                                 {
                                     stopEffectEvent.SubEvents[1] = new(timestamp, stopEffectEvent);
                                     setCurrentMultiLineObject(null);
-                                    continue;
                                 }
                                 continue;
                             }
@@ -559,7 +557,6 @@ public static class SatV3Reader
                         
                         // don't throw.
                         Console.WriteLine(ex);
-                        continue;
                     }
                 }
             }
@@ -673,35 +670,35 @@ public static class SatV3Reader
 
                 string value;
                 
-                if (NotationUtils.ContainsKey(line, "@GUID ",           out value)) { entry.Guid = value; }
-                if (NotationUtils.ContainsKey(line, "@TITLE ",          out value)) { entry.Title = value; }
-                if (NotationUtils.ContainsKey(line, "@READING ",        out value)) { entry.Reading = value; }
-                if (NotationUtils.ContainsKey(line, "@ARTIST ",         out value)) { entry.Artist = value; }
-                if (NotationUtils.ContainsKey(line, "@BPM_MESSAGE ",    out value)) { entry.BpmMessage = value; }
+                if (NotationHelpers.ContainsKey(line, "@GUID ",           out value)) { entry.Guid = value; }
+                if (NotationHelpers.ContainsKey(line, "@TITLE ",          out value)) { entry.Title = value; }
+                if (NotationHelpers.ContainsKey(line, "@READING ",        out value)) { entry.Reading = value; }
+                if (NotationHelpers.ContainsKey(line, "@ARTIST ",         out value)) { entry.Artist = value; }
+                if (NotationHelpers.ContainsKey(line, "@BPM_MESSAGE ",    out value)) { entry.BpmMessage = value; }
                 
-                if (NotationUtils.ContainsKey(line, "@REVISION ",       out value)) { entry.Revision = value; }
-                if (NotationUtils.ContainsKey(line, "@NOTES_DESIGNER ", out value)) { entry.NotesDesigner = value; }
-                if (NotationUtils.ContainsKey(line, "@DIFFICULTY ",     out value)) { entry.Difficulty = string2Difficulty(value); }
-                if (NotationUtils.ContainsKey(line, "@LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                if (NotationUtils.ContainsKey(line, "@CLEAR",           out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationHelpers.ContainsKey(line, "@REVISION ",       out value)) { entry.Revision = value; }
+                if (NotationHelpers.ContainsKey(line, "@NOTES_DESIGNER ", out value)) { entry.NotesDesigner = value; }
+                if (NotationHelpers.ContainsKey(line, "@DIFFICULTY ",     out value)) { entry.Difficulty = string2Difficulty(value); }
+                if (NotationHelpers.ContainsKey(line, "@LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationHelpers.ContainsKey(line, "@CLEAR",           out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
 
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_BEGIN ",  out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_BEGIN ",  out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
 
-                if (NotationUtils.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketFile = value; }
-                if (NotationUtils.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioFile  = value; }
-                if (NotationUtils.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoFile  = value; }
-                if (NotationUtils.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketFile = value; }
+                if (NotationHelpers.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioFile  = value; }
+                if (NotationHelpers.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoFile  = value; }
+                if (NotationHelpers.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (NotationUtils.ContainsKey(line, "@TUTORIAL ",       out value)) { entry.TutorialMode       = value == "TRUE"; }
-                if (NotationUtils.ContainsKey(line, "@AUTO_READING ",   out value)) { entry.AutoReading        = value == "TRUE"; }
-                if (NotationUtils.ContainsKey(line, "@AUTO_BPM_MSG ",   out value)) { entry.AutoBpmMessage     = value == "TRUE"; }
-                if (NotationUtils.ContainsKey(line, "@AUTO_CLEAR ",     out value)) { entry.AutoClearThreshold = value == "TRUE"; }
-                if (NotationUtils.ContainsKey(line, "@AUTO_END ",       out value)) { entry.AutoChartEnd       = value == "TRUE"; }
+                if (NotationHelpers.ContainsKey(line, "@TUTORIAL ",       out value)) { entry.TutorialMode       = value == "TRUE"; }
+                if (NotationHelpers.ContainsKey(line, "@AUTO_READING ",   out value)) { entry.AutoReading        = value == "TRUE"; }
+                if (NotationHelpers.ContainsKey(line, "@AUTO_BPM_MSG ",   out value)) { entry.AutoBpmMessage     = value == "TRUE"; }
+                if (NotationHelpers.ContainsKey(line, "@AUTO_CLEAR ",     out value)) { entry.AutoClearThreshold = value == "TRUE"; }
+                if (NotationHelpers.ContainsKey(line, "@AUTO_END ",       out value)) { entry.AutoChartEnd       = value == "TRUE"; }
 
-                if (NotationUtils.ContainsKey(line, "@END ",            out value))
+                if (NotationHelpers.ContainsKey(line, "@END ",            out value))
                 {
                     string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
@@ -744,7 +741,7 @@ public static class SatV3Reader
             }
         }
 
-        NotationUtils.PostProcessEntry(entry, args);
+        NotationHelpers.PostProcessEntry(entry, args);
 
         return entry;
 

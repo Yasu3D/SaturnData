@@ -159,7 +159,7 @@ internal static class SatV2Reader
                     SpeedChangeEvent speedChangeEvent = new(timestamp, hiSpeed);
 
                     string layer = attributes2Layer(attributes);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, speedChangeEvent);
+                    NotationHelpers.AddOrCreate(chart.Layers, layer, speedChangeEvent);
                     continue;
                 }
 
@@ -206,7 +206,7 @@ internal static class SatV2Reader
 
                 if (type == "REV_ZONE_END")
                 {
-                    if (tempReverseEvent?.SubEvents[0] == null)
+                    if (tempReverseEvent?.SubEvents[0] == null!)
                     {
                         Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat013}");
                         exceptions.Add(exception);
@@ -215,7 +215,7 @@ internal static class SatV2Reader
                         continue;
                     }
                     
-                    if (tempReverseEvent?.SubEvents[1] == null)
+                    if (tempReverseEvent.SubEvents[1] == null!)
                     {
                         Exception exception = new($"{Array.IndexOf(lines, line) + 1} : {ErrorList.ErrorSat015}");
                         exceptions.Add(exception);
@@ -243,7 +243,7 @@ internal static class SatV2Reader
                     }
 
                     tempReverseEvent.SubEvents[2] = new(timestamp, tempReverseEvent);
-                    NotationUtils.AddOrCreate(chart.Layers, tempReverseLayer, tempReverseEvent);
+                    NotationHelpers.AddOrCreate(chart.Layers, tempReverseLayer, tempReverseEvent);
 
                     tempReverseEvent = null;
                     tempReverseLayer = "Layer 0";
@@ -287,7 +287,7 @@ internal static class SatV2Reader
                     }
 
                     tempStopEvent.SubEvents[1] = new(timestamp, tempStopEvent);
-                    NotationUtils.AddOrCreate(chart.Layers, tempStopLayer, tempStopEvent);
+                    NotationHelpers.AddOrCreate(chart.Layers, tempStopLayer, tempStopEvent);
 
                     tempStopEvent = null;
                     tempStopLayer = "Layer 0";
@@ -380,37 +380,37 @@ internal static class SatV2Reader
                 if (type == "TOUCH")
                 {
                     TouchNote touchNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, touchNote);
+                    NotationHelpers.AddOrCreate(chart.Layers, layer, touchNote);
                 }
 
                 if (type == "SNAP_FW")
                 {
                     SnapForwardNote snapForwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, snapForwardNote);
+                    NotationHelpers.AddOrCreate(chart.Layers, layer, snapForwardNote);
                 }
                 
                 if (type == "SNAP_BW")
                 {
                     SnapBackwardNote snapBackwardNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, snapBackwardNote);
+                    NotationHelpers.AddOrCreate(chart.Layers, layer, snapBackwardNote);
                 }
                 
                 if (type == "SLIDE_CW")
                 {
                     SlideClockwiseNote slideClockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, slideClockwiseNote);
+                    NotationHelpers.AddOrCreate(chart.Layers, layer, slideClockwiseNote);
                 }
                 
                 if (type == "SLIDE_CCW")
                 {
                     SlideCounterclockwiseNote slideCounterclockwiseNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, slideCounterclockwiseNote);
+                    NotationHelpers.AddOrCreate(chart.Layers, layer, slideCounterclockwiseNote);
                 }
                 
                 if (type == "CHAIN")
                 {
                     ChainNote chainNote = new(timestamp, position, size, bonusType, JudgementType.Normal);
-                    NotationUtils.AddOrCreate(chart.Layers, layer, chainNote);
+                    NotationHelpers.AddOrCreate(chart.Layers, layer, chainNote);
                 }
                 
                 if (type == "HOLD_START")
@@ -462,7 +462,7 @@ internal static class SatV2Reader
                         .OrderBy(x => x.Timestamp)
                         .ToList();
                     
-                    NotationUtils.AddOrCreate(chart.Layers, tempHoldNoteLayer, tempHoldNote);
+                    NotationHelpers.AddOrCreate(chart.Layers, tempHoldNoteLayer, tempHoldNote);
                     
                     tempHoldNote = null;
                     tempHoldNoteLayer = "Layer 0";
@@ -516,7 +516,7 @@ internal static class SatV2Reader
             }
         }
 
-        NotationUtils.PostProcessChart(chart, args);
+        NotationHelpers.PostProcessChart(chart, args);
 
         return chart;
 
@@ -598,28 +598,28 @@ internal static class SatV2Reader
 
                 string value;
 
-                if (NotationUtils.ContainsKey(line, "@GUID ",     out value)) { entry.Guid = value; }
-                if (NotationUtils.ContainsKey(line, "@VERSION ",  out value)) { entry.Revision = value; }
-                if (NotationUtils.ContainsKey(line, "@TITLE ",    out value)) { entry.Title = value; }
-                if (NotationUtils.ContainsKey(line, "@RUBI ",     out value)) { entry.Reading = value; }
-                if (NotationUtils.ContainsKey(line, "@ARTIST ",   out value)) { entry.Artist = value; }
-                if (NotationUtils.ContainsKey(line, "@AUTHOR ",   out value)) { entry.NotesDesigner = value; }
-                if (NotationUtils.ContainsKey(line, "@BPM_TEXT ", out value)) { entry.BpmMessage = value; }
+                if (NotationHelpers.ContainsKey(line, "@GUID ",     out value)) { entry.Guid = value; }
+                if (NotationHelpers.ContainsKey(line, "@VERSION ",  out value)) { entry.Revision = value; }
+                if (NotationHelpers.ContainsKey(line, "@TITLE ",    out value)) { entry.Title = value; }
+                if (NotationHelpers.ContainsKey(line, "@RUBI ",     out value)) { entry.Reading = value; }
+                if (NotationHelpers.ContainsKey(line, "@ARTIST ",   out value)) { entry.Artist = value; }
+                if (NotationHelpers.ContainsKey(line, "@AUTHOR ",   out value)) { entry.NotesDesigner = value; }
+                if (NotationHelpers.ContainsKey(line, "@BPM_TEXT ", out value)) { entry.BpmMessage = value; }
 
-                if (NotationUtils.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = (BackgroundOption)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+                if (NotationHelpers.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = (BackgroundOption)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
 
-                if (NotationUtils.ContainsKey(line, "@DIFF ",  out value)) { entry.Difficulty = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
-                if (NotationUtils.ContainsKey(line, "@LEVEL ", out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                if (NotationUtils.ContainsKey(line, "@CLEAR ", out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationHelpers.ContainsKey(line, "@DIFF ",  out value)) { entry.Difficulty = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+                if (NotationHelpers.ContainsKey(line, "@LEVEL ", out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (NotationHelpers.ContainsKey(line, "@CLEAR ", out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
 
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (NotationUtils.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketFile = value; }
-                if (NotationUtils.ContainsKey(line, "@BGM ",        out value)) { entry.AudioFile  = value; }
-                if (NotationUtils.ContainsKey(line, "@BGA ",        out value)) { entry.VideoFile  = value; }
-                if (NotationUtils.ContainsKey(line, "@BGM_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationUtils.ContainsKey(line, "@BGA_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketFile = value; }
+                if (NotationHelpers.ContainsKey(line, "@BGM ",        out value)) { entry.AudioFile  = value; }
+                if (NotationHelpers.ContainsKey(line, "@BGA ",        out value)) { entry.VideoFile  = value; }
+                if (NotationHelpers.ContainsKey(line, "@BGM_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@BGA_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
                 if (line.EndsWith("CHART_END"))
                 {
@@ -664,7 +664,7 @@ internal static class SatV2Reader
             }
         }
 
-        NotationUtils.PostProcessEntry(entry, args);
+        NotationHelpers.PostProcessEntry(entry, args);
 
         return entry;
     }

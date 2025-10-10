@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Events;
@@ -20,9 +19,7 @@ public static class SatV3Writer
     public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
-        NotationUtils.PreProcessEntry(entry, args);
-        NotationUtils.PreProcessChart(chart, args);
-
+        
         WriteMetadata(sb, entry, args);
         WriteBookmarks(sb, chart, args);
         WriteEvents(sb, chart, args);
