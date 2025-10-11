@@ -362,9 +362,8 @@ public static class MerWriter
 
                 if (note is HoldNote holdNote)
                 {
-                    // TODO: Bake Holds here.
-                    holdNote = new(holdNote);
-
+                    holdNote = NotationHelpers.BakeHoldNote(holdNote);
+                    
                     MerWriterNote? lastNoteToReference = null;
 
                     // Loop from end to start to easily get "next" reference.
@@ -418,6 +417,24 @@ public static class MerWriter
         {
             if (note is LaneShowNote laneShowNote)
             {
+                if (laneShowNote.Direction == LaneSweepDirection.Instant)
+                {
+                    for (int i = laneShowNote.Position; i < laneShowNote.Position + laneShowNote.Size; i++)
+                    {
+                        notes.Add(new()
+                        {
+                            Timestamp = laneShowNote.Timestamp,
+                            NoteType = 12,
+                            Position = i,
+                            Size = 1,
+                            Render = 1,
+                            Direction = (int)LaneSweepDirection.Center,
+                        });
+                    }
+
+                    continue;
+                }
+                
                 notes.Add(new()
                 {
                     Timestamp = laneShowNote.Timestamp,
@@ -433,6 +450,24 @@ public static class MerWriter
 
             if (note is LaneHideNote laneHideNote)
             {
+                if (laneHideNote.Direction == LaneSweepDirection.Instant)
+                {
+                    for (int i = laneHideNote.Position; i < laneHideNote.Position + laneHideNote.Size; i++)
+                    {
+                        notes.Add(new()
+                        {
+                            Timestamp = laneHideNote.Timestamp,
+                            NoteType = 13,
+                            Position = i,
+                            Size = 1,
+                            Render = 1,
+                            Direction = (int)LaneSweepDirection.Center,
+                        });
+                    }
+
+                    continue;
+                }
+                
                 notes.Add(new()
                 {
                     Timestamp = laneHideNote.Timestamp,

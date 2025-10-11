@@ -39,29 +39,13 @@ public class HoldNote : Note, IPositionable, IPlayable
     public int Position
     {
         get => Points.Count == 0 ? -1 : Points[0].Position;
-        set
-        {
-            if (Points.Count == 0) return;
-            
-            // Move all points equally when setting timestamp.
-            int delta = value - Points[0].Position;
-
-            foreach (HoldPointNote point in Points)
-            {
-                point.Position += delta;
-            }
-        }
+        set { }
     }
 
     public int Size
     {
         get => Points.Count == 0 ? -1 : Points[0].Size;
-        set
-        {
-            if (Points.Count == 0) return;
-
-            Points[0].Size = value;
-        }
+        set { }
     }
     
     public TimingWindow TimingWindow { get; set; }
