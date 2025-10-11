@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
+using SaturnData.Notation.Notes;
 
 namespace SaturnData.Notation.Core;
 
@@ -123,201 +124,129 @@ public class Chart
         return Timestamp.Max(chartEnd, audioEnd);
     }
     
-    public void Build()
+    public void Build(Entry entry)
     {
-        throw new NotImplementedException();
-
-        /*
-        /// <summary>
-        /// Calculates millisecond timestamps for all objects in an entry and a chart.
-        /// </summary>
-        /// <param name="entry">The entry to calculate timestamps for.</param>
-        /// <param name="chart">The chart to calculate timestamps for.</param>
-        public static void GenerateTimeForAllObjects(Entry entry, Chart chart)
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        
+        // Update Millisecond Time & ScaledTime.
+        // Clear Generated Notes on all layers.
+        foreach (Event @event in Events)
         {
-            foreach (Event @event in chart.Events)
-            {
-                @event.Timestamp = @event.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, @event.Timestamp) };
-            }
-
-            foreach (Bookmark bookmark in chart.Bookmarks)
-            {
-                bookmark.Timestamp = bookmark.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, bookmark.Timestamp) };
-            }
-
-            foreach (Note laneToggle in chart.LaneToggles)
-            {
-                laneToggle.Timestamp = laneToggle.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, laneToggle.Timestamp) };
-            }
-
-            foreach (Layer layer in chart.Layers)
-            {
-                foreach (Event @event in layer.Events)
-                {
-                    if (@event is StopEffectEvent stopEffectEvent)
-                    {
-                        foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
-                        {
-                            subEvent.Timestamp = subEvent.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, subEvent.Timestamp) };
-                        }
-                    }
-                    else if (@event is ReverseEffectEvent reverseEffectEvent)
-                    {
-                        foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
-                        {
-                            subEvent.Timestamp = subEvent.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, subEvent.Timestamp) };
-                        }
-                    }
-                    else
-                    {
-                        @event.Timestamp = @event.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, @event.Timestamp) };
-                    }
-                }
-
-                foreach (Note note in layer.Notes)
-                {
-                    if (note is HoldNote holdNote)
-                    {
-                        foreach (HoldPointNote point in holdNote.Points)
-                        {
-                            point.Timestamp = point.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, point.Timestamp) };
-                        }
-                    }
-                    else
-                    {
-                        note.Timestamp = note.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, note.Timestamp) };
-                    }
-                }
-
-                foreach (Note note in layer.GeneratedNotes)
-                {
-                    note.Timestamp = note.Timestamp with { Time = Timestamp.TimeFromTimestamp(chart, note.Timestamp) };
-                }
-            }
-
-            entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(chart, entry.ChartEnd) };
+            float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
+            @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = time };
         }
 
-        /// <summary>
-        /// Calculates millisecond timestamps scaled by speed changes for all objects in a chart.
-        /// </summary>
-        /// <param name="chart">The chart to calculate timestamps for.</param>
-        public static void GenerateScaledTimeForAllObjects(Chart chart)
+        foreach (Bookmark bookmark in Bookmarks)
         {
-            foreach (Layer layer in chart.Layers)
+            float time = Timestamp.TimeFromTimestamp(this, bookmark.Timestamp);
+            bookmark.Timestamp = bookmark.Timestamp with { Time = time, ScaledTime = time };
+        }
+
+        foreach (Note laneToggle in LaneToggles)
+        {
+            float time = Timestamp.TimeFromTimestamp(this, laneToggle.Timestamp);
+            laneToggle.Timestamp = laneToggle.Timestamp with { Time = time, ScaledTime = time };
+        }
+
+        foreach (Layer layer in Layers)
+        {
+            layer.GeneratedNotes.Clear(); // Clear Generated Notes here to save an enumeration.
+            
+            foreach (Event @event in layer.Events)
             {
-                foreach (Event @event in layer.Events)
+                if (@event is StopEffectEvent stopEffectEvent)
                 {
-                    if (@event is StopEffectEvent stopEffectEvent)
+                    foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
                     {
-                        foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
-                        {
-                            subEvent.Timestamp = subEvent.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time) };
-                        }
-                    }
-                    else if (@event is ReverseEffectEvent reverseEffectEvent)
-                    {
-                        foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
-                        {
-                            subEvent.Timestamp = subEvent.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time) };
-                        }
-                    }
-                    else
-                    {
-                        @event.Timestamp = @event.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, @event.Timestamp.Time) };
+                        float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
+                        subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
                     }
                 }
-
-                foreach (Note note in layer.Notes)
+                else if (@event is ReverseEffectEvent reverseEffectEvent)
                 {
-                    if (note is HoldNote holdNote)
+                    foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
                     {
-                        foreach (HoldPointNote point in holdNote.Points)
-                        {
-                            point.Timestamp = point.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, point.Timestamp.Time) };
-                        }
-                    }
-                    else
-                    {
-                        note.Timestamp = note.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, note.Timestamp.Time) };
+                        float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
+                        subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
                     }
                 }
-
-                foreach (Note note in layer.GeneratedNotes)
+                else
                 {
-                    if (note is not ITimeable timeable) continue;
-
-                    timeable.Timestamp = timeable.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(layer, timeable.Timestamp.Time) };
+                    float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
+                    @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
                 }
             }
 
-            if (chart.Layers.Count == 0)
+            foreach (Note note in layer.Notes)
             {
-                foreach (Event @event in chart.Events)
+                if (note is HoldNote holdNote)
                 {
-                    @event.Timestamp = @event.Timestamp with { ScaledTime = @event.Timestamp.Time };
+                    foreach (HoldPointNote point in holdNote.Points)
+                    {
+                        float time = Timestamp.TimeFromTimestamp(this, point.Timestamp);
+                        point.Timestamp = point.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                    }
                 }
-            }
-            else
-            {
-                foreach (Event @event in chart.Events)
+                else
                 {
-                    @event.Timestamp = @event.Timestamp with { ScaledTime = Timestamp.ScaledTimeFromTime(chart.Layers[0], @event.Timestamp.Time) };
+                    float time = Timestamp.TimeFromTimestamp(this, note.Timestamp);
+                    note.Timestamp = note.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
                 }
             }
         }
 
-        public static void GenerateAllMeasureLineAndSyncNotes(Chart chart, Timestamp end)
+        // Update Chart End.
+        if (entry.AutoChartEnd)
         {
-            if (chart.Layers.Count == 0) return;
-
-            foreach (Layer layer in chart.Layers)
-            {
-                layer.GeneratedNotes.Clear();
-            }
-
-            GenerateMeasureLineNotes(chart.Layers[0], end);
-            GenerateBeatLineNotes(chart, chart.Layers[0], end);
-
-            foreach (Layer layer in chart.Layers)
-            {
-                GenerateSyncNotes(layer);
-
-                layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => ((ITimeable)x).Timestamp).ToList();
-            }
+            entry.ChartEnd = FindIdealChartEnd();
         }
-
-        public static void GenerateMeasureLineNotes(Layer layer, Timestamp end)
+        else
         {
-            for (int i = 0; i < end.Measure; i++)
-            {
-                layer.GeneratedNotes.Add(new MeasureLineNote(new(i, 0), false));
-            }
+            entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(this, entry.ChartEnd) };
         }
-
-        public static void GenerateBeatLineNotes(Chart chart, Layer layer, Timestamp end)
+        
+        // Create new generated notes.
+        for (int l = 0; l < Layers.Count; l++)
         {
-            List<MetreChangeEvent> metreChangeEvents = chart.Events.OfType<MetreChangeEvent>().ToList();
-
-            for (int i = 0; i < metreChangeEvents.Count; i++)
+            Layer layer = Layers[l];
+            
+            // Create Measure and Beat Lines
+            if (l == 0)
             {
-                int startTick = metreChangeEvents[i].Timestamp.FullTick;
-                int endTick = i == metreChangeEvents.Count - 1
-                    ? end.FullTick
-                    : metreChangeEvents[i + 1].Timestamp.FullTick;
-
-                int step = 1920 / metreChangeEvents[i].Upper;
-
-                for (int j = startTick; j < endTick; j += step)
+                for (int i = 0; i < entry.ChartEnd.Measure; i++)
                 {
-                    if (j % 1920 == 0) continue;
-                    layer.GeneratedNotes.Add(new MeasureLineNote(new(j), true));
+                    Timestamp timestamp = new(i, 0);
+                    timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
+                    timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
+                    
+                    layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, false));
+                }
+                
+                List<MetreChangeEvent> metreChangeEvents = Events.OfType<MetreChangeEvent>().ToList();
+
+                for (int i = 0; i < metreChangeEvents.Count; i++)
+                {
+                    int startTick = metreChangeEvents[i].Timestamp.FullTick;
+                    int endTick = i == metreChangeEvents.Count - 1
+                        ? entry.ChartEnd.FullTick
+                        : metreChangeEvents[i + 1].Timestamp.FullTick;
+
+                    int step = 1920 / metreChangeEvents[i].Upper;
+
+                    for (int j = startTick; j < endTick; j += step)
+                    {
+                        if (j % 1920 == 0) continue;
+                        
+                        Timestamp timestamp = new(j);
+                        timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
+                        timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
+                        
+                        layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, true));
+                    }
                 }
             }
-        }
-
-        public static void GenerateSyncNotes(Layer layer)
-        {
+            
+            // Create Sync Notes
             for (int i = 1; i < layer.Notes.Count; i++)
             {
                 Note current = layer.Notes[i];
@@ -343,6 +272,11 @@ public class Chart
                 SyncNote syncNote = new(current.Timestamp, finalPosition, finalSize);
                 layer.GeneratedNotes.Add(syncNote);
             }
-        }*/
+
+            layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => x.Timestamp.FullTick).ToList();
+        }
+        
+        stopwatch.Stop();
+        Console.WriteLine(stopwatch.ElapsedTicks / 10000.0f);
     }
 }
