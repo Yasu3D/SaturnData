@@ -206,13 +206,78 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="time">The time to convert in milliseconds.</param>
     public static float ScaledTimeFromTime(Layer layer, float time)
     {
-        SpeedChangeEvent? speed = layer.LastSpeedChange(time);
-        if (speed == null) return time; // This is fine, just means there are no speed changes.
-
-        float timeDifference = time - speed.Timestamp.Time;
-        float scaledTimeDifference = timeDifference * speed.HiSpeed;
+        // Reverse Effects overrule all other speed changes.
+        ReverseEffectEvent? reverseEffect = layer.LastReverseEffect(time);
+        if (reverseEffect != null && reverseEffect.IsActive(time))
+        {
+            return reverseEffect.SampleReversedTime(time);
+        }
         
-        return speed.Timestamp.ScaledTime + scaledTimeDifference;
+        SpeedChangeEvent? speedChange = layer.LastSpeedChange(time);
+        StopEffectEvent? stopEffect = layer.LastStopEffect(time);
+        
+        if (speedChange == null && stopEffect == null) return time; // This is fine, just means there are no speed changes or stops.
+
+        float eventTime;
+        float eventScaledTime;
+        float scrollSpeed;
+
+        if (speedChange != null && stopEffect == null)
+        {
+            // Speed change exists - Stop doesn't exist.
+            eventTime = speedChange.Timestamp.Time;
+            eventScaledTime = speedChange.Timestamp.ScaledTime;
+            scrollSpeed = speedChange.Speed;
+        }
+        else if (speedChange == null && stopEffect != null)
+        {
+            // Speed change doesn't exist - Stop exists.
+            bool stopPassed = time > stopEffect.SubEvents[1].Timestamp.Time;
+            
+            eventTime = stopPassed 
+                ? stopEffect.SubEvents[1].Timestamp.Time 
+                : stopEffect.SubEvents[0].Timestamp.Time;
+            
+            eventScaledTime = stopPassed 
+                ? stopEffect.SubEvents[1].Timestamp.ScaledTime 
+                : stopEffect.SubEvents[0].Timestamp.ScaledTime;
+
+            scrollSpeed = stopPassed ? 1 : 0;
+        }
+        else
+        {
+            // Speed change exists - Stop exists.
+            
+            if (speedChange!.Timestamp.Time > stopEffect!.SubEvents[1].Timestamp.Time)
+            {
+                // Speed change comes after the stop.
+                // Ignore the stop.
+                eventTime = speedChange.Timestamp.Time;
+                eventScaledTime = speedChange.Timestamp.ScaledTime;
+                scrollSpeed = speedChange.Speed;
+            }
+            else
+            {
+                // Speed change comes during or before the stop.
+                // It gets overruled by the stop until it has passed.
+                bool stopPassed = time > stopEffect.SubEvents[1].Timestamp.Time;
+            
+                eventTime = stopPassed 
+                    ? stopEffect.SubEvents[1].Timestamp.Time 
+                    : stopEffect.SubEvents[0].Timestamp.Time;
+                
+                eventScaledTime = stopPassed 
+                    ? stopEffect.SubEvents[1].Timestamp.ScaledTime 
+                    : stopEffect.SubEvents[0].Timestamp.ScaledTime;
+
+                scrollSpeed = stopPassed ? speedChange.Speed : 0;
+            }
+        }
+        
+        float timeDifference = time - eventTime;
+        float scaledTimeDifference = timeDifference * scrollSpeed;
+        
+        return eventScaledTime + scaledTimeDifference;
     }
 
     /// <summary>

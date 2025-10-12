@@ -197,7 +197,7 @@ public static class SatV3Writer
             {
                 if (@event is SpeedChangeEvent hiSpeedChangeEvent)
                 {
-                    sb.Append($"{"SPEED",-9} {hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {hiSpeedChangeEvent.HiSpeed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
+                    sb.Append($"{"SPEED",-9} {hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {hiSpeedChangeEvent.Speed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
                 }
 
                 if (@event is VisibilityChangeEvent visibilityChangeEvent)

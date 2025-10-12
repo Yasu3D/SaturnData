@@ -70,4 +70,30 @@ public class Layer(string name)
         
         return Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is SpeedChangeEvent && x.Timestamp.Time < time) as SpeedChangeEvent;
     }
+
+    /// <summary>
+    /// Finds the last stop effect on this layer before a given time.
+    /// </summary>
+    public StopEffectEvent? LastStopEffect(float time)
+    {
+        if (time == 0)
+        {
+            return Events.LastOrDefault(x => x is StopEffectEvent && x.Timestamp.Time == 0) as StopEffectEvent;
+        }
+        
+        return Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is StopEffectEvent && x.Timestamp.Time < time) as StopEffectEvent;
+    }
+    
+    /// <summary>
+    /// Finds the last stop effect on this layer before a given time.
+    /// </summary>
+    public ReverseEffectEvent? LastReverseEffect(float time)
+    {
+        if (time == 0)
+        {
+            return Events.LastOrDefault(x => x is ReverseEffectEvent && x.Timestamp.Time == 0) as ReverseEffectEvent;
+        }
+        
+        return Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is ReverseEffectEvent && x.Timestamp.Time < time) as ReverseEffectEvent;
+    }
 }

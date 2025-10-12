@@ -11,13 +11,13 @@ public sealed class SpeedChangeEvent : Event
     public SpeedChangeEvent(SpeedChangeEvent cloneSource)
     {
         Timestamp = cloneSource.Timestamp;
-        HiSpeed = cloneSource.HiSpeed;
+        Speed = cloneSource.Speed;
     }
 
-    public SpeedChangeEvent(Timestamp timestamp, float hiSpeed)
+    public SpeedChangeEvent(Timestamp timestamp, float speed)
     {
         Timestamp = timestamp;
-        HiSpeed = hiSpeed;
+        Speed = speed;
     }
     
     /// <summary>
@@ -25,5 +25,5 @@ public sealed class SpeedChangeEvent : Event
     /// Default: <c>1.0</c><br/>
     /// Range: <c>Single.MinValue / Single.MaxValue</c>
     /// </summary>
-    public float HiSpeed { get; set; }
+    public float Speed { get; set; }
 }

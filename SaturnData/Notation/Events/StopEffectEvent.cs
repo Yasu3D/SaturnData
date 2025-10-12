@@ -43,5 +43,5 @@ public class StopEffectEvent : Event
     /// [0] = Stop Effect Begin
     /// [1] = Stop Effect End
     /// </code>
-    public readonly EffectSubEvent[] SubEvents;
+    public EffectSubEvent[] SubEvents;
 }

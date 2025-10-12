@@ -121,7 +121,7 @@ public static class SatV2Writer
             {
                 int? layer = layerIndices.TryGetValue(hiSpeedChangeEvent, out int value) ? value : null;
                 string layerAttribute = LayerAttribute2String(layer, args);
-                sb.Append($"{hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {index,-4} {"HISPEED" + layerAttribute,-16} {hiSpeedChangeEvent.HiSpeed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
+                sb.Append($"{hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {index,-4} {"HISPEED" + layerAttribute,-16} {hiSpeedChangeEvent.Speed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
             }
 
             if (@event is ReverseEffectEvent reverseEffectEvent)

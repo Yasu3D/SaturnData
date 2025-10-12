@@ -187,7 +187,7 @@ public static class MerWriter
                     {
                         Timestamp = hiSpeedChangeEvent.Timestamp,
                         ObjectType = 5,
-                        FloatValue = hiSpeedChangeEvent.HiSpeed,
+                        FloatValue = hiSpeedChangeEvent.Speed,
                     });
                 }
             }
