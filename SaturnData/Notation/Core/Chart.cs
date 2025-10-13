@@ -130,200 +130,203 @@ public class Chart
     /// <param name="entry"></param>
     public void Build(Entry entry, float audioLength = 0)
     {
-        // Update Millisecond Time & ScaledTime.
-        // Clear Generated Notes on all layers.
-        foreach (Event @event in Events)
+        lock (this)
         {
-            float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
-            @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = time };
-        }
+            // Update Millisecond Time & ScaledTime.
+            // Clear Generated Notes on all layers.
+            foreach (Event @event in Events)
+            {
+                float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
+                @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = time };
+            }
 
-        foreach (Bookmark bookmark in Bookmarks)
-        {
-            float time = Timestamp.TimeFromTimestamp(this, bookmark.Timestamp);
-            bookmark.Timestamp = bookmark.Timestamp with { Time = time, ScaledTime = time };
-        }
+            foreach (Bookmark bookmark in Bookmarks)
+            {
+                float time = Timestamp.TimeFromTimestamp(this, bookmark.Timestamp);
+                bookmark.Timestamp = bookmark.Timestamp with { Time = time, ScaledTime = time };
+            }
 
-        foreach (Note laneToggle in LaneToggles)
-        {
-            float time = Timestamp.TimeFromTimestamp(this, laneToggle.Timestamp);
-            laneToggle.Timestamp = laneToggle.Timestamp with { Time = time, ScaledTime = time };
-        }
+            foreach (Note laneToggle in LaneToggles)
+            {
+                float time = Timestamp.TimeFromTimestamp(this, laneToggle.Timestamp);
+                laneToggle.Timestamp = laneToggle.Timestamp with { Time = time, ScaledTime = time };
+            }
 
-        foreach (Layer layer in Layers)
-        {
-            layer.GeneratedNotes.Clear(); // Clear Generated Notes here to save an enumeration.
+            foreach (Layer layer in Layers)
+            {
+                layer.GeneratedNotes.Clear(); // Clear Generated Notes here to save an enumeration.
             
-            foreach (Event @event in layer.Events)
-            {
-                if (@event is StopEffectEvent stopEffectEvent)
+                foreach (Event @event in layer.Events)
                 {
-                    stopEffectEvent.SubEvents = stopEffectEvent.SubEvents.OrderBy(x => x.Timestamp.FullTick).ToArray();
+                    if (@event is StopEffectEvent stopEffectEvent)
+                    {
+                        stopEffectEvent.SubEvents = stopEffectEvent.SubEvents.OrderBy(x => x.Timestamp.FullTick).ToArray();
                     
-                    foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
-                    {
-                        float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
-                        subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                        foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
+                        {
+                            float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
+                            subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                        }
                     }
-                }
-                else if (@event is ReverseEffectEvent reverseEffectEvent)
-                {
-                    reverseEffectEvent.SubEvents = reverseEffectEvent.SubEvents.OrderBy(x => x.Timestamp.FullTick).ToArray();
+                    else if (@event is ReverseEffectEvent reverseEffectEvent)
+                    {
+                        reverseEffectEvent.SubEvents = reverseEffectEvent.SubEvents.OrderBy(x => x.Timestamp.FullTick).ToArray();
                     
-                    foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
-                    {
-                        float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
-                        subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
-                    }
-                }
-                else
-                {
-                    float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
-                    @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
-                }
-            }
-
-            foreach (Note note in layer.Notes)
-            {
-                if (note is HoldNote holdNote)
-                {
-                    foreach (HoldPointNote point in holdNote.Points)
-                    {
-                        float time = Timestamp.TimeFromTimestamp(this, point.Timestamp);
-                        point.Timestamp = point.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
-                    }
-                }
-                else
-                {
-                    float time = Timestamp.TimeFromTimestamp(this, note.Timestamp);
-                    note.Timestamp = note.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
-                }
-            }
-        }
-
-        // Update Chart End.
-        if (entry.AutoChartEnd)
-        {
-            entry.ChartEnd = FindIdealChartEnd(audioLength);
-        }
-        else
-        {
-            entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(this, entry.ChartEnd) };
-        }
-        
-        // Create new generated notes.
-        for (int l = 0; l < Layers.Count; l++)
-        {
-            Layer layer = Layers[l];
-            
-            // Create Measure and Beat Lines
-            if (l == 0)
-            {
-                for (int i = 0; i <= entry.ChartEnd.Measure; i++)
-                {
-                    Timestamp timestamp = new(i, 0);
-                    timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
-                    timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
-                    
-                    layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, false));
-                }
-                
-                List<MetreChangeEvent> metreChangeEvents = Events.OfType<MetreChangeEvent>().ToList();
-
-                for (int i = 0; i < metreChangeEvents.Count; i++)
-                {
-                    int startTick = metreChangeEvents[i].Timestamp.FullTick;
-                    int endTick = i == metreChangeEvents.Count - 1
-                        ? entry.ChartEnd.FullTick
-                        : metreChangeEvents[i + 1].Timestamp.FullTick;
-
-                    int step = 1920 / metreChangeEvents[i].Upper;
-
-                    for (int j = startTick; j < endTick; j += step)
-                    {
-                        // I prefer giving people the option to have only beat lines.
-                        // if (j % 1920 == 0) continue;
-                        
-                        Timestamp timestamp = new(j);
-                        timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
-                        timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
-                        
-                        layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, true));
-                    }
-                }
-            }
-            
-            // Create Sync Notes
-            for (int i = 1; i < layer.Notes.Count; i++)
-            {
-                Note current = layer.Notes[i];
-                Note previous = layer.Notes[i - 1];
-
-                if (!current.IsSync(previous)) continue;
-                if (current is not IPositionable currentPositionable) continue;
-                if (previous is not IPositionable previousPositionable) continue;
-
-                // -1 + 60
-                // => + 59
-                int position0 = (currentPositionable.Position + currentPositionable.Size + 59) % 60;
-                int position1 = (previousPositionable.Position + previousPositionable.Size + 59) % 60;
-
-                int size0 = (previousPositionable.Position - position0 + 60) % 60 + 1;
-                int size1 = (currentPositionable.Position  - position1 + 60) % 60 + 1;
-
-                int finalPosition = size0 < size1 ? position0 : position1;
-                int finalSize = Math.Min(size0, size1);
-
-                if (finalSize > 30) continue;
-
-                SyncNote syncNote = new(current.Timestamp, finalPosition, finalSize);
-                layer.GeneratedNotes.Add(syncNote);
-            }
-
-            layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => x.Timestamp.FullTick).ToList();
-        }
-        
-        // Re-build reverse effect note lists.
-        foreach (Layer layer in Layers)
-        {
-            foreach (Event @event in layer.Events)
-            {
-                if (@event is not ReverseEffectEvent reverseEffectEvent) continue;
-                if (reverseEffectEvent.SubEvents.Length != 3) continue;
-
-                reverseEffectEvent.ContainedNotes.Clear();
-                
-                foreach (Note note in layer.Notes)
-                {
-                    if (note.Timestamp.FullTick <= reverseEffectEvent.SubEvents[1].Timestamp.FullTick) continue;
-                    if (note.Timestamp.FullTick >= reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
-
-                    if (note is HoldNote holdNote && holdNote.Points.Count != 0)
-                    {
-                        int end = holdNote.Points[^1].Timestamp.FullTick;
-                        if (end >= reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
-                    }
-                    
-                    reverseEffectEvent.ContainedNotes.Add(note);
-                }
-
-                // Not source-game accurate, but looks nicer :)
-                foreach (Note note in layer.GeneratedNotes)
-                {
-                    // It looks nicer if measure lines on top of the reverse sub-events are included as well.
-                    // Do the == checks only for sync notes.
-                    if (note is SyncNote)
-                    {
-                        if (note.Timestamp.FullTick <= reverseEffectEvent.SubEvents[1].Timestamp.FullTick) continue;
-                        if (note.Timestamp.FullTick >= reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
+                        foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
+                        {
+                            float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
+                            subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                        }
                     }
                     else
                     {
-                        if (note.Timestamp.FullTick < reverseEffectEvent.SubEvents[1].Timestamp.FullTick) continue;
-                        if (note.Timestamp.FullTick > reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
+                        float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
+                        @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
                     }
+                }
+
+                foreach (Note note in layer.Notes)
+                {
+                    if (note is HoldNote holdNote)
+                    {
+                        foreach (HoldPointNote point in holdNote.Points)
+                        {
+                            float time = Timestamp.TimeFromTimestamp(this, point.Timestamp);
+                            point.Timestamp = point.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                        }
+                    }
+                    else
+                    {
+                        float time = Timestamp.TimeFromTimestamp(this, note.Timestamp);
+                        note.Timestamp = note.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                    }
+                }
+            }
+
+            // Update Chart End.
+            if (entry.AutoChartEnd)
+            {
+                entry.ChartEnd = FindIdealChartEnd(audioLength);
+            }
+            else
+            {
+                entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(this, entry.ChartEnd) };
+            }
+        
+            // Create new generated notes.
+            for (int l = 0; l < Layers.Count; l++)
+            {
+                Layer layer = Layers[l];
+            
+                // Create Measure and Beat Lines
+                if (l == 0)
+                {
+                    for (int i = 0; i <= entry.ChartEnd.Measure; i++)
+                    {
+                        Timestamp timestamp = new(i, 0);
+                        timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
+                        timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
                     
-                    reverseEffectEvent.ContainedNotes.Add(note);
+                        layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, false));
+                    }
+                
+                    List<MetreChangeEvent> metreChangeEvents = Events.OfType<MetreChangeEvent>().ToList();
+
+                    for (int i = 0; i < metreChangeEvents.Count; i++)
+                    {
+                        int startTick = metreChangeEvents[i].Timestamp.FullTick;
+                        int endTick = i == metreChangeEvents.Count - 1
+                            ? entry.ChartEnd.FullTick
+                            : metreChangeEvents[i + 1].Timestamp.FullTick;
+
+                        int step = 1920 / metreChangeEvents[i].Upper;
+
+                        for (int j = startTick; j < endTick; j += step)
+                        {
+                            // I prefer giving people the option to have only beat lines.
+                            // if (j % 1920 == 0) continue;
+                        
+                            Timestamp timestamp = new(j);
+                            timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
+                            timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
+                        
+                            layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, true));
+                        }
+                    }
+                }
+            
+                // Create Sync Notes
+                for (int i = 1; i < layer.Notes.Count; i++)
+                {
+                    Note current = layer.Notes[i];
+                    Note previous = layer.Notes[i - 1];
+
+                    if (!current.IsSync(previous)) continue;
+                    if (current is not IPositionable currentPositionable) continue;
+                    if (previous is not IPositionable previousPositionable) continue;
+
+                    // -1 + 60
+                    // => + 59
+                    int position0 = (currentPositionable.Position + currentPositionable.Size + 59) % 60;
+                    int position1 = (previousPositionable.Position + previousPositionable.Size + 59) % 60;
+
+                    int size0 = (previousPositionable.Position - position0 + 60) % 60 + 1;
+                    int size1 = (currentPositionable.Position  - position1 + 60) % 60 + 1;
+
+                    int finalPosition = size0 < size1 ? position0 : position1;
+                    int finalSize = Math.Min(size0, size1);
+
+                    if (finalSize > 30) continue;
+
+                    SyncNote syncNote = new(current.Timestamp, finalPosition, finalSize);
+                    layer.GeneratedNotes.Add(syncNote);
+                }
+
+                layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => x.Timestamp.FullTick).ToList();
+            }
+        
+            // Re-build reverse effect note lists.
+            foreach (Layer layer in Layers)
+            {
+                foreach (Event @event in layer.Events)
+                {
+                    if (@event is not ReverseEffectEvent reverseEffectEvent) continue;
+                    if (reverseEffectEvent.SubEvents.Length != 3) continue;
+
+                    reverseEffectEvent.ContainedNotes.Clear();
+                
+                    foreach (Note note in layer.Notes)
+                    {
+                        if (note.Timestamp.FullTick <= reverseEffectEvent.SubEvents[1].Timestamp.FullTick) continue;
+                        if (note.Timestamp.FullTick >= reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
+
+                        if (note is HoldNote holdNote && holdNote.Points.Count != 0)
+                        {
+                            int end = holdNote.Points[^1].Timestamp.FullTick;
+                            if (end >= reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
+                        }
+                    
+                        reverseEffectEvent.ContainedNotes.Add(note);
+                    }
+
+                    // Not source-game accurate, but looks nicer :)
+                    foreach (Note note in layer.GeneratedNotes)
+                    {
+                        // It looks nicer if measure lines on top of the reverse sub-events are included as well.
+                        // Do the == checks only for sync notes.
+                        if (note is SyncNote)
+                        {
+                            if (note.Timestamp.FullTick <= reverseEffectEvent.SubEvents[1].Timestamp.FullTick) continue;
+                            if (note.Timestamp.FullTick >= reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
+                        }
+                        else
+                        {
+                            if (note.Timestamp.FullTick < reverseEffectEvent.SubEvents[1].Timestamp.FullTick) continue;
+                            if (note.Timestamp.FullTick > reverseEffectEvent.SubEvents[2].Timestamp.FullTick) continue;
+                        }
+                    
+                        reverseEffectEvent.ContainedNotes.Add(note);
+                    }
                 }
             }
         }
