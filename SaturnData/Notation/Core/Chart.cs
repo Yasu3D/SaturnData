@@ -92,7 +92,7 @@ public class Chart
     /// <returns></returns>
     public Timestamp FindIdealChartEnd(float audioLength = 0)
     {
-        Timestamp audioEnd = Timestamp.TimestampFromTime(this, audioLength, 1920);
+        Timestamp audioEnd = Timestamp.TimestampFromTime(this, audioLength);
         Timestamp chartEnd = Timestamp.Zero;
 
         foreach (Layer layer in Layers)
@@ -128,7 +128,7 @@ public class Chart
     /// Pre-calculates all values for rendering or gameplay to function properly.
     /// </summary>
     /// <param name="entry"></param>
-    public void Build(Entry entry)
+    public void Build(Entry entry, float audioLength = 0)
     {
         // Update Millisecond Time & ScaledTime.
         // Clear Generated Notes on all layers.
@@ -204,7 +204,7 @@ public class Chart
         // Update Chart End.
         if (entry.AutoChartEnd)
         {
-            entry.ChartEnd = FindIdealChartEnd();
+            entry.ChartEnd = FindIdealChartEnd(audioLength);
         }
         else
         {
@@ -219,7 +219,7 @@ public class Chart
             // Create Measure and Beat Lines
             if (l == 0)
             {
-                for (int i = 0; i < entry.ChartEnd.Measure; i++)
+                for (int i = 0; i <= entry.ChartEnd.Measure; i++)
                 {
                     Timestamp timestamp = new(i, 0);
                     timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
@@ -241,7 +241,8 @@ public class Chart
 
                     for (int j = startTick; j < endTick; j += step)
                     {
-                        if (j % 1920 == 0) continue;
+                        // I prefer giving people the option to have only beat lines.
+                        // if (j % 1920 == 0) continue;
                         
                         Timestamp timestamp = new(j);
                         timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
