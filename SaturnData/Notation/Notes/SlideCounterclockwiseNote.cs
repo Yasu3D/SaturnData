@@ -28,9 +28,19 @@ public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable
         TimingWindow = new(-10, -8, -5, -1, 1, 7, 10, 10);
     }
     
-    public int Position { get; set; }
+    public int Position
+    {
+        get => position;
+        set => position = IPositionable.LimitPosition(value);
+    }
+    private int position = 0;
     
-    public int Size { get; set; }
+    public int Size
+    {
+        get => size;
+        set => size = IPositionable.LimitSize(value);
+    }
+    private int size = 15;
 
     public TimingWindow TimingWindow { get; set; }
     

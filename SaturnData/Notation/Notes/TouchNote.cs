@@ -28,9 +28,19 @@ public sealed class TouchNote : Note, IPositionable, IPlayable
         TimingWindow = new(-6, -5, -3, -1, 1, 3, 5, 6);
     }
     
-    public int Position { get; set; }
+    public int Position
+    {
+        get => position;
+        set => position = IPositionable.LimitPosition(value);
+    }
+    private int position = 0;
     
-    public int Size { get; set; }
+    public int Size
+    {
+        get => size;
+        set => size = IPositionable.LimitSize(value);
+    }
+    private int size = 15;
 
     public TimingWindow TimingWindow { get; set; }
     

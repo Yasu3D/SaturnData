@@ -1,3 +1,4 @@
+using System;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Interfaces;
 
@@ -27,10 +28,20 @@ public sealed class ChainNote : Note, IPositionable, IPlayable
         JudgementType = judgementType;
         TimingWindow = new(-4, -4, -4, -4, 4, 4, 4, 4);
     }
+
+    public int Position
+    {
+        get => position;
+        set => position = IPositionable.LimitPosition(value);
+    }
+    private int position = 0;
     
-    public int Position { get; set; }
-    
-    public int Size { get; set; }
+    public int Size
+    {
+        get => size;
+        set => size = IPositionable.LimitSize(value);
+    }
+    private int size = 15;
 
     public TimingWindow TimingWindow { get; set; }
     

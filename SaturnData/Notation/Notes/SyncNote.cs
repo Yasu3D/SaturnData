@@ -22,7 +22,17 @@ public sealed class SyncNote : Note, IPositionable
         Size = size;
     }
     
-    public int Position { get; set; }
+    public int Position
+    {
+        get => position;
+        set => position = IPositionable.LimitPosition(value);
+    }
+    private int position = 0;
     
-    public int Size { get; set; }
+    public int Size
+    {
+        get => size;
+        set => size = IPositionable.LimitSize(value);
+    }
+    private int size = 15;
 }

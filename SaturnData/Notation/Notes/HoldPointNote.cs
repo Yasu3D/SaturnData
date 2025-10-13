@@ -23,9 +23,19 @@ public sealed class HoldPointNote : Note, IPositionable
         RenderType = renderType;
     }
     
-    public int Position { get; set; }
+    public int Position
+    {
+        get => position;
+        set => position = IPositionable.LimitPosition(value);
+    }
+    private int position = 0;
     
-    public int Size { get; set; }
+    public int Size
+    {
+        get => size;
+        set => size = IPositionable.LimitSize(value);
+    }
+    private int size = 15;
     
     /// <summary>
     /// The parent hold note this hold point note belongs to.
