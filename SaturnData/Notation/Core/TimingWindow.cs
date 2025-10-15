@@ -16,7 +16,7 @@ public struct TimingWindow
     /// - Late window values are positive.<br/></i>
     /// And converted to milliseconds within the constructor.
     /// </remarks>
-    /// <exception cref="ArgumentException">Thrown when the early window is later than the late window.</exception>
+    /// <exception cref="ArgumentException">Thrown when the timing windows are defined out of order. (e.g. early window is later than the late window.)</exception>
     public TimingWindow(int goodEarlyFrames, int greatEarlyFrames, int marvelousEarlyFrames, int marvelousPerfectEarlyFrames, int marvelousPerfectLateFrames,  int marvelousLateFrames,  int greatLateFrames, int goodLateFrames)
     {
         bool order = goodEarlyFrames             <= greatEarlyFrames
