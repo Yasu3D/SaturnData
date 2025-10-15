@@ -5,7 +5,7 @@ namespace SaturnData.Notation.Core;
 
 public abstract class Note : ITimeable
 {
-    public virtual Timestamp Timestamp { get; set; }
+    public virtual Timestamp Timestamp { get; set; } = Timestamp.Zero;
     
     /// <summary>
     /// Determines if two notes should have a "Sync" outline or not.

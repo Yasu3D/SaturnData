@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +13,7 @@ public static class MerWriter
 {
     private class MerWriterNote
     {
-        public Timestamp Timestamp { get; set; }
+        public Timestamp Timestamp { get; set; } = Timestamp.Zero;
 
         public int NoteType { get; set; }
 
@@ -31,7 +30,7 @@ public static class MerWriter
 
     private class MerWriterEvent
     {
-        public Timestamp Timestamp { get; set; }
+        public Timestamp Timestamp { get; set; } = Timestamp.Zero;
 
         public int ObjectType { get; set; }
         

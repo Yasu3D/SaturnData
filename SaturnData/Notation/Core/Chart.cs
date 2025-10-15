@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
@@ -104,7 +103,7 @@ public class Chart
             chartEnd = Timestamp.Max(chartEnd, note.Timestamp);
         }
         
-        chartEnd = Timestamp.TimestampFromTime(this, chartEnd.Time + 2000, 1920);
+        chartEnd = Timestamp.TimestampFromTime(this, chartEnd.Time + 2000);
         
         // Round up to next measure.
         if (chartEnd.Tick != 0)
@@ -137,19 +136,22 @@ public class Chart
             foreach (Event @event in Events)
             {
                 float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
-                @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = time };
+                @event.Timestamp.Time = time;
+                @event.Timestamp.ScaledTime = time;
             }
 
             foreach (Bookmark bookmark in Bookmarks)
             {
                 float time = Timestamp.TimeFromTimestamp(this, bookmark.Timestamp);
-                bookmark.Timestamp = bookmark.Timestamp with { Time = time, ScaledTime = time };
+                bookmark.Timestamp.Time = time;
+                bookmark.Timestamp.ScaledTime = time;
             }
 
             foreach (Note laneToggle in LaneToggles)
             {
                 float time = Timestamp.TimeFromTimestamp(this, laneToggle.Timestamp);
-                laneToggle.Timestamp = laneToggle.Timestamp with { Time = time, ScaledTime = time };
+                laneToggle.Timestamp.Time = time;
+                laneToggle.Timestamp.ScaledTime = time;
             }
 
             foreach (Layer layer in Layers)
@@ -165,7 +167,8 @@ public class Chart
                         foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
                         {
                             float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
-                            subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                            subEvent.Timestamp.Time = time;
+                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                         }
                     }
                     else if (@event is ReverseEffectEvent reverseEffectEvent)
@@ -175,13 +178,15 @@ public class Chart
                         foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
                         {
                             float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
-                            subEvent.Timestamp = subEvent.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                            subEvent.Timestamp.Time = time;
+                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                         }
                     }
                     else
                     {
                         float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
-                        @event.Timestamp = @event.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                        @event.Timestamp.Time = time;
+                        @event.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                     }
                 }
 
@@ -192,13 +197,15 @@ public class Chart
                         foreach (HoldPointNote point in holdNote.Points)
                         {
                             float time = Timestamp.TimeFromTimestamp(this, point.Timestamp);
-                            point.Timestamp = point.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                            point.Timestamp.Time = time;
+                            point.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                         }
                     }
                     else
                     {
                         float time = Timestamp.TimeFromTimestamp(this, note.Timestamp);
-                        note.Timestamp = note.Timestamp with { Time = time, ScaledTime = Timestamp.ScaledTimeFromTime(layer, time) };
+                        note.Timestamp.Time = time;
+                        note.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                     }
                 }
             }
@@ -210,7 +217,7 @@ public class Chart
             }
             else
             {
-                entry.ChartEnd = entry.ChartEnd with { Time = Timestamp.TimeFromTimestamp(this, entry.ChartEnd) };
+                entry.ChartEnd.Time = Timestamp.TimeFromTimestamp(this, entry.ChartEnd);
             }
         
             // Create new generated notes.

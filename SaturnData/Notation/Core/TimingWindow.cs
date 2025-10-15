@@ -5,7 +5,7 @@ namespace SaturnData.Notation.Core;
 /// <summary>
 /// A timing window that defines when certain judgements are available.
 /// </summary>
-public struct TimingWindow
+public class TimingWindow
 {
     /// <summary>
     /// Creates a timing window.

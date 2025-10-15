@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using SaturnData.Notation.Events;
 
 namespace SaturnData.Notation.Core;
@@ -8,7 +7,7 @@ namespace SaturnData.Notation.Core;
 /// Contains information about an object's position in time.
 /// </summary>
 [Serializable]
-public struct Timestamp : IEquatable<Timestamp>, IComparable
+public class Timestamp : IEquatable<Timestamp>, IComparable
 {
     /// <summary>
     /// Creates a timestamp from a <c>Measure</c> and <c>Tick</c> value.
@@ -48,11 +47,8 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <summary>
     /// The earliest possible timestamp.
     /// </summary>
-    public static Timestamp Zero = new()
+    public static Timestamp Zero => new(0)
     {
-        Measure = 0,
-        Tick = 0,
-        FullTick = 0,
         Time = 0,
         ScaledTime = 0,
     };
@@ -62,7 +58,7 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// </summary>
     public int Measure
     {
-        readonly get => measure;
+        get => measure;
         set
         {
             if (measure == value) return;
@@ -78,7 +74,7 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// </summary>
     public int Tick
     {
-        readonly get => tick;
+        get => tick;
         set
         {
             if (tick == value) return;
@@ -127,14 +123,29 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="a">The start Timestamp</param>
     /// <param name="b">The end Timestamp</param>
     /// <param name="t">The interpolation value between the two Timestamps.</param>
-    public static Timestamp Lerp(Timestamp a, Timestamp b, float t) => new((int)((1 - t) * a.FullTick + t * b.FullTick));
+    public static Timestamp Lerp(Timestamp a, Timestamp b, float t)
+    {
+        int fullTick = (int)((1 - t) * a.FullTick + t * b.FullTick);
+        return new(fullTick);
+    }
 
-    public bool Equals(Timestamp other) => FullTick == other.FullTick && Time == other.Time && ScaledTime == other.ScaledTime;
-    public override bool Equals(object? obj) => obj is Timestamp timestamp && Equals(timestamp);
-    public override int GetHashCode() => HashCode.Combine(Measure, Tick, FullTick, Time, ScaledTime);
+    public bool Equals(Timestamp? other)
+    {
+        return other is not null && FullTick == other.FullTick && Time == other.Time && ScaledTime == other.ScaledTime;
+    }
 
-    public static bool operator ==(Timestamp a, Timestamp b) => a.Equals(b);
-    public static bool operator !=(Timestamp a, Timestamp b) => !a.Equals(b);
+    public override bool Equals(object? obj)
+    {
+        return obj is Timestamp timestamp && Equals(timestamp);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Measure, Tick, FullTick);
+    }
+
+    public static bool operator ==(Timestamp? a, Timestamp? b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(Timestamp? a, Timestamp? b) => !a?.Equals(b) ?? b is not null;
     public static bool operator >(Timestamp a, Timestamp b) => a.FullTick > b.FullTick;
     public static bool operator <(Timestamp a, Timestamp b) => a.FullTick < b.FullTick;
     public static bool operator >=(Timestamp a, Timestamp b) => a.FullTick >= b.FullTick;
@@ -150,7 +161,7 @@ public struct Timestamp : IEquatable<Timestamp>, IComparable
         return new((int)(a.FullTick / b));
     }
     
-    public int CompareTo(object obj)
+    public int CompareTo(object? obj)
     {
         if (obj is not Timestamp timestamp) return 1;
         return FullTick.CompareTo(timestamp.FullTick);

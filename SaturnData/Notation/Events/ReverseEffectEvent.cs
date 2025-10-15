@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using SaturnData.Notation.Core;
-using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Notation.Events;
 

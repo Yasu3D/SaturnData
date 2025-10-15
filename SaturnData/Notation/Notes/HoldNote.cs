@@ -34,7 +34,7 @@ public class HoldNote : Note, IPositionable, IPlayable
     /// The timestamp when the hold note begins.<br/>
     /// Modifying this timestamp will move all points as well.
     /// </summary>
-    public sealed override Timestamp Timestamp => Points.Count == 0 ? new() : Points[0].Timestamp;
+    public sealed override Timestamp Timestamp => Points.Count == 0 ? Timestamp.Zero : Points[0].Timestamp;
 
     public int Position
     {
