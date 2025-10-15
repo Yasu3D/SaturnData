@@ -10,7 +10,7 @@ public sealed class LaneHideNote : Note, IPositionable, ILaneToggle
 {
     public LaneHideNote(LaneHideNote cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Position = cloneSource.Position;
         Size = cloneSource.Size;
         Direction = cloneSource.Direction;

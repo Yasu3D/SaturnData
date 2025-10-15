@@ -10,6 +10,18 @@ namespace SaturnData.Notation.Core;
 public class Timestamp : IEquatable<Timestamp>, IComparable
 {
     /// <summary>
+    /// Creates a timestamp from another timestamp.
+    /// </summary>
+    public Timestamp(Timestamp cloneSource)
+    {
+        Measure = cloneSource.measure;
+        Tick = cloneSource.Tick;
+        FullTick = cloneSource.FullTick;
+        Time = cloneSource.Time;
+        ScaledTime = cloneSource.ScaledTime;
+    }
+    
+    /// <summary>
     /// Creates a timestamp from a <c>Measure</c> and <c>Tick</c> value.
     /// </summary>
     /// <exception cref="ArgumentException">Thrown when <c>measure</c> or <c>tick</c> are negative.</exception>
@@ -63,7 +75,7 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
         {
             if (measure == value) return;
 
-            measure = value;
+            measure = Math.Max(0, value);
             fullTick = measure * 1920 + Tick;
         }
     }
@@ -79,7 +91,7 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
         {
             if (tick == value) return;
 
-            tick = value;
+            tick = Math.Clamp(value, 0, 1919);
             fullTick = measure * 1920 + tick;
         }
     }

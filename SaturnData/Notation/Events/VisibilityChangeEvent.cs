@@ -9,7 +9,7 @@ public sealed class VisibilityChangeEvent : Event
 {
     public VisibilityChangeEvent(VisibilityChangeEvent cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Visible = cloneSource.Visible;
     }
     

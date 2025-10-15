@@ -9,7 +9,7 @@ public sealed class SpeedChangeEvent : Event
 {
     public SpeedChangeEvent(SpeedChangeEvent cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Speed = cloneSource.Speed;
     }
 

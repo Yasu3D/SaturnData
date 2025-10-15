@@ -12,10 +12,10 @@ public class HoldNote : Note, IPositionable, IPlayable
 { 
     public HoldNote(HoldNote cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         BonusType = cloneSource.BonusType;
         JudgementType = cloneSource.JudgementType;
-        TimingWindow = cloneSource.TimingWindow;
+        TimingWindow = new(cloneSource.TimingWindow);
 
         foreach (HoldPointNote point in cloneSource.Points)
         {
@@ -27,7 +27,7 @@ public class HoldNote : Note, IPositionable, IPlayable
     {
         BonusType = bonusType;
         JudgementType = judgementType;
-        TimingWindow = new(-6, -5, -3, -1, 1, 3, 5, 6);
+        TimingWindow = TimingWindowTemplate;
     }
     
     /// <summary>
@@ -49,7 +49,9 @@ public class HoldNote : Note, IPositionable, IPlayable
     }
     
     public TimingWindow TimingWindow { get; set; }
-    
+
+    public TimingWindow TimingWindowTemplate => TimingWindow.FromFrames(0, -6, -5, -3, -1, 1, 3, 5, 6);
+
     public BonusType BonusType { get; set; }
     
     public JudgementType JudgementType { get; set; }

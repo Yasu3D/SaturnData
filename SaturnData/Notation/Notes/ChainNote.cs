@@ -10,12 +10,12 @@ public sealed class ChainNote : Note, IPositionable, IPlayable
 {
     public ChainNote(ChainNote cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Position = cloneSource.Position;
         Size = cloneSource.Size;
         BonusType = cloneSource.BonusType;
         JudgementType = cloneSource.JudgementType;
-        TimingWindow = cloneSource.TimingWindow;
+        TimingWindow = new(cloneSource.TimingWindow);
     }
     
     public ChainNote(Timestamp timestamp, int position, int size, BonusType bonusType, JudgementType judgementType)
@@ -25,7 +25,7 @@ public sealed class ChainNote : Note, IPositionable, IPlayable
         Size = size;
         BonusType = bonusType;
         JudgementType = judgementType;
-        TimingWindow = new(-4, -4, -4, -4, 4, 4, 4, 4);
+        TimingWindow = TimingWindowTemplate;
     }
 
     public int Position
@@ -43,6 +43,8 @@ public sealed class ChainNote : Note, IPositionable, IPlayable
     private int size = 15;
 
     public TimingWindow TimingWindow { get; set; }
+    
+    public TimingWindow TimingWindowTemplate => TimingWindow.FromFrames(0, -4, -4, -4, -4, 4, 4, 4, 4);
     
     public BonusType BonusType { get; set; }
     

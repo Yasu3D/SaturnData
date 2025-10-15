@@ -25,7 +25,12 @@ public interface IPlayable
     /// The timing window of the IPlayable.
     /// </summary>
     public TimingWindow TimingWindow { get; set; }
-    
+
+    /// <summary>
+    /// The template timing window of the IPlayable.
+    /// </summary>
+    public TimingWindow TimingWindowTemplate { get; }
+
     /// <summary>
     /// The bonus type of the IPlayable.
     /// </summary>

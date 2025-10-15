@@ -9,7 +9,7 @@ public sealed class MeasureLineNote : Note
 {
     public MeasureLineNote(MeasureLineNote cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         IsBeatLine = cloneSource.IsBeatLine;
     }
     

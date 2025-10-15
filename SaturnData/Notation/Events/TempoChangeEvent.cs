@@ -9,7 +9,7 @@ public sealed class TempoChangeEvent : Event
 {
     public TempoChangeEvent(TempoChangeEvent cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Tempo = cloneSource.Tempo;
     }
     

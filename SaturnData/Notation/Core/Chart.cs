@@ -158,6 +158,7 @@ public class Chart
             {
                 layer.GeneratedNotes.Clear(); // Clear Generated Notes here to save an enumeration.
             
+                // Generate Time and ScaledTime in separate loops, because Timestamp.ScaledTimeFromTime() relies on all events having a valid Time.
                 foreach (Event @event in layer.Events)
                 {
                     if (@event is StopEffectEvent stopEffectEvent)
@@ -168,7 +169,6 @@ public class Chart
                         {
                             float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
                             subEvent.Timestamp.Time = time;
-                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                         }
                     }
                     else if (@event is ReverseEffectEvent reverseEffectEvent)
@@ -179,14 +179,38 @@ public class Chart
                         {
                             float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
                             subEvent.Timestamp.Time = time;
-                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                         }
                     }
                     else
                     {
                         float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
                         @event.Timestamp.Time = time;
-                        @event.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
+                    }
+                }
+                
+                foreach (Event @event in layer.Events)
+                {
+                    if (@event is StopEffectEvent stopEffectEvent)
+                    {
+                        stopEffectEvent.SubEvents = stopEffectEvent.SubEvents.OrderBy(x => x.Timestamp.FullTick).ToArray();
+                    
+                        foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
+                        {
+                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time);
+                        }
+                    }
+                    else if (@event is ReverseEffectEvent reverseEffectEvent)
+                    {
+                        reverseEffectEvent.SubEvents = reverseEffectEvent.SubEvents.OrderBy(x => x.Timestamp.FullTick).ToArray();
+                    
+                        foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
+                        {
+                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time);
+                        }
+                    }
+                    else
+                    {
+                        @event.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, @event.Timestamp.Time);
                     }
                 }
 
@@ -206,6 +230,28 @@ public class Chart
                         float time = Timestamp.TimeFromTimestamp(this, note.Timestamp);
                         note.Timestamp.Time = time;
                         note.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
+                    }
+
+                    if (note is IPlayable playable)
+                    {
+                        playable.TimingWindow = playable.TimingWindowTemplate;
+                        playable.TimingWindow.MarvelousPerfectEarly += note.Timestamp.Time;
+                        playable.TimingWindow.MarvelousPerfectLate  += note.Timestamp.Time;
+                        playable.TimingWindow.MarvelousEarly        += note.Timestamp.Time;
+                        playable.TimingWindow.MarvelousLate         += note.Timestamp.Time;
+                        playable.TimingWindow.GreatEarly            += note.Timestamp.Time;
+                        playable.TimingWindow.GreatLate             += note.Timestamp.Time;
+                        playable.TimingWindow.GoodEarly             += note.Timestamp.Time;
+                        playable.TimingWindow.GoodLate              += note.Timestamp.Time;
+                        
+                        playable.TimingWindow.ScaledMarvelousPerfectEarly = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousPerfectEarly);
+                        playable.TimingWindow.ScaledMarvelousPerfectLate  = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousPerfectLate);
+                        playable.TimingWindow.ScaledMarvelousEarly        = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousEarly);
+                        playable.TimingWindow.ScaledMarvelousLate         = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousLate);
+                        playable.TimingWindow.ScaledGreatEarly            = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGreatEarly);
+                        playable.TimingWindow.ScaledGreatLate             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGreatLate);
+                        playable.TimingWindow.ScaledGoodEarly             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGoodEarly);
+                        playable.TimingWindow.ScaledGoodLate              = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGoodLate);
                     }
                 }
             }
@@ -316,7 +362,7 @@ public class Chart
                         reverseEffectEvent.ContainedNotes.Add(note);
                     }
 
-                    // Not source-game accurate, but looks nicer :)
+                    // Not source-game accurate, but looks nicer to include measure/beat lines and sync notes :)
                     foreach (Note note in layer.GeneratedNotes)
                     {
                         // It looks nicer if measure lines on top of the reverse sub-events are included as well.

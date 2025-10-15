@@ -9,7 +9,7 @@ public sealed class MetreChangeEvent : Event
 {
     public MetreChangeEvent(MetreChangeEvent cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Upper = cloneSource.Upper;
         Lower = cloneSource.Lower;
     }

@@ -10,7 +10,7 @@ public sealed class SyncNote : Note, IPositionable
 {
     public SyncNote(SyncNote cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Position = cloneSource.Position;
         Size = cloneSource.Size;
     }

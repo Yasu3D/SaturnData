@@ -6,7 +6,7 @@ public sealed class TutorialMarkerEvent : Event
 {
     public TutorialMarkerEvent(TutorialMarkerEvent cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Key = cloneSource.Key;
     }
     

@@ -10,12 +10,12 @@ public sealed class TouchNote : Note, IPositionable, IPlayable
 {
     public TouchNote(TouchNote cloneSource)
     {
-        Timestamp = cloneSource.Timestamp;
+        Timestamp = new(cloneSource.Timestamp);
         Position = cloneSource.Position;
         Size = cloneSource.Size;
         BonusType = cloneSource.BonusType;
         JudgementType = cloneSource.JudgementType;
-        TimingWindow = cloneSource.TimingWindow;
+        TimingWindow = new(cloneSource.TimingWindow);
     }
     
     public TouchNote(Timestamp timestamp, int position, int size, BonusType bonusType, JudgementType judgementType)
@@ -25,7 +25,7 @@ public sealed class TouchNote : Note, IPositionable, IPlayable
         Size = size;
         BonusType = bonusType;
         JudgementType = judgementType;
-        TimingWindow = new(-6, -5, -3, -1, 1, 3, 5, 6);
+        TimingWindow = TimingWindowTemplate;
     }
     
     public int Position
@@ -43,6 +43,8 @@ public sealed class TouchNote : Note, IPositionable, IPlayable
     private int size = 15;
 
     public TimingWindow TimingWindow { get; set; }
+    
+    public TimingWindow TimingWindowTemplate => TimingWindow.FromFrames(0, -6, -5, -3, -1, 1, 3, 5, 6);
     
     public BonusType BonusType { get; set; }
     
