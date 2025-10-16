@@ -7,7 +7,7 @@ namespace SaturnData.Notation.Core;
 /// </summary>
 public class TimingWindow
 {
-    private const float FrameDuration = 1.0f / 60.0f;
+    private const float FrameDuration = 1000.0f / 60.0f;
     
     /// <summary>
     /// Creates a timing window from another timing window.
@@ -104,6 +104,16 @@ public class TimingWindow
     /// The latest timing window.
     /// </summary>
     public float MaxLate => Math.Max(MarvelousPerfectLate, Math.Max(MarvelousLate, Math.Max(GreatLate, GoodLate)));
+        
+    /// <summary>
+    /// The earliest timing window.
+    /// </summary>
+    public float ScaledMaxEarly => Math.Min(ScaledMarvelousPerfectEarly, Math.Min(ScaledMarvelousEarly, Math.Min(ScaledGreatEarly, ScaledGoodEarly)));
+    
+    /// <summary>
+    /// The latest timing window.
+    /// </summary>
+    public float ScaledMaxLate => Math.Max(ScaledMarvelousPerfectLate, Math.Max(ScaledMarvelousLate, Math.Max(ScaledGreatLate, ScaledGoodLate)));
     
     /// <summary>
     /// Start of "Perfect Marvelous" window in milliseconds.

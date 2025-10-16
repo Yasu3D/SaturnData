@@ -131,6 +131,9 @@ public class Chart
     {
         lock (this)
         {
+            // Keep track of hold ends for timing window calculations later.
+            List<HoldPointNote> holdEnds = [];
+            
             // Update Millisecond Time & ScaledTime.
             // Clear Generated Notes on all layers.
             foreach (Event @event in Events)
@@ -224,6 +227,11 @@ public class Chart
                             point.Timestamp.Time = time;
                             point.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                         }
+
+                        if (holdNote.Points.Count > 1)
+                        {
+                            holdEnds.Add(holdNote.Points[^1]);
+                        }
                     }
                     else
                     {
@@ -244,14 +252,14 @@ public class Chart
                         playable.TimingWindow.GoodEarly             += note.Timestamp.Time;
                         playable.TimingWindow.GoodLate              += note.Timestamp.Time;
                         
-                        playable.TimingWindow.ScaledMarvelousPerfectEarly = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousPerfectEarly);
-                        playable.TimingWindow.ScaledMarvelousPerfectLate  = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousPerfectLate);
-                        playable.TimingWindow.ScaledMarvelousEarly        = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousEarly);
-                        playable.TimingWindow.ScaledMarvelousLate         = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledMarvelousLate);
-                        playable.TimingWindow.ScaledGreatEarly            = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGreatEarly);
-                        playable.TimingWindow.ScaledGreatLate             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGreatLate);
-                        playable.TimingWindow.ScaledGoodEarly             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGoodEarly);
-                        playable.TimingWindow.ScaledGoodLate              = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.ScaledGoodLate);
+                        playable.TimingWindow.ScaledMarvelousPerfectEarly = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousPerfectEarly);
+                        playable.TimingWindow.ScaledMarvelousPerfectLate  = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousPerfectLate);
+                        playable.TimingWindow.ScaledMarvelousEarly        = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousEarly);
+                        playable.TimingWindow.ScaledMarvelousLate         = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousLate);
+                        playable.TimingWindow.ScaledGreatEarly            = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GreatEarly);
+                        playable.TimingWindow.ScaledGreatLate             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GreatLate);
+                        playable.TimingWindow.ScaledGoodEarly             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GoodEarly);
+                        playable.TimingWindow.ScaledGoodLate              = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GoodLate);
                     }
                 }
             }
@@ -381,6 +389,13 @@ public class Chart
                         reverseEffectEvent.ContainedNotes.Add(note);
                     }
                 }
+            }
+            
+            // Recalculate timing windows.
+            foreach (Layer layer in Layers)
+            foreach (Note note in layer.Notes)
+            {
+                
             }
         }
     }
