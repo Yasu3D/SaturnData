@@ -407,6 +407,7 @@ public static class MerReader
                 if (noteType != 14) continue;
                 
                 entry.ChartEnd = new(measure, tick);
+                entry.AutoChartEnd = false;
             }
             catch (Exception ex)
             {

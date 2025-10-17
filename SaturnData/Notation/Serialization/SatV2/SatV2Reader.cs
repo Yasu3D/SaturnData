@@ -628,6 +628,7 @@ internal static class SatV2Reader
                     int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
 
                     entry.ChartEnd = new(measure, tick);
+                    entry.AutoChartEnd = false;
                 }
             }
             catch (Exception ex)
