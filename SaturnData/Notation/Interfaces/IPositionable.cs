@@ -24,7 +24,113 @@ public interface IPositionable
     /// Range [1 - 60]
     /// </remarks>
     public int Size { get; set; }
+    
+    /// <summary>
+    /// Returns <c>true</c> if two <c>IPositionable</c>s overlap on any lane.
+    /// </summary>
+    /// <param name="a">The first positionable to compare.</param>
+    /// <param name="b">The second positionable to compare.</param>
+    public static bool IsAnyOverlap(IPositionable a, IPositionable b)
+    {
+        return IsAnyOverlap(a.Position, a.Size, b.Position, b.Size);
+    }
 
+    /// <summary>
+    /// Returns <c>true</c> if the defined shapes overlap on any lane.
+    /// </summary>
+    /// <param name="posA">The first position to compare.</param>
+    /// <param name="sizeA">The first size to compare.</param>
+    /// <param name="posB">The second position to compare.</param>
+    /// <param name="sizeB">The second size to compare.</param>
+    public static bool IsAnyOverlap(int posA, int sizeA, int posB, int sizeB)
+    {
+        if (IsIdenticalOverlap(posA, sizeA, posB, sizeB)) return true;
+        if (sizeA == 60 || sizeB == 60) return true;
+        
+        bool[] occupiedLanes = new bool[60];
+
+        for (int i = posA; i < posA + sizeA; i++)
+        {
+            occupiedLanes[i % 60] = true;
+        }
+
+        for (int i = posB; i < posB + sizeB; i++)
+        {
+            if (occupiedLanes[i % 60]) return true;
+        }
+        
+        return false;
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> if one <c>IPositionable</c> fully overlaps another.
+    /// </summary>
+    /// <param name="a">The first positionable to compare.</param>
+    /// <param name="b">The second positionable to compare.</param>
+    public static bool IsFullOverlap(IPositionable a, IPositionable b)
+    {
+        return IsFullOverlap(a.Position, a.Size, b.Position, b.Size);
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> if one defined shape fully overlaps another.
+    /// </summary>
+    /// <param name="posA">The first position to compare.</param>
+    /// <param name="sizeA">The first size to compare.</param>
+    /// <param name="posB">The second position to compare.</param>
+    /// <param name="sizeB">The second size to compare.</param>
+    public static bool IsFullOverlap(int posA, int sizeA, int posB, int sizeB)
+    {
+        if (IsIdenticalOverlap(posA, sizeA, posB, sizeB)) return true;
+        if (sizeA == 60 || sizeB == 60) return true;
+
+        // IsIdenticalOverlap() already checked if the positions are equal.
+        // If the size is the same here, then the position must be different -> no enclosing overlap.
+        if (sizeA == sizeB) return false;
+        
+        int largerPos = sizeA > sizeB ? posA : posB;
+        int largerSize = Math.Max(sizeA, sizeB);
+        
+        int smallerPos = sizeA > sizeB ? posB : posA;
+        int smallerSize = Math.Min(sizeA, sizeB);
+
+        bool[] occupiedLanes = new bool[60];
+        
+        for (int i = largerPos; i < largerPos + largerSize; i++)
+        {
+            occupiedLanes[i % 60] = true;
+        }
+
+        for (int i = smallerPos; i < smallerPos + smallerSize; i++)
+        {
+            if (!occupiedLanes[i % 60]) return false;
+        }
+        
+        return true;
+    }
+    
+    /// <summary>
+    /// Returns <c>true</c> if two <c>IPositionable</c>s have identical shapes.
+    /// </summary>
+    /// <param name="a">The first positionable to compare.</param>
+    /// <param name="b">The second positionable to compare.</param>
+    public static bool IsIdenticalOverlap(IPositionable a, IPositionable b)
+    {
+        return IsIdenticalOverlap(a.Position, a.Size, b.Position, b.Size);
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> if two defined shapes are identical.
+    /// </summary>
+    /// <param name="posA">The first position to compare.</param>
+    /// <param name="sizeA">The first size to compare.</param>
+    /// <param name="posB">The second position to compare.</param>
+    /// <param name="sizeB">The second size to compare.</param>
+    public static bool IsIdenticalOverlap(int posA, int sizeA, int posB, int sizeB)
+    {
+        return posA == posB && sizeA == sizeB;
+    }
+    
     internal static int LimitPosition(int value)
     {
         int r = value % 60;

@@ -50,6 +50,7 @@ public class Entry
     public event EventHandler? JacketChanged;
     public event EventHandler? AudioChanged;
     public event EventHandler? VideoChanged;
+    public event EventHandler? ChartEndChanged;
     
     /// <summary>
     /// The unique identifier of the chart.
@@ -417,6 +418,7 @@ public class Entry
             
             chartEnd = value;
             EntryChanged?.Invoke(null, EventArgs.Empty);
+            ChartEndChanged?.Invoke(null, EventArgs.Empty);
         }
     }
     private Timestamp chartEnd = Timestamp.Zero;

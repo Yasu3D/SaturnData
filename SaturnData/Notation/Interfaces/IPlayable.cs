@@ -22,14 +22,14 @@ public enum JudgementType
 public interface IPlayable
 {
     /// <summary>
-    /// The timing window of the IPlayable.
+    /// The judge area of the IPlayable.
     /// </summary>
-    public TimingWindow TimingWindow { get; set; }
+    public JudgeArea JudgeArea { get; set; }
 
     /// <summary>
-    /// The template timing window of the IPlayable.
+    /// The template judge area of the IPlayable.
     /// </summary>
-    public TimingWindow TimingWindowTemplate { get; }
+    public JudgeArea JudgeAreaTemplate { get; }
 
     /// <summary>
     /// The bonus type of the IPlayable.

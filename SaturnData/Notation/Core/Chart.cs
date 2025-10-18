@@ -127,13 +127,10 @@ public class Chart
     /// Pre-calculates all values for rendering or gameplay to function properly.
     /// </summary>
     /// <param name="entry"></param>
-    public void Build(Entry entry, float audioLength = 0)
+    public void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = false)
     {
         lock (this)
         {
-            // Keep track of hold ends for timing window calculations later.
-            List<HoldPointNote> holdEnds = [];
-            
             // Update Millisecond Time & ScaledTime.
             // Clear Generated Notes on all layers.
             foreach (Event @event in Events)
@@ -157,6 +154,10 @@ public class Chart
                 laneToggle.Timestamp.ScaledTime = time;
             }
 
+            // Collection of all playable notes for judge area calculations done later.
+            List<Note> playableNotes = [];
+            Dictionary<int, List<HoldPointNote>> holdEndNotes = [];
+            
             foreach (Layer layer in Layers)
             {
                 layer.GeneratedNotes.Clear(); // Clear Generated Notes here to save an enumeration.
@@ -230,7 +231,15 @@ public class Chart
 
                         if (holdNote.Points.Count > 1)
                         {
-                            holdEnds.Add(holdNote.Points[^1]);
+                            int holdEndFullTick = holdNote.Points[^1].Timestamp.FullTick;
+                            if (holdEndNotes.TryGetValue(holdEndFullTick, out List<HoldPointNote>? holdEndsOnTick))
+                            {
+                                holdEndsOnTick.Add(holdNote.Points[^1]);
+                            }
+                            else
+                            {
+                                holdEndNotes.Add(holdEndFullTick, [holdNote.Points[^1]]);
+                            }
                         }
                     }
                     else
@@ -239,27 +248,23 @@ public class Chart
                         note.Timestamp.Time = time;
                         note.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                     }
-
+                    
                     if (note is IPlayable playable)
                     {
-                        playable.TimingWindow = playable.TimingWindowTemplate;
-                        playable.TimingWindow.MarvelousPerfectEarly += note.Timestamp.Time;
-                        playable.TimingWindow.MarvelousPerfectLate  += note.Timestamp.Time;
-                        playable.TimingWindow.MarvelousEarly        += note.Timestamp.Time;
-                        playable.TimingWindow.MarvelousLate         += note.Timestamp.Time;
-                        playable.TimingWindow.GreatEarly            += note.Timestamp.Time;
-                        playable.TimingWindow.GreatLate             += note.Timestamp.Time;
-                        playable.TimingWindow.GoodEarly             += note.Timestamp.Time;
-                        playable.TimingWindow.GoodLate              += note.Timestamp.Time;
+                        // Reset judge areas.
+                        playable.JudgeArea = playable.JudgeAreaTemplate;
+                        playable.JudgeArea.MarvelousEarly += note.Timestamp.Time;
+                        playable.JudgeArea.MarvelousLate  += note.Timestamp.Time;
+                        playable.JudgeArea.GreatEarly     += note.Timestamp.Time;
+                        playable.JudgeArea.GreatLate      += note.Timestamp.Time;
+                        playable.JudgeArea.GoodEarly      += note.Timestamp.Time;
+                        playable.JudgeArea.GoodLate       += note.Timestamp.Time;
                         
-                        playable.TimingWindow.ScaledMarvelousPerfectEarly = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousPerfectEarly);
-                        playable.TimingWindow.ScaledMarvelousPerfectLate  = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousPerfectLate);
-                        playable.TimingWindow.ScaledMarvelousEarly        = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousEarly);
-                        playable.TimingWindow.ScaledMarvelousLate         = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.MarvelousLate);
-                        playable.TimingWindow.ScaledGreatEarly            = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GreatEarly);
-                        playable.TimingWindow.ScaledGreatLate             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GreatLate);
-                        playable.TimingWindow.ScaledGoodEarly             = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GoodEarly);
-                        playable.TimingWindow.ScaledGoodLate              = Timestamp.ScaledTimeFromTime(layer, playable.TimingWindow.GoodLate);
+                        // Collect playable notes for judge area processing later.
+                        if (playable.JudgementType is not JudgementType.Fake)
+                        {
+                            playableNotes.Add(note);
+                        }
                     }
                 }
             }
@@ -391,11 +396,188 @@ public class Chart
                 }
             }
             
-            // Recalculate timing windows.
+            // Process judge areas.
+            playableNotes = playableNotes.OrderBy(x => x.Timestamp.FullTick).ToList();
+            
+            if (saturnJudgeAreas)
+            {
+                // Follow Saturn-spec
+                
+                // Notes on hold ends
+                // - Early GREAT/GOOD windows are removed.
+                foreach (Note note in playableNotes)
+                {
+                    if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote> holdEndsOnTick)) continue;
+
+                    foreach (HoldPointNote holdEnd in holdEndsOnTick)
+                    {
+                        if (!IPositionable.IsAnyOverlap((IPositionable)note, holdEnd)) continue;
+                        
+                        JudgeArea judgeArea = ((IPlayable)note).JudgeArea;
+                        judgeArea.GoodEarly = judgeArea.MarvelousEarly;
+                        judgeArea.GreatEarly = judgeArea.MarvelousEarly;
+                        
+                        break;
+                    }
+                }
+
+                // Slide & Snap notes on hold starts
+                // - All early windows of the hold note are converted to MARVELOUS.
+                for (int i = 0; i < playableNotes.Count; i++)
+                {
+                    Note note = playableNotes[i];
+                    if (note is not (SlideClockwiseNote or SlideCounterclockwiseNote or SnapForwardNote or SnapBackwardNote)) continue;
+                    if (note is not IPositionable positionable) continue;
+
+                    // Look backward for notes on same tick.
+                    for (int j = i; j > 0; j--)
+                    {
+                        Note other = playableNotes[j];
+                        if (other.Timestamp.FullTick != note.Timestamp.FullTick) break;
+
+                        if (other is not HoldNote holdNote) continue;
+                        if (!IPositionable.IsAnyOverlap(positionable, holdNote)) continue;
+                        
+                        JudgeArea judgeArea = holdNote.JudgeArea;
+                        judgeArea.MarvelousEarly = judgeArea.GoodEarly;
+                        judgeArea.GreatEarly = judgeArea.GoodEarly;
+                    }
+
+                    // Look forward for notes on same tick.
+                    for (int j = i; j < playableNotes.Count; j++)
+                    {
+                        Note other = playableNotes[j];
+                        if (other.Timestamp.FullTick != note.Timestamp.FullTick) break;
+
+                        if (other is not HoldNote holdNote) continue;
+                        if (!IPositionable.IsAnyOverlap(positionable, holdNote)) continue;
+                        
+                        JudgeArea judgeArea = holdNote.JudgeArea;
+                        judgeArea.MarvelousEarly = judgeArea.GoodEarly;
+                        judgeArea.GreatEarly = judgeArea.GoodEarly;
+                    }
+                }
+
+                // Notes inside holds
+                // - Early GREAT/GOOD windows are cut in half.
+                // TODO
+                
+                // Overlapping judge areas
+                // - Do not truncate MARVELOUS window.
+                for (int i = 0; i < playableNotes.Count; i++)
+                {
+                    Note note = playableNotes[i];
+                    
+                    if (note is not IPlayable playable) continue;
+                    if (note is not IPositionable positionable) continue;
+                    
+                    for (int j = i + 1; j < playableNotes.Count; j++)
+                    {
+                        Note other = playableNotes[j];
+
+                        if (note.Timestamp.FullTick == other.Timestamp.FullTick) continue;
+                        
+                        // Stop processing if judge areas are far enough out of range.
+                        // Use a +200ms "safety net" for any larger judge areas. Hacky and inefficient, but keeps things simple.
+                        if (other is not IPlayable otherPlayable) continue;
+                        if (otherPlayable.JudgeArea.MaxEarly > playable.JudgeArea.MaxLate + 200) break;
+                        if (otherPlayable.JudgeArea.MaxEarly > playable.JudgeArea.MaxLate) continue;
+                        
+                        if (other is not IPositionable otherPositionable) continue;
+                        if (!IPositionable.IsAnyOverlap(positionable, otherPositionable)) continue;
+
+                        // Valid overlapping note was found.
+                        float centerTime = (note.Timestamp.Time + other.Timestamp.Time) * 0.5f;
+                        centerTime = Math.Min(centerTime, playable.JudgeArea.MaxLate);
+                        centerTime = Math.Max(centerTime, otherPlayable.JudgeArea.MaxEarly);
+
+                        playable.JudgeArea.GoodLate  = Math.Min(centerTime, playable.JudgeArea.GoodLate);
+                        playable.JudgeArea.GreatLate = Math.Min(centerTime, playable.JudgeArea.GreatLate);
+                        
+                        playable.JudgeArea.GoodLate  = Math.Max(playable.JudgeArea.MarvelousLate, playable.JudgeArea.GoodLate);
+                        playable.JudgeArea.GreatLate = Math.Max(playable.JudgeArea.MarvelousLate, playable.JudgeArea.GreatLate);
+                        
+                        
+                        otherPlayable.JudgeArea.GoodEarly  = Math.Max(centerTime, otherPlayable.JudgeArea.GoodEarly);
+                        otherPlayable.JudgeArea.GreatEarly = Math.Max(centerTime, otherPlayable.JudgeArea.GreatEarly);
+                        
+                        otherPlayable.JudgeArea.GoodEarly  = Math.Min(otherPlayable.JudgeArea.MarvelousEarly, otherPlayable.JudgeArea.GoodEarly);
+                        otherPlayable.JudgeArea.GreatEarly = Math.Min(otherPlayable.JudgeArea.MarvelousEarly, otherPlayable.JudgeArea.GreatEarly);
+                    }
+                }
+            }
+            else
+            {
+                // Follow Mer-spec
+                
+                // Notes on hold ends
+                // - Early GREAT/GOOD windows are removed.
+                foreach (Note note in playableNotes)
+                {
+                    if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote> holdEndsOnTick)) continue;
+
+                    foreach (HoldPointNote holdEnd in holdEndsOnTick)
+                    {
+                        if (!IPositionable.IsAnyOverlap((IPositionable)note, holdEnd)) continue;
+                        
+                        JudgeArea judgeArea = ((IPlayable)note).JudgeArea;
+                        judgeArea.GoodEarly = judgeArea.MarvelousEarly;
+                        judgeArea.GreatEarly = judgeArea.MarvelousEarly;
+                        
+                        break;
+                    }
+                }
+                
+                // Overlapping judge areas
+                for (int i = 0; i < playableNotes.Count; i++)
+                {
+                    Note note = playableNotes[i];
+                    
+                    if (note is not IPlayable playable) continue;
+                    if (note is not IPositionable positionable) continue;
+                    
+                    for (int j = i + 1; j < playableNotes.Count; j++)
+                    {
+                        Note other = playableNotes[j];
+
+                        if (note.Timestamp.FullTick == other.Timestamp.FullTick) continue;
+                        
+                        // Stop processing if judge areas are far enough out of range.
+                        // Use a +200ms "safety net" for any larger judge areas. Hacky and inefficient, but keeps things simple.
+                        if (other is not IPlayable otherPlayable) continue;
+                        if (otherPlayable.JudgeArea.MaxEarly > playable.JudgeArea.MaxLate + 200) break;
+                        if (otherPlayable.JudgeArea.MaxEarly > playable.JudgeArea.MaxLate) continue;
+                        
+                        if (other is not IPositionable otherPositionable) continue;
+                        if (!IPositionable.IsAnyOverlap(positionable, otherPositionable)) continue;
+
+                        // Valid overlapping note was found.
+                        float centerTime = (note.Timestamp.Time + other.Timestamp.Time) * 0.5f;
+                        centerTime = Math.Min(centerTime, playable.JudgeArea.MaxLate);
+                        centerTime = Math.Max(centerTime, otherPlayable.JudgeArea.MaxEarly);
+
+                        playable.JudgeArea.GoodLate      = Math.Min(centerTime, playable.JudgeArea.GoodLate);
+                        playable.JudgeArea.GreatLate     = Math.Min(centerTime, playable.JudgeArea.GreatLate);
+                        playable.JudgeArea.MarvelousLate = Math.Min(centerTime, playable.JudgeArea.MarvelousLate);
+                        otherPlayable.JudgeArea.GoodEarly      = Math.Max(centerTime, otherPlayable.JudgeArea.GoodEarly);
+                        otherPlayable.JudgeArea.GreatEarly     = Math.Max(centerTime, otherPlayable.JudgeArea.GreatEarly);
+                        otherPlayable.JudgeArea.MarvelousEarly = Math.Max(centerTime, otherPlayable.JudgeArea.MarvelousEarly);
+                    }
+                }
+            }
+            
+            // Create Scaled Timing windows for rendering.
             foreach (Layer layer in Layers)
             foreach (Note note in layer.Notes)
             {
+                if (note is not IPlayable playable) continue;
                 
+                playable.JudgeArea.ScaledMarvelousEarly = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.MarvelousEarly);
+                playable.JudgeArea.ScaledMarvelousLate  = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.MarvelousLate);
+                playable.JudgeArea.ScaledGreatEarly     = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GreatEarly);
+                playable.JudgeArea.ScaledGreatLate      = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GreatLate);
+                playable.JudgeArea.ScaledGoodEarly      = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodEarly);
+                playable.JudgeArea.ScaledGoodLate       = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodLate);
             }
         }
     }
