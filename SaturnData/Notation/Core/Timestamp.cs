@@ -125,10 +125,15 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     public float ScaledTime { get; set; }
 
     /// <summary>
-    /// Returns the larger Timestamp.
+    /// Returns the larger timestamp.
     /// </summary>
     public static Timestamp Max(Timestamp a, Timestamp b) => a.FullTick > b.FullTick ? a : b;
 
+    /// <summary>
+    /// Returns the smaller timestamp.
+    /// </summary>
+    public static Timestamp Min(Timestamp a, Timestamp b) => a.FullTick < b.FullTick ? a : b;
+    
     /// <summary>
     /// Linearly interpolates between <c>a</c> and <c>b</c> by <c>t</c>.
     /// </summary>
