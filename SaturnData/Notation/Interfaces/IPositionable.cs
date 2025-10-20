@@ -7,6 +7,14 @@ namespace SaturnData.Notation.Interfaces;
 /// </summary>
 public interface IPositionable
 {
+    public enum OverlapResult
+    {
+        None = 0,
+        Body = 1,
+        LeftEdge = 2,
+        RightEdge = 3,
+    }
+    
     /// <summary>
     /// The position of the IPositionable.<br/>
     /// Position starts at 3 o'clock/East, and steps Counterclockwise in 6° increments.
@@ -129,6 +137,23 @@ public interface IPositionable
     public static bool IsIdenticalOverlap(int posA, int sizeA, int posB, int sizeB)
     {
         return posA == posB && sizeA == sizeB;
+    }
+
+    /// <summary>
+    /// Returns the
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="size"></param>
+    /// <param name="lane"></param>
+    /// <returns></returns>
+    public static OverlapResult HitTestResult(int pos, int size, int lane)
+    {
+        if (size == 60) return OverlapResult.Body;
+        if (lane == pos) return OverlapResult.LeftEdge;
+        if (lane == (pos + size - 1) % 60) return OverlapResult.RightEdge;
+        if (IsAnyOverlap(pos, size, lane, 1)) return OverlapResult.Body;
+        
+        return OverlapResult.None;
     }
     
     internal static int LimitPosition(int value)
