@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SaturnData.Notation.Core;
@@ -8,21 +9,8 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by tapping and holding down within its area at the right time.
 /// </summary>
-public class HoldNote : Note, IPositionable, IPlayable
+public class HoldNote : Note, IPositionable, IPlayable, ICloneable
 { 
-    public HoldNote(HoldNote cloneSource)
-    {
-        Timestamp = new(cloneSource.Timestamp);
-        BonusType = cloneSource.BonusType;
-        JudgementType = cloneSource.JudgementType;
-        JudgeArea = new(cloneSource.JudgeArea);
-
-        foreach (HoldPointNote point in cloneSource.Points)
-        {
-            Points.Add(new(point.Timestamp, point.Position, point.Size, this, point.RenderType));
-        }
-    }
-    
     public HoldNote(BonusType bonusType, JudgementType judgementType)
     {
         BonusType = bonusType;
@@ -39,13 +27,23 @@ public class HoldNote : Note, IPositionable, IPlayable
     public int Position
     {
         get => Points.Count == 0 ? -1 : Points[0].Position;
-        set { }
+        set
+        {
+            if (Points.Count == 0) return;
+
+            Points[0].Position = value;
+        }
     }
 
     public int Size
     {
         get => Points.Count == 0 ? -1 : Points[0].Size;
-        set { }
+        set
+        {
+            if (Points.Count == 0) return;
+
+            Points[0].Size = value;
+        }
     }
     
     public JudgeArea JudgeArea { get; set; }
@@ -65,4 +63,20 @@ public class HoldNote : Note, IPositionable, IPlayable
     /// The size of the largest point in the hold note.
     /// </summary>
     public int MaxSize => Points.Max(x => x.Size);
+    
+    public object Clone()
+    {
+        HoldNote clone = new(BonusType, JudgementType)
+        {
+            Timestamp = new(Timestamp),
+            JudgeArea = new(JudgeArea),
+        };
+        
+        foreach (HoldPointNote point in Points)
+        {
+            clone.Points.Add(new(point.Timestamp, point.Position, point.Size, clone, point.RenderType));
+        }
+
+        return clone;
+    }
 }

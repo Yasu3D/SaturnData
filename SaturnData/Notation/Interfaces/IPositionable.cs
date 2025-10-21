@@ -148,7 +148,6 @@ public interface IPositionable
     /// <returns></returns>
     public static OverlapResult HitTestResult(int pos, int size, int lane)
     {
-        if (size == 60) return OverlapResult.Body;
         if (lane == pos) return OverlapResult.LeftEdge;
         if (lane == (pos + size - 1) % 60) return OverlapResult.RightEdge;
         if (IsAnyOverlap(pos, size, lane, 1)) return OverlapResult.Body;

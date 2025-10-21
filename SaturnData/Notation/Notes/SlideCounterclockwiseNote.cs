@@ -1,3 +1,4 @@
+using System;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Interfaces;
 
@@ -6,18 +7,8 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note hit by flicking counterclockwise within its area at the right time.
 /// </summary>
-public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable
+public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable, ICloneable
 {
-    public SlideCounterclockwiseNote(SlideCounterclockwiseNote cloneSource)
-    {
-        Timestamp = new(cloneSource.Timestamp);
-        Position = cloneSource.Position;
-        Size = cloneSource.Size;
-        BonusType = cloneSource.BonusType;
-        JudgementType = cloneSource.JudgementType;
-        JudgeArea = new(cloneSource.JudgeArea);
-    }
-    
     public SlideCounterclockwiseNote(Timestamp timestamp, int position, int size, BonusType bonusType, JudgementType judgementType)
     {
         Timestamp = timestamp;
@@ -49,4 +40,14 @@ public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable
     public BonusType BonusType { get; set; }
     
     public JudgementType JudgementType { get; set; } 
+    
+    public object Clone()
+    {
+        SlideCounterclockwiseNote clone = new(new(Timestamp), Position, Size, BonusType, JudgementType)
+        {
+            JudgeArea = new(JudgeArea),
+        };
+
+        return clone;
+    }
 }
