@@ -127,7 +127,7 @@ public class Chart
     /// Pre-calculates all values for rendering or gameplay to function properly.
     /// </summary>
     /// <param name="entry"></param>
-    public void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = false)
+    public async void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = false)
     {
         lock (this)
         {
@@ -579,6 +579,36 @@ public class Chart
                 playable.JudgeArea.ScaledGoodEarly      = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodEarly);
                 playable.JudgeArea.ScaledGoodLate       = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodLate);
             }
+        }
+        
+        // Update BPM message
+        if (entry.AutoBpmMessage)
+        {
+            try
+            {
+                List<Event> tempoChanges = Events.Where(x => x is TempoChangeEvent).ToList();
+                float minTempo = tempoChanges.Min(x => ((TempoChangeEvent)x).Tempo);
+                float maxTempo = tempoChanges.Max(x => ((TempoChangeEvent)x).Tempo);
+
+                entry.BpmMessage = minTempo == maxTempo 
+                    ? $"{minTempo}" 
+                    : $"{minTempo} - {maxTempo}";
+            }
+            catch (Exception ex)
+            {
+                // don't throw
+                Console.WriteLine(ex);
+            }
+        }
+
+        if (entry.AutoReading)
+        {
+            entry.Reading = await entry.GetAutoReading();
+        }
+
+        if (entry.AutoClearThreshold)
+        {
+            entry.ClearThreshold = entry.GetAutoClearThreshold();
         }
     }
 }
