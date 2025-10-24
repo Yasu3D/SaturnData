@@ -13,6 +13,10 @@ namespace SaturnData.Notation.Serialization.SatV2;
 
 internal static class SatV2Reader
 { 
+    // TODO: FIX THE SHIT.
+    // Loading the final hold note breaks for some reason.
+    // SEE A-0 [H] TO REPRODUCE ISSUE.
+    
     /// <summary>
     /// RegEx pattern to parse bookmarks.
     /// </summary>
@@ -96,10 +100,10 @@ internal static class SatV2Reader
         }
 
         ReverseEffectEvent? tempReverseEvent = null;
-        string tempReverseLayer = "Layer 0";
+        string tempReverseLayer = "Main Layer";
 
         StopEffectEvent? tempStopEvent = null;
-        string tempStopLayer = "Layer 0";
+        string tempStopLayer = "Main Layer";
         
         foreach (string line in events)
         {
@@ -246,7 +250,7 @@ internal static class SatV2Reader
                     NotationHelpers.AddOrCreate(chart.Layers, tempReverseLayer, tempReverseEvent);
 
                     tempReverseEvent = null;
-                    tempReverseLayer = "Layer 0";
+                    tempReverseLayer = "Main Layer";
                     continue;
                 }
 
@@ -290,7 +294,7 @@ internal static class SatV2Reader
                     NotationHelpers.AddOrCreate(chart.Layers, tempStopLayer, tempStopEvent);
 
                     tempStopEvent = null;
-                    tempStopLayer = "Layer 0";
+                    tempStopLayer = "Main Layer";
                     continue;
                 }
                 
@@ -337,7 +341,7 @@ internal static class SatV2Reader
         }
 
         HoldNote? tempHoldNote = null;
-        string tempHoldNoteLayer = "Layer 0";
+        string tempHoldNoteLayer = "Main Layer";
 
         foreach (string line in objects)
         {
@@ -465,7 +469,7 @@ internal static class SatV2Reader
                     NotationHelpers.AddOrCreate(chart.Layers, tempHoldNoteLayer, tempHoldNote);
                     
                     tempHoldNote = null;
-                    tempHoldNoteLayer = "Layer 0";
+                    tempHoldNoteLayer = "Main Layer";
                 }
                 
                 if (type == "MASK_ADD")
@@ -524,19 +528,19 @@ internal static class SatV2Reader
         {
             foreach (string a in attributes)
             {
-                if (a == "L0") return "Layer 0";
-                if (a == "L1") return "Layer 1";
-                if (a == "L2") return "Layer 2";
-                if (a == "L3") return "Layer 3";
-                if (a == "L4") return "Layer 4";
-                if (a == "L5") return "Layer 5";
-                if (a == "L6") return "Layer 6";
-                if (a == "L7") return "Layer 7";
-                if (a == "L8") return "Layer 8";
-                if (a == "L9") return "Layer 9";
+                if (a == "L0") return "Main Layer";
+                if (a == "L1") return "Extra Layer 1";
+                if (a == "L2") return "Extra Layer 2";
+                if (a == "L3") return "Extra Layer 3";
+                if (a == "L4") return "Extra Layer 4";
+                if (a == "L5") return "Extra Layer 5";
+                if (a == "L6") return "Extra Layer 6";
+                if (a == "L7") return "Extra Layer 7";
+                if (a == "L8") return "Extra Layer 8";
+                if (a == "L9") return "Extra Layer 9";
             }
 
-            return "Layer 0";
+            return "Main Layer";
         }
 
         BonusType attributes2BonusType(string[] attributes)
