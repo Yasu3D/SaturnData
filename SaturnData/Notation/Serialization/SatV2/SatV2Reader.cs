@@ -13,10 +13,6 @@ namespace SaturnData.Notation.Serialization.SatV2;
 
 internal static class SatV2Reader
 { 
-    // TODO: FIX THE SHIT.
-    // Loading the final hold note breaks for some reason.
-    // SEE A-0 [H] TO REPRODUCE ISSUE.
-    
     /// <summary>
     /// RegEx pattern to parse bookmarks.
     /// </summary>

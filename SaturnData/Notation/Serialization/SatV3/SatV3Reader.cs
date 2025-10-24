@@ -82,11 +82,11 @@ public static class SatV3Reader
                     Match layerMatch = Regex.Match(line, LayerRegexPattern);
                     if (!layerMatch.Success) continue;
                     
-                    Layer layer = new(layerMatch.Groups[1].Value);
+                    setCurrentMultiLineObject(null);
                     
+                    Layer layer = new(layerMatch.Groups[1].Value);
                     currentRegion = Region.Layer;
                     currentLayer = layer;
-                    setCurrentMultiLineObject(null);
 
                     chart.Layers.Add(layer);
                     continue;
@@ -566,6 +566,9 @@ public static class SatV3Reader
                 Console.WriteLine(ex);
             }
         }
+        
+        // Finish the last multi-line object.
+        setCurrentMultiLineObject(null);
         
         return chart;
 
