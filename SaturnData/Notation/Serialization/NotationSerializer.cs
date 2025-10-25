@@ -17,7 +17,6 @@ public static class NotationSerializer
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <param name="formatVersion">The format to serialize as.</param>
-    /// <returns></returns>
     public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
     {
         return args.FormatVersion switch
@@ -30,6 +29,9 @@ public static class NotationSerializer
         };
     }
 
+    /// <summary>
+    /// Writes a chart to a file.
+    /// </summary>
     public static void ToFile(string path, Entry entry, Chart chart, NotationWriteArgs args)
     {
         string data = ToString(entry, chart, args);
@@ -41,7 +43,6 @@ public static class NotationSerializer
     /// </summary>
     /// <param name="path">The file to open.</param>
     /// <param name="args">Arguments for how the data should be read.</param>
-    /// <returns></returns>
     public static Chart ToChart(string path, NotationReadArgs args, out List<Exception> exceptions)
     {
         try
