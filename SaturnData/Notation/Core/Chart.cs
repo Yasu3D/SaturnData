@@ -83,6 +83,28 @@ public class Chart
         
         return Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is MetreChangeEvent && x.Timestamp.Time < time) as MetreChangeEvent;
     }
+
+    /// <summary>
+    /// Returns the "parent" <see cref="Layer"/> that contains the specified <see cref="ITimeable"/>.<br/>
+    /// If the ITimeable is not in any layer, <c>null</c> is returned instead.
+    /// </summary>
+    /// <param name="obj">The ITimeable to find the parent of.</param>
+    public Layer? ParentLayer(ITimeable obj)
+    {
+        if (Layers.Count == 0) return null;
+
+        if (obj is Note note)
+        {
+            return Layers.FirstOrDefault(x => x.Notes.Contains(note));
+        }
+
+        if (obj is Event @event)
+        {
+            return Layers.FirstOrDefault(x => x.Events.Contains(@event));
+        }
+        
+        return null;
+    }
     
     /// <summary>
     /// Calculates the ideal chart end timestamp, based on all objects in a chart and the length of audio.
