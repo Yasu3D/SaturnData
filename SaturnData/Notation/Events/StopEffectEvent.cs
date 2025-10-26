@@ -11,7 +11,7 @@ public class StopEffectEvent : Event
 {
     public StopEffectEvent(StopEffectEvent cloneSource)
     {
-        SubEvents = new EffectSubEvent[3];
+        SubEvents = new EffectSubEvent[2];
         SubEvents[0] = new(cloneSource.SubEvents[0].Timestamp, this);
         SubEvents[1] = new(cloneSource.SubEvents[1].Timestamp, this);
     }
