@@ -4,7 +4,7 @@ namespace SaturnData.Notation.Core;
 
 public class Bookmark : ITimeable
 {
-    public Bookmark(Timestamp timestamp, string color, string message)
+    public Bookmark(Timestamp timestamp, uint color, string message)
     {
         Timestamp = timestamp;
         Color = color;
@@ -13,7 +13,7 @@ public class Bookmark : ITimeable
     
     public Timestamp Timestamp { get; set; }
 
-    public string Color { get; set; }
+    public uint Color { get; set; }
     
     public string Message { get; set; }
 }

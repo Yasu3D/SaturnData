@@ -67,7 +67,7 @@ internal static class SatV2Reader
                 int tick = Convert.ToInt32(match.Groups[2].Value, CultureInfo.InvariantCulture);
                 string message = match.Groups[4].Value;
 
-                Bookmark bookmark = new(new(measure, tick), "DDDDDD", message);
+                Bookmark bookmark = new(new(measure, tick), 0xFFDDDDDD, message);
                 chart.Bookmarks.Add(bookmark);
             }
             catch (Exception ex)

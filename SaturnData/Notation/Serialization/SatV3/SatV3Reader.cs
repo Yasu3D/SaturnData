@@ -108,7 +108,7 @@ public static class SatV3Reader
                             continue;
                         }
                         
-                        string color = bookmarkMatch.Groups[1].Value;
+                        uint color = uint.TryParse(bookmarkMatch.Groups[1].Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint result) ? result + 0xFF000000 : 0xFFDDDDDD;
                         int measure = Convert.ToInt32(bookmarkMatch.Groups[2].Value, CultureInfo.InvariantCulture);
                         int tick = Convert.ToInt32(bookmarkMatch.Groups[3].Value, CultureInfo.InvariantCulture);
                         Timestamp timestamp = new(measure, tick);
