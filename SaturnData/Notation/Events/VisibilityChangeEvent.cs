@@ -10,17 +10,17 @@ public sealed class VisibilityChangeEvent : Event
     public VisibilityChangeEvent(VisibilityChangeEvent cloneSource)
     {
         Timestamp = new(cloneSource.Timestamp);
-        Visible = cloneSource.Visible;
+        Visibility = cloneSource.Visibility;
     }
     
-    public VisibilityChangeEvent(Timestamp timestamp, bool visible)
+    public VisibilityChangeEvent(Timestamp timestamp, bool visibility)
     {
         Timestamp = timestamp;
-        Visible = visible;
+        Visibility = visibility;
     }
 
     /// <summary>
     /// The new visibility value this event changes to.
     /// </summary>
-    public bool Visible { get; set; }
+    public bool Visibility { get; set; }
 }

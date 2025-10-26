@@ -202,7 +202,7 @@ public static class SatV3Writer
 
                 if (@event is VisibilityChangeEvent visibilityChangeEvent)
                 {
-                    sb.Append($"{"VISIBLE",-9} {visibilityChangeEvent.Timestamp.Measure,-4} {visibilityChangeEvent.Timestamp.Tick,-4} {bool2String(visibilityChangeEvent.Visible),11}\n");
+                    sb.Append($"{"VISIBLE",-9} {visibilityChangeEvent.Timestamp.Measure,-4} {visibilityChangeEvent.Timestamp.Tick,-4} {bool2String(visibilityChangeEvent.Visibility),11}\n");
                 }
 
                 if (@event is ReverseEffectEvent reverseEffectEvent)
