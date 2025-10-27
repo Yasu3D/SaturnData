@@ -601,6 +601,17 @@ public class Chart
                 playable.JudgeArea.ScaledGoodEarly      = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodEarly);
                 playable.JudgeArea.ScaledGoodLate       = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodLate);
             }
+            
+            // Sort everything.
+            Events = Events.OrderBy(x => x.Timestamp.FullTick).ToList();
+            LaneToggles = LaneToggles.OrderBy(x => x.Timestamp.FullTick).ToList();
+            Bookmarks = Bookmarks.OrderBy(x => x.Timestamp.FullTick).ToList();
+            
+            foreach (Layer layer in Layers)
+            {
+                layer.Notes = layer.Notes.OrderBy(x => x.Timestamp.FullTick).ToList();
+                layer.Events = layer.Events.OrderBy(x => x.Timestamp.FullTick).ToList();
+            }
         }
         
         // Update BPM message
