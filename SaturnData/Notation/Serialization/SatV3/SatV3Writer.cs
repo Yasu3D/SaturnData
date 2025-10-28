@@ -121,7 +121,7 @@ public static class SatV3Writer
         
         foreach (Bookmark bookmark in chart.Bookmarks)
         {
-            sb.Append($"{bookmark.Color - 0xFF000000,-9:X} {bookmark.Timestamp.Measure,-4} {bookmark.Timestamp.Tick,-4} {bookmark.Message}\n");
+            sb.Append($"{bookmark.Color - 0xFF000000,-9:X6} {bookmark.Timestamp.Measure,-4} {bookmark.Timestamp.Tick,-4} {bookmark.Message}\n");
         }
 
         sb.Append('\n');
