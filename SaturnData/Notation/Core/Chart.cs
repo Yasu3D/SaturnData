@@ -92,6 +92,11 @@ public class Chart
     public Layer? ParentLayer(ITimeable obj)
     {
         if (Layers.Count == 0) return null;
+        if (obj is TempoChangeEvent) return null;
+        if (obj is MetreChangeEvent) return null;
+        if (obj is TutorialMarkerEvent) return null;
+        if (obj is Bookmark) return null;
+        if (obj is ILaneToggle) return null;
 
         if (obj is Note note)
         {
