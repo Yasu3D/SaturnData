@@ -232,11 +232,11 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     /// </summary>
     /// <param name="layer">The layer to reference speed changes off of.</param>
     /// <param name="time">The time to convert in milliseconds.</param>
-    public static float ScaledTimeFromTime(Layer layer, float time)
+    public static float ScaledTimeFromTime(Layer layer, float time, bool ignoreReverse = false)
     {
         // Reverse Effects overrule all other speed changes.
         ReverseEffectEvent? reverseEffect = layer.LastReverseEffect(time);
-        if (reverseEffect != null && reverseEffect.IsActive(time))
+        if (!ignoreReverse && reverseEffect != null && reverseEffect.IsActive(time))
         {
             return reverseEffect.SampleReversedTime(time);
         }

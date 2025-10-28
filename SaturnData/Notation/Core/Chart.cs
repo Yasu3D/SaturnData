@@ -236,7 +236,7 @@ public class Chart
                     
                         foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
                         {
-                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time);
+                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time, true);
                         }
                     }
                     else
