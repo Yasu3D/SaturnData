@@ -55,7 +55,7 @@ public class Layer(string name)
             return Events.LastOrDefault(x => x is VisibilityChangeEvent && x.Timestamp.Time == 0) as VisibilityChangeEvent;
         }
         
-        return Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is VisibilityChangeEvent && x.Timestamp.Time < time) as VisibilityChangeEvent;
+        return Events.OrderBy(x => x.Timestamp).LastOrDefault(x => x is VisibilityChangeEvent && x.Timestamp.Time <= time) as VisibilityChangeEvent;
     }
     
     /// <summary>
