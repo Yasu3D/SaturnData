@@ -256,6 +256,8 @@ public class Chart
                             point.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
                         }
 
+                        holdNote.Points = holdNote.Points.OrderBy(x => x.Timestamp.FullTick).ToList();
+                        
                         if (holdNote.Points.Count > 1)
                         {
                             int holdEndFullTick = holdNote.Points[^1].Timestamp.FullTick;
