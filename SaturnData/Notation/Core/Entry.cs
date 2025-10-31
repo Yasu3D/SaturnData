@@ -518,9 +518,17 @@ public class Entry
     /// 12.7 => "12+"
     /// 13.2 => "13"
     /// </code>
-    public string LevelString => Level < 0
-        ? "X"
-        : $"{(int)Level}{(Level - (int)Level >= 0.7f ? "+" : "")}";
+    public string LevelString
+    {
+        get
+        {
+            if (Level < 0) return "X";
+            
+            return Math.Round(Level * 10) - (int)Level * 10 >= 7
+                ? $"{(int)Level}+"
+                : $"{(int)Level}";
+        }
+    }
 
     /// <summary>
     /// 
