@@ -327,16 +327,19 @@ public class Chart
 
                     for (int i = 0; i < metreChangeEvents.Count; i++)
                     {
-                        int startTick = metreChangeEvents[i].Timestamp.Tick == 0
-                            ? metreChangeEvents[i].Timestamp.FullTick
-                            : (metreChangeEvents[i].Timestamp.Measure + 1) * 1920;
+                        int step = 1920 / metreChangeEvents[i].Upper;
+                        float m = 1920.0f / metreChangeEvents[i].Upper;
+                        
+                        int roundedStartTick = (int)(Math.Floor(metreChangeEvents[i].Timestamp.FullTick / m) * m);
+
+                        int startTick = roundedStartTick < metreChangeEvents[i].Timestamp.FullTick 
+                            ? roundedStartTick + step 
+                            : roundedStartTick;
                         
                         int endTick = i == metreChangeEvents.Count - 1
                             ? entry.ChartEnd.FullTick
                             : metreChangeEvents[i + 1].Timestamp.FullTick;
-
-                        int step = 1920 / metreChangeEvents[i].Upper;
-
+                        
                         for (int j = startTick; j < endTick; j += step)
                         {
                             // I prefer giving people the option to have only beat lines.
