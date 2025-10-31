@@ -151,6 +151,10 @@ public class Chart
         return Timestamp.Max(chartEnd, audioEnd);
     }
 
+    /// <summary>
+    /// Returns an appropriate bpm message based on tempo changes in the chart.
+    /// </summary>
+    /// <returns></returns>
     public string GetAutoBpmMessage()
     {
         try
