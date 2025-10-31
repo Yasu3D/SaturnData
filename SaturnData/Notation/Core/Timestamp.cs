@@ -201,12 +201,17 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
         float timeDifference = time - last.Time;
         int tickDifference = (int)(timeDifference / TimePerTick(tempo.Tempo, metre.Ratio));
 
+        int fullTick = last.FullTick + tickDifference;
+        
         if (division != 1920)
         {
-            tickDifference = (int)(Math.Floor(tickDifference / (1920.0f / division)) * (1920.0f / division));
+            float m = 1920.0f / division;
+            fullTick = (int)(Math.Floor(fullTick / m) * m);
         }
+
+        fullTick = Math.Max(last.FullTick, fullTick);
         
-        return new(last.FullTick + tickDifference) { Time = time };
+        return new(fullTick) { Time = time };
     }
     
     /// <summary>

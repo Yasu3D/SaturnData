@@ -327,7 +327,10 @@ public class Chart
 
                     for (int i = 0; i < metreChangeEvents.Count; i++)
                     {
-                        int startTick = metreChangeEvents[i].Timestamp.FullTick;
+                        int startTick = metreChangeEvents[i].Timestamp.Tick == 0
+                            ? metreChangeEvents[i].Timestamp.FullTick
+                            : (metreChangeEvents[i].Timestamp.Measure + 1) * 1920;
+                        
                         int endTick = i == metreChangeEvents.Count - 1
                             ? entry.ChartEnd.FullTick
                             : metreChangeEvents[i + 1].Timestamp.FullTick;
