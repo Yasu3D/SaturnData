@@ -531,11 +531,11 @@ public class Entry
     }
 
     /// <summary>
-    /// 
+    /// Returns the standard clear threshold for the specified difficulty.
     /// </summary>
-    public float GetAutoClearThreshold()
+    public static float GetAutoClearThreshold(Difficulty difficulty)
     {
-        return Difficulty switch
+        return difficulty switch
         {
             Difficulty.None => 0.45f,
             Difficulty.Normal => 0.45f,
@@ -547,9 +547,12 @@ public class Entry
         };
     }
 
-    public async Task<string> GetAutoReading()
+    /// <summary>
+    /// Returns the "reading" string for a specified title.
+    /// </summary>
+    public static async Task<string> GetAutoReading(string title)
     {
-        string result = Title;
+        string result = title;
 
         foreach (KeyValuePair<char, char> pair in FullWidthDict)
         {

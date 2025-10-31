@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
@@ -149,12 +150,33 @@ public class Chart
 
         return Timestamp.Max(chartEnd, audioEnd);
     }
+
+    public string GetAutoBpmMessage()
+    {
+        try
+        {
+            List<Event> tempoChanges = Events.Where(x => x is TempoChangeEvent).ToList();
+            float minTempo = tempoChanges.Min(x => ((TempoChangeEvent)x).Tempo);
+            float maxTempo = tempoChanges.Max(x => ((TempoChangeEvent)x).Tempo);
+
+            return minTempo == maxTempo 
+                ? $"{minTempo}" 
+                : $"{minTempo} - {maxTempo}";
+        }
+        catch (Exception ex)
+        {
+            // don't throw
+            Console.WriteLine(ex);
+        }
+
+        return "???";
+    }
     
     /// <summary>
     /// Pre-calculates all values for rendering or gameplay to function properly.
     /// </summary>
     /// <param name="entry"></param>
-    public async void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = false)
+    public void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = false)
     {
         lock (this)
         {
@@ -625,36 +647,6 @@ public class Chart
                 layer.Notes = layer.Notes.OrderBy(x => x.Timestamp.FullTick).ToList();
                 layer.Events = layer.Events.OrderBy(x => x.Timestamp.FullTick).ToList();
             }
-        }
-        
-        // Update BPM message
-        if (entry.AutoBpmMessage)
-        {
-            try
-            {
-                List<Event> tempoChanges = Events.Where(x => x is TempoChangeEvent).ToList();
-                float minTempo = tempoChanges.Min(x => ((TempoChangeEvent)x).Tempo);
-                float maxTempo = tempoChanges.Max(x => ((TempoChangeEvent)x).Tempo);
-
-                entry.BpmMessage = minTempo == maxTempo 
-                    ? $"{minTempo}" 
-                    : $"{minTempo} - {maxTempo}";
-            }
-            catch (Exception ex)
-            {
-                // don't throw
-                Console.WriteLine(ex);
-            }
-        }
-
-        if (entry.AutoReading)
-        {
-            entry.Reading = await entry.GetAutoReading();
-        }
-
-        if (entry.AutoClearThreshold)
-        {
-            entry.ClearThreshold = entry.GetAutoClearThreshold();
         }
     }
 }
