@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -204,7 +205,7 @@ public static class MerWriter
 
             if (@event.FloatValue != null)
             {
-                sb.Append($" {@event.FloatValue:F6}");
+                sb.Append($" {@event.FloatValue.Value.ToString("0.000000", CultureInfo.InvariantCulture)}");
             }
 
             if (@event.IntValue1 != null && @event.IntValue2 != null)

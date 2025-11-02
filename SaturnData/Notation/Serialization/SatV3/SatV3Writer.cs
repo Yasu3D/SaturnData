@@ -49,18 +49,18 @@ public static class SatV3Writer
             sb.Append($"{"@REVISION",-16}{entry.Revision}\n");
             sb.Append($"{"@NOTES_DESIGNER",-16}{entry.NotesDesigner}\n");
             sb.Append($"{"@DIFFICULTY",-16}{difficulty2String(entry.Difficulty)}\n");
-            sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("F1", CultureInfo.InvariantCulture)}\n");
-            sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("F2", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("0.0", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n");
             sb.Append('\n');
-            sb.Append($"{"@PREVIEW_BEGIN",-16}{(entry.PreviewBegin / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-            sb.Append($"{"@PREVIEW_LENGTH",-16}{(entry.PreviewLength / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@PREVIEW_BEGIN",-16}{(entry.PreviewBegin / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@PREVIEW_LENGTH",-16}{(entry.PreviewLength / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
             sb.Append('\n');
             sb.Append($"{"@JACKET",-16}{entry.JacketFile}\n");
             sb.Append($"{"@AUDIO",-16}{entry.AudioFile}\n");
             sb.Append($"{"@VIDEO",-16}{entry.VideoFile}\n");
-            sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
-            sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("F6", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
             sb.Append('\n');
             sb.Append($"{"@END",-16}{entry.ChartEnd.Measure,-4}{entry.ChartEnd.Tick,-4}\n");
             sb.Append('\n');
@@ -135,7 +135,7 @@ public static class SatV3Writer
         {
             if (@event is TempoChangeEvent bpmChangeEvent)
             {
-                sb.Append($"{"TEMPO",-9} {bpmChangeEvent.Timestamp.Measure,-4} {bpmChangeEvent.Timestamp.Tick,-4} {bpmChangeEvent.Tempo.ToString("F6", CultureInfo.InvariantCulture),11}\n");
+                sb.Append($"{"TEMPO",-9} {bpmChangeEvent.Timestamp.Measure,-4} {bpmChangeEvent.Timestamp.Tick,-4} {bpmChangeEvent.Tempo.ToString("0.000000", CultureInfo.InvariantCulture),11}\n");
             }
 
             if (@event is MetreChangeEvent timeSignatureChangeEvent)
@@ -197,7 +197,7 @@ public static class SatV3Writer
             {
                 if (@event is SpeedChangeEvent hiSpeedChangeEvent)
                 {
-                    sb.Append($"{"SPEED",-9} {hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {hiSpeedChangeEvent.Speed.ToString("F6", CultureInfo.InvariantCulture),11}\n");
+                    sb.Append($"{"SPEED",-9} {hiSpeedChangeEvent.Timestamp.Measure,-4} {hiSpeedChangeEvent.Timestamp.Tick,-4} {hiSpeedChangeEvent.Speed.ToString("0.000000", CultureInfo.InvariantCulture),11}\n");
                 }
 
                 if (@event is VisibilityChangeEvent visibilityChangeEvent)
