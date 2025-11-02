@@ -371,7 +371,7 @@ public static class MerReader
                     if (NotationHelpers.ContainsKey(line, "#EDITOR_MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
             
                     // WACK COMPATIBILITY
-                    if (NotationHelpers.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value); }
+                    if (NotationHelpers.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                     if (NotationHelpers.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioFile = value; }
                     if (NotationHelpers.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
                     if (NotationHelpers.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
