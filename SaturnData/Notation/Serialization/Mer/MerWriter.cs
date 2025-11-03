@@ -45,14 +45,30 @@ public static class MerWriter
     /// <summary>
     /// Converts a chart into a string.
     /// </summary>
+    /// <param name="chart">The chart to serialize.</param>
+    /// <remarks>
+    /// This overload doesn't write any metadata. Certain format specs may not support this.
+    /// </remarks>
+    public static string ToString(Chart chart, NotationWriteArgs args)
+    {
+        return ToString(null, chart, args);
+    }
+    
+    /// <summary>
+    /// Converts a chart into a string.
+    /// </summary>
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
+    public static string ToString(Entry? entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
 
-        WriteMetadata(sb, entry, args);
+        if (entry != null)
+        {
+            WriteMetadata(sb, entry, args);
+        }
+        
         WriteEvents(sb, chart, args);
         WriteNotes(sb, chart, entry, args);
 
@@ -88,7 +104,6 @@ public static class MerWriter
 
         sb.Append($"#OFFSET {entry.AudioOffset / 1000}\n");
         sb.Append($"#MOVIEOFFSET {entry.VideoOffset / 1000}\n");
-        sb.Append("#BODY\n");
     }
 
     /// <summary>
@@ -199,6 +214,8 @@ public static class MerWriter
             .ToList();
 
         // Create string with StringBuilder
+        sb.Append("#BODY\n");
+        
         foreach (MerWriterEvent @event in events)
         {
             sb.Append($"{@event.Timestamp.Measure,4} {@event.Timestamp.Tick,4} {@event.ObjectType,4}");
@@ -223,7 +240,7 @@ public static class MerWriter
     /// <param name="sb">The StringBuilder to use.</param>
     /// <param name="chart">The chart that holds the notes to write.</param>
     /// <param name="args">Options to adjust serialization behaviour.</param>
-    public static void WriteNotes(StringBuilder sb, Chart chart, Entry entry, NotationWriteArgs args)
+    public static void WriteNotes(StringBuilder sb, Chart chart, Entry? entry, NotationWriteArgs args)
     {
         List<MerWriterNote> notes = [];
         
@@ -481,14 +498,17 @@ public static class MerWriter
         }
         
         // Add chart end.
-        notes.Add(new()
+        if (entry != null)
         {
-            Timestamp = entry.ChartEnd,
-            NoteType = 14,
-            Position = 0,
-            Size = 60,
-            Render = 1,
-        });
+            notes.Add(new()
+            {
+                Timestamp = entry.ChartEnd,
+                NoteType = 14,
+                Position = 0,
+                Size = 60,
+                Render = 1,
+            });
+        }
         
         notes = notes
             .OrderBy(x => x.Timestamp)

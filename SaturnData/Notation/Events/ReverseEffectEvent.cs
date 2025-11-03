@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SaturnData.Notation.Core;
 
@@ -6,21 +7,8 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Scrolls a set of notes on a layer backwards.
 /// </summary>
-public class ReverseEffectEvent : Event
+public class ReverseEffectEvent : Event, ICloneable
 {
-    public ReverseEffectEvent(ReverseEffectEvent cloneSource)
-    {
-        SubEvents = new EffectSubEvent[3];
-        SubEvents[0] = new(cloneSource.SubEvents[0].Timestamp, this);
-        SubEvents[1] = new(cloneSource.SubEvents[1].Timestamp, this);
-        SubEvents[2] = new(cloneSource.SubEvents[2].Timestamp, this);
-    }
-
-    public ReverseEffectEvent()
-    {
-        SubEvents = new EffectSubEvent[3];
-    }
-    
     /// <summary>
     /// The timestamp when the reverse effect begins.<br/>
     /// Modifying this timestamp will move all sub-events as well.
@@ -35,7 +23,7 @@ public class ReverseEffectEvent : Event
     /// [1] = Reverse Effect End / Reverse Note Capture Begin
     /// [2] = Reverse Note Capture End
     /// </code>
-    public EffectSubEvent[] SubEvents;
+    public EffectSubEvent[] SubEvents = new EffectSubEvent[3];
 
     /// <summary>
     /// All notes that appear during the reverse effect.
@@ -76,4 +64,14 @@ public class ReverseEffectEvent : Event
     /// <see cref="SubEvents"/>[0] and <see cref="SubEvents"/>[1].
     /// </summary>
     public bool IsActive(float time) => time >= SubEvents[0].Timestamp.Time && time <= SubEvents[1].Timestamp.Time;
+
+    public object Clone()
+    {
+        ReverseEffectEvent clone = new();
+        clone.SubEvents[0] = new(SubEvents[0].Timestamp, clone);
+        clone.SubEvents[1] = new(SubEvents[1].Timestamp, clone);
+        clone.SubEvents[2] = new(SubEvents[2].Timestamp, clone);
+
+        return clone;
+    }
 }

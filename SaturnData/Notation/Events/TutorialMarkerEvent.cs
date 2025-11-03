@@ -1,15 +1,10 @@
+using System;
 using SaturnData.Notation.Core;
 
 namespace SaturnData.Notation.Events;
 
-public sealed class TutorialMarkerEvent : Event
+public sealed class TutorialMarkerEvent : Event, ICloneable
 {
-    public TutorialMarkerEvent(TutorialMarkerEvent cloneSource)
-    {
-        Timestamp = new(cloneSource.Timestamp);
-        Key = cloneSource.Key;
-    }
-    
     public TutorialMarkerEvent(Timestamp timestamp, string key)
     {
         Timestamp = timestamp;
@@ -20,4 +15,6 @@ public sealed class TutorialMarkerEvent : Event
     /// The key of the tutorial message to display.
     /// </summary>
     public string Key { get; set; }
+
+    public object Clone() => new TutorialMarkerEvent(new(Timestamp), Key);
 }

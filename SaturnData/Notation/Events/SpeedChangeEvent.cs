@@ -1,3 +1,4 @@
+using System;
 using SaturnData.Notation.Core;
 
 namespace SaturnData.Notation.Events;
@@ -5,14 +6,8 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current scroll speed of a layer.
 /// </summary>
-public sealed class SpeedChangeEvent : Event
+public sealed class SpeedChangeEvent : Event, ICloneable
 {
-    public SpeedChangeEvent(SpeedChangeEvent cloneSource)
-    {
-        Timestamp = new(cloneSource.Timestamp);
-        Speed = cloneSource.Speed;
-    }
-
     public SpeedChangeEvent(Timestamp timestamp, float speed)
     {
         Timestamp = timestamp;
@@ -25,4 +20,6 @@ public sealed class SpeedChangeEvent : Event
     /// Range: <c>Single.MinValue / Single.MaxValue</c>
     /// </summary>
     public float Speed { get; set; }
+
+    public object Clone() => new SpeedChangeEvent(new(Timestamp), Speed);
 }

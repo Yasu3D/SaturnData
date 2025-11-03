@@ -4,6 +4,13 @@ namespace SaturnData.Notation.Core;
 
 public class Bookmark : ITimeable
 {
+    public Bookmark(Bookmark cloneSource)
+    {
+        Timestamp = new(cloneSource.Timestamp.FullTick);
+        Color = cloneSource.Color;
+        Message = cloneSource.Message;
+    }
+    
     public Bookmark(Timestamp timestamp, uint color, string message)
     {
         Timestamp = timestamp;

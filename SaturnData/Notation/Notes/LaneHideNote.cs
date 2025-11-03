@@ -1,3 +1,4 @@
+using System;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Interfaces;
 
@@ -6,16 +7,8 @@ namespace SaturnData.Notation.Notes;
 /// <summary>
 /// A note that hides the tunnel lanes it occupies once it reaches the judgement line.
 /// </summary>
-public sealed class LaneHideNote : Note, IPositionable, ILaneToggle
+public sealed class LaneHideNote : Note, IPositionable, ILaneToggle, ICloneable
 {
-    public LaneHideNote(LaneHideNote cloneSource)
-    {
-        Timestamp = new(cloneSource.Timestamp);
-        Position = cloneSource.Position;
-        Size = cloneSource.Size;
-        Direction = cloneSource.Direction;
-    }
-    
     public LaneHideNote(Timestamp timestamp, int position, int size, LaneSweepDirection direction)
     {
         Timestamp = timestamp;
@@ -39,4 +32,6 @@ public sealed class LaneHideNote : Note, IPositionable, ILaneToggle
     private int size = 15;
     
     public LaneSweepDirection Direction { get; set; }
+
+    public object Clone() => new LaneHideNote(new(Timestamp), Position, Size, Direction);
 }

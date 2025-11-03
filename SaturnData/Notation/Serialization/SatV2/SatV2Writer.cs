@@ -15,14 +15,29 @@ public static class SatV2Writer
     /// <summary>
     /// Converts a chart into a string.
     /// </summary>
+    /// <param name="chart">The chart to serialize.</param>
+    /// <remarks>
+    /// This overload doesn't write any metadata. Certain format specs may not support this.
+    /// </remarks>
+    public static string ToString(Chart chart, NotationWriteArgs args)
+    {
+        return ToString(null, chart, args);
+    }
+    
+    /// <summary>
+    /// Converts a chart into a string.
+    /// </summary>
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry entry, Chart chart, NotationWriteArgs args)
+    public static string ToString(Entry? entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
 
-        WriteMetadata(sb, entry, args);
+        if (entry != null)
+        {
+            WriteMetadata(sb, entry, args);
+        }
         WriteBookmarks(sb, chart, args);
         WriteEvents(sb, chart, entry, args);
         WriteNotes(sb, chart, args);
@@ -77,7 +92,7 @@ public static class SatV2Writer
         sb.Append('\n');
     }
     
-    public static void WriteEvents(StringBuilder sb, Chart chart, Entry entry, NotationWriteArgs args)
+    public static void WriteEvents(StringBuilder sb, Chart chart, Entry? entry, NotationWriteArgs args)
     {
         List<Event> events = [];
         Dictionary<Event, int> layerIndices = new();
@@ -143,7 +158,11 @@ public static class SatV2Writer
             index++;
         }
 
-        sb.Append($"{entry.ChartEnd.Measure,-4} {entry.ChartEnd.Tick,-4} {index,-4} {"CHART_END",-16}\n");
+        if (entry != null)
+        {
+            sb.Append($"{entry.ChartEnd.Measure,-4} {entry.ChartEnd.Tick,-4} {index,-4} {"CHART_END",-16}\n");
+        }
+        
         sb.Append('\n');
     }
     

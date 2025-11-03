@@ -1,3 +1,4 @@
+using System;
 using SaturnData.Notation.Core;
 
 namespace SaturnData.Notation.Events;
@@ -5,15 +6,8 @@ namespace SaturnData.Notation.Events;
 /// <summary>
 /// Changes the current metre / time signature.
 /// </summary>
-public sealed class MetreChangeEvent : Event
+public sealed class MetreChangeEvent : Event, ICloneable
 {
-    public MetreChangeEvent(MetreChangeEvent cloneSource)
-    {
-        Timestamp = new(cloneSource.Timestamp);
-        Upper = cloneSource.Upper;
-        Lower = cloneSource.Lower;
-    }
-
     public MetreChangeEvent(Timestamp timestamp, int upper, int lower)
     {
         Timestamp = timestamp;
@@ -35,4 +29,6 @@ public sealed class MetreChangeEvent : Event
     /// The metre ratio to change to.
     /// </summary>
     public float Ratio => (float)Upper / Lower;
+
+    public object Clone() => new MetreChangeEvent(new(Timestamp), Upper, Lower);
 }
