@@ -639,8 +639,7 @@ public static class SatV3Reader
                 currentLayer.Events.Add(reverseEffectEvent);
             }
 
-            if (currentMultilineObject is HoldNote holdNote
-                && holdNote.Points.Count > 1)
+            if (currentMultilineObject is HoldNote holdNote)
             {
                 currentLayer.Notes.Add(holdNote);
             }
