@@ -19,7 +19,8 @@ public static class SatV3Writer
     /// </remarks>
     public static string ToString(Chart chart, NotationWriteArgs args)
     {
-        return ToString(null, chart, args);
+        string prefix = $"# {args.ExportWatermark}\n{"@SAT_VERSION",-16}3\n\n";
+        return prefix + ToString(null, chart, args);
     }
     
     /// <summary>

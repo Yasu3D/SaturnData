@@ -68,13 +68,12 @@ public class HoldNote : Note, IPositionable, IPlayable, ICloneable
     {
         HoldNote clone = new(BonusType, JudgementType)
         {
-            Timestamp = new(Timestamp),
             JudgeArea = new(JudgeArea),
         };
         
         foreach (HoldPointNote point in Points)
         {
-            clone.Points.Add(new(point.Timestamp, point.Position, point.Size, clone, point.RenderType));
+            clone.Points.Add(new(new(point.Timestamp), point.Position, point.Size, clone, point.RenderType));
         }
 
         return clone;

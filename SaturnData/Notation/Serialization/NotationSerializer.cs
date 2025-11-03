@@ -20,7 +20,14 @@ public static class NotationSerializer
     /// </remarks>
     public static string ToString(Chart chart, NotationWriteArgs args)
     {
-        return ToString(null, chart, args);
+        return args.FormatVersion switch
+        {
+            FormatVersion.Mer => MerWriter.ToString(chart, args),
+            FormatVersion.SatV1 => SatV1Writer.ToString(chart, args),
+            FormatVersion.SatV2 => SatV2Writer.ToString(chart, args),
+            FormatVersion.SatV3 => SatV3Writer.ToString(chart, args),
+            _ => "",
+        };
     }
     
     /// <summary>

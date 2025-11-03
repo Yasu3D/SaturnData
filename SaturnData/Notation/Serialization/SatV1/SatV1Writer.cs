@@ -15,7 +15,7 @@ public static class SatV1Writer
     /// </remarks>
     public static string ToString(Chart chart, NotationWriteArgs args)
     {
-        return ToString(null, chart, args);
+        return SatV2Writer.ToString(chart, args);
     }
     
     /// <summary>
