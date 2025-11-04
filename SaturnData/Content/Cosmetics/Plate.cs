@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A background to display behind the user profile.
 /// </summary>
 [Serializable]
-public class Plate : ContentItem
+public class Plate : CosmeticItem
 {
     /// <summary>
     /// The creator of the <see cref="Plate"/> image.

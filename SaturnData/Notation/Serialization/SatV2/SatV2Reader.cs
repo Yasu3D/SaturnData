@@ -598,7 +598,7 @@ internal static class SatV2Reader
 
                 string value;
 
-                if (NotationHelpers.ContainsKey(line, "@GUID ",     out value)) { entry.Guid = value; }
+                if (NotationHelpers.ContainsKey(line, "@GUID ",     out value)) { entry.Id = value; }
                 if (NotationHelpers.ContainsKey(line, "@VERSION ",  out value)) { entry.Revision = value; }
                 if (NotationHelpers.ContainsKey(line, "@TITLE ",    out value)) { entry.Title = value; }
                 if (NotationHelpers.ContainsKey(line, "@RUBI ",     out value)) { entry.Reading = value; }

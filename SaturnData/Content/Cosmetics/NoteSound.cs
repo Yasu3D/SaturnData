@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A set of note sound effects, also known as "Hitsounds".
 /// </summary>
 [Serializable]
-public class NoteSound : ContentItem
+public class NoteSound : CosmeticItem
 {
     /// <summary>
     /// The creator of the <see cref="NoteSound"/>.

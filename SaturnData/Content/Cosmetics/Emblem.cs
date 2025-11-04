@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A secondary icon to display on the user profile, often denoting a stage-up clear.
 /// </summary>
 [Serializable]
-public class Emblem : ContentItem
+public class Emblem : CosmeticItem
 {
     /// <summary>
     /// The creator of the <see cref="Emblem"/> image.

@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A primary icon to display on the user profile. Acts like a profile picture.
 /// </summary>
 [Serializable]
-public class Icon : ContentItem
+public class Icon : CosmeticItem
 {
     /// <summary>
     /// The creator of the <see cref="Icon"/> image.

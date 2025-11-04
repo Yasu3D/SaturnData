@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
@@ -468,7 +467,7 @@ public class Chart
                 // - Early GREAT/GOOD areas are removed.
                 foreach (Note note in playableNotes)
                 {
-                    if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote> holdEndsOnTick)) continue;
+                    if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote>? holdEndsOnTick)) continue;
 
                     foreach (HoldPointNote holdEnd in holdEndsOnTick)
                     {
@@ -575,7 +574,7 @@ public class Chart
                 // - Early GREAT/GOOD areas are removed.
                 foreach (Note note in playableNotes)
                 {
-                    if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote> holdEndsOnTick)) continue;
+                    if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote>? holdEndsOnTick)) continue;
 
                     foreach (HoldPointNote holdEnd in holdEndsOnTick)
                     {

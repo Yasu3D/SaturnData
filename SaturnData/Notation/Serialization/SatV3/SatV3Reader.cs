@@ -672,7 +672,7 @@ public static class SatV3Reader
 
                 string value;
                 
-                if (NotationHelpers.ContainsKey(line, "@GUID ",           out value)) { entry.Guid = value; }
+                if (NotationHelpers.ContainsKey(line, "@ID ",             out value)) { entry.Id = value; }
                 if (NotationHelpers.ContainsKey(line, "@TITLE ",          out value)) { entry.Title = value; }
                 if (NotationHelpers.ContainsKey(line, "@READING ",        out value)) { entry.Reading = value; }
                 if (NotationHelpers.ContainsKey(line, "@ARTIST ",         out value)) { entry.Artist = value; }

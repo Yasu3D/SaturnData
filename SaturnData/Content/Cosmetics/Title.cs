@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A piece of text to display on the user profile. Acts like a profile status or formal title.
 /// </summary>
 [Serializable]
-public class Title : ContentItem
+public class Title : CosmeticItem
 {
     /// <summary>
     /// The title message to display to users.

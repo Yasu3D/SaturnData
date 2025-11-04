@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A set of background songs to play in different scenes.
 /// </summary>
 [Serializable]
-public class SystemMusic : ContentItem
+public class SystemMusic : CosmeticItem
 {
     /// <summary>
     /// The creator of the <see cref="SystemMusic"/>.

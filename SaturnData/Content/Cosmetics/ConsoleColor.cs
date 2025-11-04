@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A color theme of the input console.
 /// </summary>
 [Serializable]
-public class ConsoleColor : ContentItem
+public class ConsoleColor : CosmeticItem
 {
     /// <summary>
     /// The color to display in-game for areas with hidden lanes.

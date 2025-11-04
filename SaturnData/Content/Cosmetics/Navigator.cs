@@ -27,7 +27,7 @@ public enum NavigatorBlinkState
 /// A character that accompanies the user throughout gameplay.
 /// </summary>
 [Serializable]
-public class Navigator : ContentItem
+public class Navigator : CosmeticItem
 {
     /// <summary>
     /// The creator of the <see cref="Navigator"/> artwork.
@@ -136,18 +136,18 @@ public class Navigator : ContentItem
         if (DialogueLanguages.Count == 0) return NavigatorDialogue.ErrorDialogue;
 
         // Try to get desired language.
-        if (DialogueLanguages.TryGetValue(locale, out NavigatorDialogueLanguage desiredLanguage))
+        if (DialogueLanguages.TryGetValue(locale, out NavigatorDialogueLanguage? desiredLanguage))
         {
-            if (desiredLanguage.Dialogues.TryGetValue(key, out NavigatorDialogueVariantCollection collection))
+            if (desiredLanguage.Dialogues.TryGetValue(key, out NavigatorDialogueVariantCollection? collection))
             {
                 return collection.RandomVariant;
             }
         }
         
         // Try to get en-US
-        if (DialogueLanguages.TryGetValue("en-US", out NavigatorDialogueLanguage fallbackLanguage))
+        if (DialogueLanguages.TryGetValue("en-US", out NavigatorDialogueLanguage? fallbackLanguage))
         {
-            if (fallbackLanguage.Dialogues.TryGetValue(key, out NavigatorDialogueVariantCollection collection))
+            if (fallbackLanguage.Dialogues.TryGetValue(key, out NavigatorDialogueVariantCollection? collection))
             {
                 return collection.RandomVariant;
             }
@@ -156,7 +156,7 @@ public class Navigator : ContentItem
         // Search through all languages and return dialogue in the first language it exists in.
         foreach (NavigatorDialogueLanguage language in DialogueLanguages.Values)
         {
-            if (!language.Dialogues.TryGetValue(key, out NavigatorDialogueVariantCollection collection)) continue;
+            if (!language.Dialogues.TryGetValue(key, out NavigatorDialogueVariantCollection? collection)) continue;
 
             return collection.RandomVariant;
         }

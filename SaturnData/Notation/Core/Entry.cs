@@ -54,9 +54,7 @@ public class Entry
     /// <summary>
     /// The unique identifier of the chart.
     /// </summary>
-    public string Guid = $"SAT{System.Guid.NewGuid()}";
-    
-    
+    public string Id = $"SAT{Guid.NewGuid()}";
     
     /// <summary>
     /// The title of the chart's song.

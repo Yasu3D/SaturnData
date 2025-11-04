@@ -57,7 +57,7 @@ public static class SatV3Writer
 
             sb.Append($"{"@SAT_VERSION",-16}3\n");
             sb.Append('\n');
-            sb.Append($"{"@GUID",-16}{entry.Guid}\n");
+            sb.Append($"{"@ID",-16}{entry.Id}\n");
             sb.Append($"{"@TITLE",-16}{entry.Title}\n");
             sb.Append($"{"@READING",-16}{entry.Reading}\n");
             sb.Append($"{"@ARTIST",-16}{entry.Artist}\n");

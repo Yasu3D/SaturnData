@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 
 namespace SaturnData.Content;
@@ -22,24 +21,6 @@ public abstract class ContentItem
     /// </summary>
     public string Name { get; set; }  = "";
     
-    /// <summary>
-    /// The author of the <see cref="ContentItem"/>.
-    /// </summary>
-    /// <remarks>
-    /// This property should be used for the person that compiled the <see cref="ContentItem"/>.
-    /// Authors for media used (images, audio, video) are specified in classes that inherit from <see cref="ContentItem"/>.
-    /// </remarks>
-    public string Author { get; set; } = "";
-
-    /// <summary>
-    /// The rarity of the <see cref="ContentItem"/>.
-    /// </summary>
-    /// <remarks>
-    /// - Rarity has no effect on what the ContentItem does.<br/>
-    /// - Some ContentItems may not display their rarity.
-    /// </remarks>
-    public int Rarity { get; set; } = 0;
-
     /// <summary>
     /// The absolute path to the file that defined the <see cref="ContentItem"/>.
     /// </summary>

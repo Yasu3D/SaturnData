@@ -6,7 +6,7 @@ namespace SaturnData.Content.Cosmetics;
 /// A set of menu sound effects to play on UI interactions.
 /// </summary>
 [Serializable]
-public class SystemSound : ContentItem
+public class SystemSound : CosmeticItem
 {
     /// <summary>
     /// The creator of the <see cref="SystemSound"/>.
