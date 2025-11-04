@@ -465,7 +465,7 @@ public class Chart
                 // Follow Saturn-spec
                 
                 // Notes on hold ends
-                // - Early GREAT/GOOD windows are removed.
+                // - Early GREAT/GOOD areas are removed.
                 foreach (Note note in playableNotes)
                 {
                     if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote> holdEndsOnTick)) continue;
@@ -483,7 +483,7 @@ public class Chart
                 }
 
                 // Slide & Snap notes on hold starts
-                // - All early windows of the hold note are converted to MARVELOUS.
+                // - All early areas of the hold note are converted to MARVELOUS.
                 for (int i = 0; i < playableNotes.Count; i++)
                 {
                     Note note = playableNotes[i];
@@ -520,11 +520,11 @@ public class Chart
                 }
 
                 // Notes inside holds
-                // - Early GREAT/GOOD windows are cut in half.
+                // - Early GREAT/GOOD areas are cut in half.
                 // TODO
                 
                 // Overlapping judge areas
-                // - Do not truncate MARVELOUS window.
+                // - Do not truncate MARVELOUS area.
                 for (int i = 0; i < playableNotes.Count; i++)
                 {
                     Note note = playableNotes[i];
@@ -572,7 +572,7 @@ public class Chart
                 // Follow Mer-spec
                 
                 // Notes on hold ends
-                // - Early GREAT/GOOD windows are removed.
+                // - Early GREAT/GOOD areas are removed.
                 foreach (Note note in playableNotes)
                 {
                     if (!holdEndNotes.TryGetValue(note.Timestamp.FullTick, out List<HoldPointNote> holdEndsOnTick)) continue;
@@ -627,7 +627,7 @@ public class Chart
                 }
             }
             
-            // Create Scaled Timing windows for rendering.
+            // Create Scaled Timing areas for rendering.
             foreach (Layer layer in Layers)
             foreach (Note note in layer.Notes)
             {

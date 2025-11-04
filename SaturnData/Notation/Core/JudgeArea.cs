@@ -28,10 +28,10 @@ public class JudgeArea
     /// </summary>
     /// <remarks>
     /// Parameters are interpreted as "signed" milliseconds:<br/>
-    /// <i>- Early window values are negative<br/>
-    /// - Late window values are positive.<br/></i>
+    /// <i>- Early area values are negative<br/>
+    /// - Late area values are positive.<br/></i>
     /// </remarks>
-    /// <exception cref="ArgumentException">Thrown when the judge areas are defined out of order. (e.g. early window is later than the late window.)</exception>
+    /// <exception cref="ArgumentException">Thrown when the judge areas are defined out of order. (e.g. early area is later than the late area.)</exception>
     public JudgeArea(float time, float goodEarly, float greatEarly, float marvelousEarly, float marvelousLate,  float greatLate, float goodLate)
     {
         bool order = goodEarly             <= greatEarly
@@ -58,10 +58,10 @@ public class JudgeArea
     /// </summary>
     /// <remarks>
     /// Parameters are interpreted as "signed" frames:<br/>
-    /// <i>- Early window values are negative<br/>
-    /// - Late window values are positive.<br/></i>
+    /// <i>- Early area values are negative<br/>
+    /// - Late area values are positive.<br/></i>
     /// </remarks>
-    /// <exception cref="ArgumentException">Thrown when the judge areas are defined out of order. (e.g. early window is later than the late window.)</exception>
+    /// <exception cref="ArgumentException">Thrown when the judge areas are defined out of order. (e.g. early area is later than the late area.)</exception>
     public static JudgeArea FromFrames(float time, int goodEarlyFrames, int greatEarlyFrames, int marvelousEarlyFrames, int marvelousLateFrames,  int greatLateFrames, int goodLateFrames)
     {
         bool order = goodEarlyFrames             <= greatEarlyFrames
@@ -106,62 +106,62 @@ public class JudgeArea
     public float ScaledMaxLate => Math.Max(ScaledMarvelousLate, Math.Max(ScaledGreatLate, ScaledGoodLate));
 
     /// <summary>
-    /// Start of "Marvelous" window in milliseconds.
+    /// Start of "Marvelous" area in milliseconds.
     /// </summary>
     public float MarvelousEarly;
 
     /// <summary>
-    /// End of "Marvelous" window in milliseconds.
+    /// End of "Marvelous" area in milliseconds.
     /// </summary>
     public float MarvelousLate;
 
     /// <summary>
-    /// Start of "Great" window in milliseconds.
+    /// Start of "Great" area in milliseconds.
     /// </summary>
     public float GreatEarly;
 
     /// <summary>
-    /// End of "Great" window in milliseconds.
+    /// End of "Great" area in milliseconds.
     /// </summary>
     public float GreatLate;
 
     /// <summary>
-    /// Start of "Good" window in milliseconds.
+    /// Start of "Good" area in milliseconds.
     /// </summary>
     public float GoodEarly;
 
     /// <summary>
-    /// End of "Good" window in milliseconds.
+    /// End of "Good" area in milliseconds.
     /// </summary>
     public float GoodLate;
 
     /// <summary>
-    /// Start of "Marvelous" window in milliseconds, scaled by speed changes.
+    /// Start of "Marvelous" area in milliseconds, scaled by speed changes.
     /// </summary>
     public float ScaledMarvelousEarly;
 
     /// <summary>
-    /// End of "Marvelous" window in milliseconds, scaled by speed changes.
+    /// End of "Marvelous" area in milliseconds, scaled by speed changes.
     /// </summary>
     public float ScaledMarvelousLate;
 
     /// <summary>
-    /// Start of "Great" window in milliseconds, scaled by speed changes.
+    /// Start of "Great" area in milliseconds, scaled by speed changes.
     /// </summary>
     public float ScaledGreatEarly;
 
     /// <summary>
-    /// End of "Great" window in milliseconds, scaled by speed changes.
+    /// End of "Great" area in milliseconds, scaled by speed changes.
     /// </summary>
     public float ScaledGreatLate;
 
     /// <summary>
-    /// Start of "Good" window in milliseconds, scaled by speed changes.
+    /// Start of "Good" area in milliseconds, scaled by speed changes.
     /// </summary>
     public float ScaledGoodEarly;
 
     /// <summary>
-    /// End of "Good" window in milliseconds, scaled by speed changes.
+    /// End of "Good" area in milliseconds, scaled by speed changes.
     /// </summary>
     public float ScaledGoodLate;
 }
