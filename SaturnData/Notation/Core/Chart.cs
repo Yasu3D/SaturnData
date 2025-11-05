@@ -4,6 +4,7 @@ using System.Linq;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
+using SaturnData.Utilities;
 
 namespace SaturnData.Notation.Core;
 
@@ -219,6 +220,7 @@ public class Chart
 
             // Collection of all playable notes for judge area calculations done later.
             List<Note> playableNotes = [];
+            List<HoldNote> playableHoldNotes = [];
             Dictionary<int, List<HoldPointNote>> holdEndNotes = [];
             
             foreach (Layer layer in Layers)
@@ -296,6 +298,8 @@ public class Chart
                         
                         if (holdNote.Points.Count > 1)
                         {
+                            playableHoldNotes.Add(holdNote);
+                            
                             int holdEndFullTick = holdNote.Points[^1].Timestamp.FullTick;
                             if (holdEndNotes.TryGetValue(holdEndFullTick, out List<HoldPointNote>? holdEndsOnTick))
                             {
@@ -470,10 +474,9 @@ public class Chart
             // Process judge areas.
             playableNotes = playableNotes.OrderBy(x => x.Timestamp.FullTick).ToList();
             
+            // Follow Saturn-spec
             if (saturnJudgeAreas)
             {
-                // Follow Saturn-spec
-                
                 // Notes on hold ends
                 // - Early GREAT/GOOD areas are removed.
                 foreach (Note note in playableNotes)
@@ -531,7 +534,56 @@ public class Chart
 
                 // Notes inside holds
                 // - Early GREAT/GOOD areas are cut in half.
-                // TODO
+                for (int i = 0; i < playableHoldNotes.Count; i++)
+                {
+                    HoldNote holdNote = playableHoldNotes[i];
+                    
+                    for (int j = 0; j < playableNotes.Count; j++)
+                    {
+                        Note note = playableNotes[j];
+                        if (note is not IPositionable positionable) continue;
+                        if (note is not IPlayable playable) continue;
+
+                        if (note.Timestamp.FullTick <= holdNote.Points[0].Timestamp.FullTick) continue;
+                        if (note.Timestamp.FullTick >= holdNote.Points[^1].Timestamp.FullTick) continue;
+
+                        HoldPointNote? start = null;
+                        HoldPointNote? end = null;
+
+                        // Find first point that's later than note.
+                        for (int k = 0; k < holdNote.Points.Count; k++)
+                        {
+                            HoldPointNote point = holdNote.Points[k];
+                            if (point.Timestamp.FullTick <= note.Timestamp.FullTick) continue;
+
+                            end = point;
+                            break;
+                        }
+                        
+                        // Find last point that's earlier than note.
+                        for (int k = holdNote.Points.Count - 1; k >= 0; k--)
+                        {
+                            HoldPointNote point = holdNote.Points[k];
+                            if (point.Timestamp.FullTick >= note.Timestamp.FullTick) continue;
+
+                            start = point;
+                            break;
+                        }
+                        
+                        if (start == null) continue;
+                        if (end == null) continue;
+
+                        float t = SaturnMath.InverseLerp(start.Timestamp.FullTick, end.Timestamp.FullTick, note.Timestamp.FullTick);
+                        
+                        int position = (int)Math.Round(SaturnMath.LerpCyclic(start.Position, end.Position, t, 60));
+                        int size = (int)Math.Round(SaturnMath.Lerp(start.Size, end.Size, t));
+
+                        if (!IPositionable.IsAnyOverlap(positionable.Position, positionable.Size, position, size)) continue;
+
+                        playable.JudgeArea.GreatEarly += (playable.JudgeArea.MarvelousEarly - playable.JudgeArea.GreatEarly) * 0.5f;
+                        playable.JudgeArea.GoodEarly = playable.JudgeArea.GreatEarly;
+                    }
+                }
                 
                 // Overlapping judge areas
                 // - Do not truncate MARVELOUS area.
@@ -577,10 +629,9 @@ public class Chart
                     }
                 }
             }
+            // Follow Mer-spec
             else
             {
-                // Follow Mer-spec
-                
                 // Notes on hold ends
                 // - Early GREAT/GOOD areas are removed.
                 foreach (Note note in playableNotes)
