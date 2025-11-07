@@ -26,6 +26,9 @@ public static class SatV1Reader
     public static Entry ToEntry(string[] lines, NotationReadArgs args, out List<Exception> exceptions, string path = "")
     {
         // SatV2 is an extension of SatV1 and fully backwards-compatible.
-        return SatV2Reader.ToEntry(lines, args, out exceptions, path);
+        Entry entry = SatV2Reader.ToEntry(lines, args, out exceptions, path);
+        entry.FormatVersion = FormatVersion.SatV1;
+
+        return entry;
     }
 }

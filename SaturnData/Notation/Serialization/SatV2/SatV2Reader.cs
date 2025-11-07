@@ -583,6 +583,7 @@ internal static class SatV2Reader
     {
         Entry entry = new()
         {
+            FormatVersion = FormatVersion.SatV2,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
             ChartFile = Path.GetFileName(path),
         };

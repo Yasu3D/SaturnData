@@ -657,6 +657,7 @@ public static class SatV3Reader
     {
         Entry entry = new()
         {
+            FormatVersion = FormatVersion.SatV3,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
             ChartFile = Path.GetFileName(path),
         };

@@ -343,6 +343,7 @@ public static class MerReader
     {
         Entry entry = new()
         {
+            FormatVersion = FormatVersion.Mer,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
             ChartFile = Path.GetFileName(path),
         };
