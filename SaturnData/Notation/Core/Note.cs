@@ -17,6 +17,8 @@ public abstract class Note : ITimeable
 
         if (this is not IPositionable pos0) return false;
         if (other is not IPositionable pos1) return false;
+        if (this is SyncNote) return false; // ironic.
+        if (other is SyncNote) return false;
         
         if (pos0.Position == pos1.Position && pos0.Size == pos1.Size) return false;
         
