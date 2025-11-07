@@ -129,6 +129,11 @@ public class Chart
             if (playable.JudgementType is JudgementType.Fake) continue; // Allow for fake notes behind end
             
             chartEnd = Timestamp.Max(chartEnd, note.Timestamp);
+
+            if (note is HoldNote holdNote && holdNote.Points.Count > 1)
+            {
+                chartEnd = Timestamp.Max(chartEnd, holdNote.Points[^1].Timestamp);
+            }
         }
         
         chartEnd = Timestamp.TimestampFromTime(this, chartEnd.Time + 2000);
