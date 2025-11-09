@@ -155,13 +155,13 @@ public interface IPositionable
         return OverlapResult.None;
     }
     
-    internal static int LimitPosition(int value)
+    public static int LimitPosition(int value)
     {
         int r = value % 60;
         return r < 0 ? r + 60 : r;
     }
 
-    internal static int LimitSize(int value)
+    public static int LimitSize(int value)
     {
         return value == 0 ? 60 : Math.Clamp(value, 1, 60);
     }
