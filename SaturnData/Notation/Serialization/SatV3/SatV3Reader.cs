@@ -379,8 +379,8 @@ public static class SatV3Reader
                             continue;
                         }
 
-                        int position;
-                        int size;
+                        int position = 0;
+                        int size = 60;
                     
                         if (split[0] == "|")
                         {
@@ -436,8 +436,12 @@ public static class SatV3Reader
                     
                         BonusType bonusType = string2BonusType(split[1]);
                         JudgementType judgementType = string2JudgementType(split[2]);
-                        position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
-                        size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
+
+                        if (split.Length >= 7)
+                        {
+                            position = Convert.ToInt32(split[5], CultureInfo.InvariantCulture);
+                            size = Convert.ToInt32(split[6], CultureInfo.InvariantCulture);
+                        }
                     
                         if (split[0] == "TOUCH")
                         {
