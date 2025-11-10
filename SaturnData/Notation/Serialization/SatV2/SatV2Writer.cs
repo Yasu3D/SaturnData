@@ -68,8 +68,8 @@ public static class SatV2Writer
         sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("0.000000", CultureInfo.InvariantCulture)}\n");
         sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("0.000000", CultureInfo.InvariantCulture)}\n");
         sb.Append('\n');
-        sb.Append($"{"@PREVIEW_START",-16}{(entry.PreviewBegin / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
-        sb.Append($"{"@PREVIEW_TIME",-16}{(entry.PreviewLength / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
+        sb.Append($"{"@PREVIEW_START",-16}{(entry.PreviewBegin.Time / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
+        sb.Append($"{"@PREVIEW_TIME",-16}{(entry.PreviewEnd.Time / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
         sb.Append('\n');
         sb.Append($"{"@JACKET",-16}{entry.JacketFile}\n");
         sb.Append($"{"@BGM",-16}{entry.AudioFile}\n");

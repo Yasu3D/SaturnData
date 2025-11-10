@@ -613,8 +613,8 @@ internal static class SatV2Reader
                 if (NotationHelpers.ContainsKey(line, "@LEVEL ", out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 if (NotationHelpers.ContainsKey(line, "@CLEAR ", out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
 
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.previewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.previewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
                 if (NotationHelpers.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketFile = value; }
                 if (NotationHelpers.ContainsKey(line, "@BGM ",        out value)) { entry.AudioFile  = value; }

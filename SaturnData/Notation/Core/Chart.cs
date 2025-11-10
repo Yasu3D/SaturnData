@@ -706,6 +706,24 @@ public class Chart
                 playable.JudgeArea.ScaledGoodEarly      = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodEarly);
                 playable.JudgeArea.ScaledGoodLate       = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodLate);
             }
+            
+            // Update PreviewBegin and PreviewEnd
+            if (entry.previewBeginTime != null && entry.previewLengthTime != null)
+            {
+                entry.PreviewBegin = Timestamp.TimestampFromTime(this, entry.previewBeginTime.Value);
+                entry.PreviewEnd = Timestamp.TimestampFromTime(this, entry.previewBeginTime.Value + entry.previewLengthTime.Value);
+                
+                entry.previewBeginTime = null;
+                entry.previewLengthTime = null;
+            }
+            else
+            {
+                entry.PreviewBegin.Time = Timestamp.TimeFromTimestamp(this, entry.PreviewBegin);
+                entry.PreviewBegin.ScaledTime = entry.PreviewBegin.Time;
+                
+                entry.PreviewEnd.Time = Timestamp.TimeFromTimestamp(this, entry.PreviewEnd);
+                entry.PreviewEnd.ScaledTime = entry.PreviewEnd.Time;
+            }
         }
     }
 }

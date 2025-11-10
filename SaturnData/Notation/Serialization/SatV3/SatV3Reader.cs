@@ -688,9 +688,23 @@ public static class SatV3Reader
                 if (NotationHelpers.ContainsKey(line, "@DIFFICULTY ",     out value)) { entry.Difficulty = string2Difficulty(value); }
                 if (NotationHelpers.ContainsKey(line, "@LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 if (NotationHelpers.ContainsKey(line, "@CLEAR",           out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_BEGIN ",  out value))
+                {
+                    string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
+                    int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
 
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_BEGIN ",  out value)) { entry.PreviewBegin = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_LENGTH ", out value)) { entry.PreviewLength = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    entry.PreviewBegin = new(measure, tick);
+                }
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_LENGTH ", out value))
+                {
+                    string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
+                    int tick = Convert.ToInt32(split[1], CultureInfo.InvariantCulture);
+
+                    entry.PreviewEnd = new(measure, tick);
+                }
                 if (NotationHelpers.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
 
                 if (NotationHelpers.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketFile = value; }

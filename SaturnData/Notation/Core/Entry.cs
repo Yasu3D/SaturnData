@@ -215,9 +215,9 @@ public class Entry
     
     
     /// <summary>
-    /// The timestamp the chart preview starts at <b>in milliseconds</b>
+    /// The timestamp the chart preview starts at. Must be less than <see cref="PreviewEnd"/>.
     /// </summary>
-    public float PreviewBegin
+    public Timestamp PreviewBegin
     {
         get => previewBegin;
         set
@@ -225,26 +225,41 @@ public class Entry
             if (previewBegin == value) return;
             
             previewBegin = value;
+
+            if (previewEnd.FullTick <= previewBegin.FullTick)
+            {
+                previewEnd = new(previewBegin.FullTick + 7680);
+            }
+            
             EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private float previewBegin = 0;
-
+    private Timestamp previewBegin = new(Timestamp.Zero);
+    
     /// <summary>
-    /// The duration of the chart preview <b>in milliseconds</b>
+    /// The timestamp the chart preview ends at. Must be greater than <see cref="PreviewBegin"/>.
     /// </summary>
-    public float PreviewLength
+    public Timestamp PreviewEnd
     {
-        get => previewLength;
+        get => previewEnd;
         set
         {
-            if (previewLength == value) return;
+            if (previewEnd == value) return;
             
-            previewLength = value;
+            previewEnd = value;
+
+            if (previewBegin.FullTick >= previewEnd.FullTick)
+            {
+                previewBegin = new(previewEnd.FullTick - 7680);
+            }
+            
             EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private float previewLength = 10000;
+    private Timestamp previewEnd = new(7680);
+    
+    internal float? previewBeginTime = null;
+    internal float? previewLengthTime = null;
 
     /// <summary>
     /// The default background for the chart.

@@ -69,8 +69,8 @@ public static class SatV3Writer
             sb.Append($"{"@LEVEL",-16}{entry.Level.ToString("0.0", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@CLEAR",-16}{entry.ClearThreshold.ToString("0.00", CultureInfo.InvariantCulture)}\n");
             sb.Append('\n');
-            sb.Append($"{"@PREVIEW_BEGIN",-16}{(entry.PreviewBegin / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
-            sb.Append($"{"@PREVIEW_LENGTH",-16}{(entry.PreviewLength / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
+            sb.Append($"{"@PREVIEW_BEGIN",-16}{entry.PreviewBegin.Measure,-4}{entry.PreviewBegin.Tick,-4}\n");
+            sb.Append($"{"@PREVIEW_END",-16}{entry.PreviewEnd.Measure,-4}{entry.PreviewEnd.Tick,-4}\n");
             sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
             sb.Append('\n');
             sb.Append($"{"@JACKET",-16}{entry.JacketFile}\n");
