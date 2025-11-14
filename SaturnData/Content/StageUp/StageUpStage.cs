@@ -4,7 +4,7 @@ using SaturnData.Notation.Core;
 namespace SaturnData.Content.StageUp;
 
 /// <summary>
-/// 
+/// A set of three songs to play in stage-up mode.
 /// </summary>
 [Serializable]
 public class StageUpStage : ContentItem
@@ -66,23 +66,18 @@ public class StageUpStage : ContentItem
 }
 
 /// <summary>
-/// 
+/// A song to play in stage-up mode.
 /// </summary>
 [Serializable]
 public class StageUpSong
 {
     /// <summary>
-    /// 
+    /// The <see cref="Entry.Id"/> of the song difficulty to play.
     /// </summary>
-    public string SongId { get; set; } = "";
-
+    public string EntryId { get; set; } = "";
+    
     /// <summary>
-    /// 
-    /// </summary>
-    public Difficulty Difficulty { get; set; } = Difficulty.Normal;
-
-    /// <summary>
-    /// 
+    /// Should the song be displayed as <c>???</c> on the stage select and song preview screen?
     /// </summary>
     public bool Secret { get; set; } = false;
 }

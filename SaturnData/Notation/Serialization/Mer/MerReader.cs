@@ -366,8 +366,8 @@ public static class MerReader
                     if (NotationHelpers.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioFile = value; }
                     if (NotationHelpers.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                     if (NotationHelpers.ContainsKey(line, "#EDITOR_AUTHOR ",          out value)) { entry.NotesDesigner = value; }
-                    if (NotationHelpers.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.previewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                    if (NotationHelpers.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.previewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#EDITOR_PREVIEW_LENGTH ",  out value)) { entry.PreviewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                     if (NotationHelpers.ContainsKey(line, "#EDITOR_OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                     if (NotationHelpers.ContainsKey(line, "#EDITOR_MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
             
@@ -375,8 +375,8 @@ public static class MerReader
                     if (NotationHelpers.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                     if (NotationHelpers.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioFile = value; }
                     if (NotationHelpers.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
-                    if (NotationHelpers.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.previewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                    if (NotationHelpers.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.previewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                    if (NotationHelpers.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
                     // MER COMPATIBILITY
                     if (NotationHelpers.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioFile = value; }

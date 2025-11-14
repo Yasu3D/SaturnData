@@ -12,6 +12,7 @@
       <PackageReference Include="Kawazu" Version="1.1.4" />
       <PackageReference Include="LibNMeCab" Version="0.10.2" />
       <PackageReference Include="LibNMeCab.IpaDicBin" Version="0.10.0" />
+      <PackageReference Include="Tomlyn" Version="0.19.0" />
     </ItemGroup>
 
 </Project>

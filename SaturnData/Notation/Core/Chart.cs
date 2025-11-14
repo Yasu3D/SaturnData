@@ -708,13 +708,13 @@ public class Chart
             }
             
             // Update PreviewBegin and PreviewEnd
-            if (entry.previewBeginTime != null && entry.previewLengthTime != null)
+            if (entry.PreviewBeginTime != null && entry.PreviewLengthTime != null)
             {
-                entry.PreviewBegin = Timestamp.TimestampFromTime(this, entry.previewBeginTime.Value);
-                entry.PreviewEnd = Timestamp.TimestampFromTime(this, entry.previewBeginTime.Value + entry.previewLengthTime.Value);
+                entry.PreviewBegin = Timestamp.TimestampFromTime(this, entry.PreviewBeginTime.Value);
+                entry.PreviewEnd = Timestamp.TimestampFromTime(this, entry.PreviewBeginTime.Value + entry.PreviewLengthTime.Value);
                 
-                entry.previewBeginTime = null;
-                entry.previewLengthTime = null;
+                entry.PreviewBeginTime = null;
+                entry.PreviewLengthTime = null;
             }
             else
             {

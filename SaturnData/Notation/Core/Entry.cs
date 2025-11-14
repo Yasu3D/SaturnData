@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Kawazu;
+using SaturnData.Content.Music;
 using SaturnData.Notation.Serialization;
-
-// ReSharper disable CompareOfFloatsByEqualityOperator
 
 namespace SaturnData.Notation.Core;
 
@@ -51,6 +50,23 @@ public class Entry
     public event EventHandler? JacketChanged;
     public event EventHandler? AudioChanged;
     public event EventHandler? VideoChanged;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool Exists => File.Exists(ChartPath);
+    
+    /// <summary>
+    /// The folder containing this entry.
+    /// </summary>
+    public Folder? Folder = null;
+    
+    /// <summary>
+    /// The song containing this entry.
+    /// </summary>
+    public Song? Song = null;
+    
+    
     
     /// <summary>
     /// The unique identifier of the chart.
@@ -258,8 +274,8 @@ public class Entry
     }
     private Timestamp previewEnd = new(7680);
     
-    internal float? previewBeginTime = null;
-    internal float? previewLengthTime = null;
+    internal float? PreviewBeginTime = null;
+    internal float? PreviewLengthTime = null;
 
     /// <summary>
     /// The default background for the chart.
@@ -537,15 +553,16 @@ public class Entry
     /// Returns the integer part of the level, and adds a + if the decimal part is >= 0.7.
     /// </summary>
     /// <code>
-    /// 12.6 => "12"
-    /// 12.7 => "12+"
-    /// 13.2 => "13"
+    /// 12.6 -> "12"
+    /// 12.7 -> "12+"
+    /// 13.2 -> "13"
     /// </code>
     public string LevelString
     {
         get
         {
-            if (Level < 0) return "X";
+            if (!Exists) return "X";
+            if (Level < 0) return "?";
             
             return Math.Round(Level * 10) - (int)Level * 10 >= 7
                 ? $"{(int)Level}+"

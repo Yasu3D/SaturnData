@@ -34,9 +34,9 @@ public class SystemMusic : CosmeticItem
     public string AudioStageUpSelectPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "stage-up challenger" bgm audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "stage-up secret" bgm audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
-    public string AudioStageUpChallengerPath { get; set; } = "";
+    public string AudioStageUpSecretPath { get; set; } = "";
     
     /// <summary>
     /// The local filepath of the "see-you" bgm audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
@@ -64,9 +64,9 @@ public class SystemMusic : CosmeticItem
     public string AbsoluteAudioStageUpSelectPath => AbsolutePath(AudioStageUpSelectPath);
     
     /// <summary>
-    /// The absolute filepath of the "stage-up challenger" bgm audio file.
+    /// The absolute filepath of the "stage-up secret" bgm audio file.
     /// </summary>
-    public string AbsoluteAudioStageUpChallengerPath => AbsolutePath(AudioStageUpChallengerPath);
+    public string AbsoluteAudioStageUpSecretPath => AbsolutePath(AudioStageUpSecretPath);
     
     /// <summary>
     /// The absolute filepath of the "see-you" bgm audio file.
