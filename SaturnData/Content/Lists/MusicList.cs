@@ -241,8 +241,7 @@ public class MusicList
 
             Group();
             Sort();
-            
-            Console.WriteLine("Ya");
+            Remesh();
         }
         catch (Exception ex)
         {
@@ -675,6 +674,133 @@ public class MusicList
     /// </summary>
     private void Remesh()
     {
+        // Save current selection
+        Entry? selectedEntry = Mesh.SelectedNode?.Entry;
         
+        // Create Entries
+        Dictionary<Entry, MusicMeshNode> nodes = [];
+        foreach (Entry entry in Entries)
+        {
+            nodes.Add(entry, new() { Entry = entry });
+        }
+        
+        // Entry Grouping
+        if (ActiveGroupType is GroupType.Level or GroupType.NotesDesigner)
+        {
+            List<MusicMeshNode> allNodes = [];
+
+            foreach (Folder folder in Folders)
+            foreach (Entry entry in folder.Entries)
+            {
+                allNodes.Add(nodes[entry]);
+            }
+            
+            // Link together nodes within a row. [Left | Right]
+            linkNodesInRow(allNodes);
+
+            // Create "jumps" from one node to another. [Up | Down]
+            foreach (MusicMeshNode node in allNodes)
+            {
+                linkNodesAcrossRow(node);
+            }
+        }
+        // Song Grouping
+        else
+        {
+            // Create rows of nodes
+            List<MusicMeshNode> normalNodes = [];
+            List<MusicMeshNode> hardNodes = [];
+            List<MusicMeshNode> expertNodes = [];
+            List<MusicMeshNode> infernoNodes = [];
+            List<MusicMeshNode> worldsEndNodes = [];
+
+            foreach (Folder folder in Folders)
+            {
+                createNodeRow(folder.NormalSongs,    Difficulty.Normal,    normalNodes);
+                createNodeRow(folder.HardSongs,      Difficulty.Hard,      hardNodes);
+                createNodeRow(folder.ExpertSongs,    Difficulty.Expert,    expertNodes);
+                createNodeRow(folder.InfernoSongs,   Difficulty.Inferno,   infernoNodes);
+                createNodeRow(folder.WorldsEndSongs, Difficulty.WorldsEnd, worldsEndNodes);
+                
+                continue;
+                
+                void createNodeRow(IEnumerable<Song> songs, Difficulty difficulty, List<MusicMeshNode> row)
+                {
+                    foreach (Song song in songs)
+                    {
+                        Entry? entry = song.EntryByDifficulty(difficulty);
+                        if (entry == null) continue;
+                        
+                        row.Add(nodes[entry]);
+                    }
+                }
+            }
+            
+            // Link together nodes within a row [Left | Right]
+            linkNodesInRow(normalNodes);
+            linkNodesInRow(hardNodes);
+            linkNodesInRow(expertNodes);
+            linkNodesInRow(infernoNodes);
+            linkNodesInRow(worldsEndNodes);
+            
+            // Link together nodes across rows [Up | Down]
+            foreach (MusicMeshNode node in normalNodes)
+            {
+                linkNodesAcrossRow(node);
+            }
+        }
+        
+        Mesh.Nodes = nodes.Values.ToList();
+
+        // Reapply current selection
+        Mesh.Select(selectedEntry);
+
+        return;
+        
+        void linkNodesInRow(List<MusicMeshNode> nodesToLink)
+        {
+            for (int i = 0; i < nodesToLink.Count; i++)
+            {
+                MusicMeshNode node = nodesToLink[i];
+                MusicMeshNode left = i == 0 ? nodesToLink[^1] : nodesToLink[i - 1];
+                
+                node.Left = left;
+                left.Right = node;
+            }
+        }
+
+        void linkNodesAcrossRow(MusicMeshNode node)
+        {
+            try
+            {
+                // There *shouldn't* be anything in here that's null at this point.
+                // Still, try-catch just in case.
+
+                Song song = node.Entry!.Song!;
+
+                MusicMeshNode normalNode = nodes[song.Normal!];
+                MusicMeshNode hardNode = nodes[song.Hard!];
+                MusicMeshNode expertNode = nodes[song.Expert!];
+                MusicMeshNode infernoNode = nodes[song.Inferno!];
+                MusicMeshNode worldsEndNode = nodes[song.WorldsEnd!];
+
+                normalNode.Top = hardNode;
+
+                hardNode.Bottom = normalNode;
+                hardNode.Top = expertNode;
+
+                expertNode.Bottom = hardNode;
+                expertNode.Top = infernoNode;
+
+                infernoNode.Bottom = expertNode;
+                infernoNode.Top = worldsEndNode;
+
+                worldsEndNode.Bottom = infernoNode;
+            }
+            catch
+            {
+                // ignored
+            }
+        }
     }
 }
