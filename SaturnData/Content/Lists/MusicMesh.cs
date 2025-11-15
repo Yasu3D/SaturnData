@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SaturnData.Notation.Core;
 
@@ -6,6 +7,11 @@ namespace SaturnData.Content.Lists;
 public class MusicMesh
 {
     /// <summary>
+    /// Invoked whenever the selected node changes.
+    /// </summary>
+    public event EventHandler? SelectionChanged;
+    
+    /// <summary>
     ///  A list of all nodes in the mesh.
     /// </summary>
     public List<MusicMeshNode> Nodes = [];
@@ -13,7 +19,19 @@ public class MusicMesh
     /// <summary>
     /// The currently selected node.
     /// </summary>
-    public MusicMeshNode? SelectedNode { get; private set; } = null;
+    public MusicMeshNode? SelectedNode
+    {
+        get => selectedNode;
+        private set
+        {
+            if (selectedNode == value) return;
+            
+            selectedNode = value;
+            SelectionChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+
+    private MusicMeshNode? selectedNode = null;
 
     /// <summary>
     /// Moves the selection point to the left in the mesh.

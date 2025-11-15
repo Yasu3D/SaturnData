@@ -85,22 +85,22 @@ public class MusicList
     /// <summary>
     /// All folders, generated based on the ActiveFolderSortType and ActiveSongSortType.
     /// </summary>
-    public List<Folder> Folders = [];
+    public readonly List<Folder> Folders = [];
 
     /// <summary>
     /// All songs, kept in the order they were loaded in.
     /// </summary>
-    public List<Song> Songs = [];
+    public readonly List<Song> Songs = [];
 
     /// <summary>
     /// All entries, kept in the order they were loaded in.
     /// </summary>
-    public List<Entry> Entries = [];
+    public readonly List<Entry> Entries = [];
 
     /// <summary>
     /// All entries, laid out in a cylinder-like mesh.
     /// </summary>
-    public MusicMesh Mesh = new();
+    public readonly MusicMesh Mesh = new();
     
     /// <summary>
     /// The criteria content is currently grouped into folders by.
@@ -155,7 +155,7 @@ public class MusicList
             string[] subDirectories = Directory.GetDirectories(musicDirectoryPath, "*", SearchOption.AllDirectories);
             foreach (string directory in subDirectories)
             {
-                // Go through all files.
+                // Go through all files in the directory.
                 string[] files = Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly).ToArray();
                 if (files.Length == 0) continue;
                 
@@ -667,7 +667,7 @@ public class MusicList
                 folder.WorldsEndSongs = folder.WorldsEndSongs.OrderBy(song => song.WorldsEnd?.Level).ToList();
             }
         }
-    }
+    }   
 
     /// <summary>
     /// Rebuilds the <see cref="MusicMesh"/> for UI navigation.
