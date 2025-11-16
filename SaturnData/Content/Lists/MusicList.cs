@@ -86,16 +86,11 @@ public class MusicList
     /// All folders, generated based on the ActiveFolderSortType and ActiveSongSortType.
     /// </summary>
     public readonly List<Folder> Folders = [];
-
+    
     /// <summary>
-    /// All songs, kept in the order they were loaded in.
+    /// All entries, listed by their Id.
     /// </summary>
-    public readonly List<Song> Songs = [];
-
-    /// <summary>
-    /// All entries, kept in the order they were loaded in.
-    /// </summary>
-    public readonly List<Entry> Entries = [];
+    public readonly Dictionary<string, Entry> Entries = [];
 
     /// <summary>
     /// All entries, laid out in a cylinder-like mesh.
@@ -145,7 +140,6 @@ public class MusicList
     {
         try
         {
-            Songs.Clear();
             Entries.Clear();
 
             // Nothing to load if the specified directory doesn't exist.
@@ -171,6 +165,10 @@ public class MusicList
                     try
                     {
                         Entry entry = NotationSerializer.ToEntry(file, args, out _);
+                        
+                        // Filter out entries without an Id.
+                        if (string.IsNullOrWhiteSpace(entry.Id)) continue;
+                        
                         entries.Add(entry);
                     }
                     catch
@@ -225,18 +223,17 @@ public class MusicList
                             Difficulty = difficulty,
                             JacketFile = source.JacketFile,
                             RootDirectory = source.RootDirectory,
+                            Song = source.Song,
                         };
                     }
                 }
                 
-                // Add entries and song.
-                Songs.Add(song);
-                
-                if (song.Normal != null)    { Entries.Add(song.Normal); }
-                if (song.Hard != null)      { Entries.Add(song.Hard); }
-                if (song.Expert != null)    { Entries.Add(song.Expert); }
-                if (song.Inferno != null)   { Entries.Add(song.Inferno); }
-                if (song.WorldsEnd != null) { Entries.Add(song.WorldsEnd); }
+                // Add final valid entries to entry list.
+                if (song.Normal    != null) { Entries[song.Normal.Id]    = song.Normal;    }
+                if (song.Hard      != null) { Entries[song.Hard.Id]      = song.Hard;      }
+                if (song.Expert    != null) { Entries[song.Expert.Id]    = song.Expert;    }
+                if (song.Inferno   != null) { Entries[song.Inferno.Id]   = song.Inferno;   }
+                if (song.WorldsEnd != null) { Entries[song.WorldsEnd.Id] = song.WorldsEnd; }
             }
 
             Group();
@@ -248,7 +245,7 @@ public class MusicList
             Console.WriteLine(ex);
         }
     }
-
+    
     /// <summary>
     /// Groups all content based on the <see cref="ActiveGroupType"/>.
     /// </summary>
@@ -270,9 +267,11 @@ public class MusicList
 
         void groupByDirectory()
         {
-            IEnumerable<IGrouping<string, Song>> songsGroupedByDirectory = Songs.GroupBy(song => song.ParentDirectory).OrderBy(grouping => grouping.Key);
-            foreach (IGrouping<string, Song> grouping in songsGroupedByDirectory)
+            IEnumerable<IGrouping<string, Entry>> songsGroupedByDirectory = Entries.Values.GroupBy(entry => entry.Song?.ParentDirectory ?? "").OrderBy(grouping => grouping.Key);
+            foreach (IGrouping<string, Entry> grouping in songsGroupedByDirectory)
             {
+                if (grouping.Key == "") continue;
+                
                 try
                 {
                     string folderDataPath = Path.Combine(grouping.Key, "folder.toml");
@@ -296,19 +295,20 @@ public class MusicList
                         };
                     }
 
-                    folder.NormalSongs    = grouping.ToList();
-                    folder.HardSongs      = grouping.ToList();
-                    folder.ExpertSongs    = grouping.ToList();
-                    folder.InfernoSongs   = grouping.ToList();
-                    folder.WorldsEndSongs = grouping.ToList();
-
-                    foreach (Song song in folder.NormalSongs)
+                    HashSet<Song> addedSongs = [];
+                    foreach (Entry entry in grouping.ToList())
                     {
-                        if (song.Normal    != null) { folder.Entries.Add(song.Normal); }
-                        if (song.Hard      != null) { folder.Entries.Add(song.Hard); }
-                        if (song.Expert    != null) { folder.Entries.Add(song.Expert); }
-                        if (song.Inferno   != null) { folder.Entries.Add(song.Inferno); }
-                        if (song.WorldsEnd != null) { folder.Entries.Add(song.WorldsEnd); }
+                        if (entry.Song == null) continue;
+                        
+                        folder.Entries.Add(entry);
+                        entry.Folder = folder;
+                        
+                        if (!addedSongs.Add(entry.Song)) continue;
+                        folder.NormalSongs.Add(entry.Song);
+                        folder.HardSongs.Add(entry.Song);
+                        folder.ExpertSongs.Add(entry.Song);
+                        folder.InfernoSongs.Add(entry.Song);
+                        folder.WorldsEndSongs.Add(entry.Song);
                     }
 
                     Folders.Add(folder);
@@ -322,7 +322,7 @@ public class MusicList
 
         void groupByLevel()
         {
-            IEnumerable<IGrouping<string, Entry>> entriesGroupedByLevel = Entries.OrderBy(entry => entry.Level).GroupBy(entry => entry.LevelString);
+            IEnumerable<IGrouping<string, Entry>> entriesGroupedByLevel = Entries.Values.OrderBy(entry => entry.Level).GroupBy(entry => entry.LevelString);
             foreach (IGrouping<string, Entry> grouping in entriesGroupedByLevel)
             {
                 try
@@ -342,7 +342,11 @@ public class MusicList
                         folder.Background = FolderBackgroundStyle.Checkers;
                     }
 
-                    folder.Entries = grouping.ToList();
+                    foreach (Entry entry in grouping.ToList())
+                    {
+                        folder.Entries.Add(entry);
+                        entry.Folder = folder;
+                    }
 
                     Folders.Add(folder);
                 }
@@ -355,7 +359,7 @@ public class MusicList
 
         void groupByTitle()
         {
-            IEnumerable<IGrouping<FolderCharacterGroup, Entry>> entriesGroupedByTitle = Entries.GroupBy(entry => getCharacterGroup(string.IsNullOrEmpty(entry.Reading) ? entry.Title : entry.Reading));
+            IEnumerable<IGrouping<FolderCharacterGroup, Entry>> entriesGroupedByTitle = Entries.Values.GroupBy(entry => getCharacterGroup(string.IsNullOrEmpty(entry.Reading) ? entry.Title : entry.Reading));
             foreach (IGrouping<FolderCharacterGroup, Entry> grouping in entriesGroupedByTitle)
             {
                 Folder folder = new()
@@ -369,9 +373,10 @@ public class MusicList
 
                 foreach (Entry entry in grouping)
                 {
-                    folder.Entries.Add(entry);
-                    
                     if (entry.Song == null) continue;
+                    
+                    folder.Entries.Add(entry);
+                    entry.Folder = folder;                    
 
                     switch (entry.Difficulty)
                     {
@@ -388,7 +393,7 @@ public class MusicList
         
         void groupByArtist()
         {
-            IEnumerable<IGrouping<FolderCharacterGroup, Entry>> entriesGroupedByTitle = Entries.GroupBy(entry => getCharacterGroup(entry.Artist));
+            IEnumerable<IGrouping<FolderCharacterGroup, Entry>> entriesGroupedByTitle = Entries.Values.GroupBy(entry => getCharacterGroup(entry.Artist));
             foreach (IGrouping<FolderCharacterGroup, Entry> grouping in entriesGroupedByTitle)
             {
                 Folder folder = new()
@@ -402,9 +407,10 @@ public class MusicList
 
                 foreach (Entry entry in grouping)
                 {
-                    folder.Entries.Add(entry);
-                    
                     if (entry.Song == null) continue;
+                    
+                    folder.Entries.Add(entry);
+                    entry.Folder = folder;   
 
                     switch (entry.Difficulty)
                     {
@@ -421,7 +427,7 @@ public class MusicList
 
         void groupByNotesDesigner()
         {
-            IEnumerable<IGrouping<FolderCharacterGroup, Entry>> entriesGroupedByTitle = Entries.GroupBy(entry => getCharacterGroup(entry.NotesDesigner));
+            IEnumerable<IGrouping<FolderCharacterGroup, Entry>> entriesGroupedByTitle = Entries.Values.GroupBy(entry => getCharacterGroup(entry.NotesDesigner));
             foreach (IGrouping<FolderCharacterGroup, Entry> grouping in entriesGroupedByTitle)
             {
                 Folder folder = new()
@@ -435,9 +441,10 @@ public class MusicList
 
                 foreach (Entry entry in grouping)
                 {
-                    folder.Entries.Add(entry);
-                    
                     if (entry.Song == null) continue;
+                    
+                    folder.Entries.Add(entry);
+                    entry.Folder = folder;   
 
                     switch (entry.Difficulty)
                     {
@@ -679,7 +686,7 @@ public class MusicList
         
         // Create Entries
         Dictionary<Entry, MusicMeshNode> nodes = [];
-        foreach (Entry entry in Entries)
+        foreach (Entry entry in Entries.Values)
         {
             nodes.Add(entry, new() { Entry = entry });
         }
@@ -778,10 +785,10 @@ public class MusicList
 
                 Song song = node.Entry!.Song!;
 
-                MusicMeshNode normalNode = nodes[song.Normal!];
-                MusicMeshNode hardNode = nodes[song.Hard!];
-                MusicMeshNode expertNode = nodes[song.Expert!];
-                MusicMeshNode infernoNode = nodes[song.Inferno!];
+                MusicMeshNode normalNode    = nodes[song.Normal!];
+                MusicMeshNode hardNode      = nodes[song.Hard!];
+                MusicMeshNode expertNode    = nodes[song.Expert!];
+                MusicMeshNode infernoNode   = nodes[song.Inferno!];
                 MusicMeshNode worldsEndNode = nodes[song.WorldsEnd!];
 
                 normalNode.Top = hardNode;
