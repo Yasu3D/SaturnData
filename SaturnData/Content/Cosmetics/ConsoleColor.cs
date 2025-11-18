@@ -11,30 +11,30 @@ public class ConsoleColor : CosmeticItem
     /// <summary>
     /// The color to display in-game for areas with hidden lanes.
     /// </summary>
-    public uint ColorA { get; set; } = 0xFF0000;
+    public uint ColorA { get; set; } = 0xFFFF0000;
     
     /// <summary>
     /// The color to display in-game for areas with visible lanes.
     /// </summary>
-    public uint ColorB { get; set; } = 0x00FF00;
+    public uint ColorB { get; set; } = 0xFF00FF00;
     
     /// <summary>
     /// The color to display in-game for areas with active notes.
     /// </summary>
-    public uint ColorC { get; set; } = 0x0000FF;
+    public uint ColorC { get; set; } = 0xFF0000FF;
     
     /// <summary>
     /// The color to send to external LEDs for areas with hidden lanes.
     /// </summary>
-    public uint LedA { get; set; } = 0x800000;
+    public uint LedA { get; set; } = 0xFF800000;
     
     /// <summary>
     /// The color to send to external LEDs for areas with visible lanes.
     /// </summary>
-    public uint LedB { get; set; } = 0x008000;
+    public uint LedB { get; set; } = 0xFF008000;
     
     /// <summary>
     /// The color to send to external LEDs for areas with active notes.
     /// </summary>
-    public uint LedC { get; set; } = 0x000080;
+    public uint LedC { get; set; } = 0xFF000080;
 }
