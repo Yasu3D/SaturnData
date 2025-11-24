@@ -163,6 +163,6 @@ public interface IPositionable
 
     public static int LimitSize(int value)
     {
-        return value == 0 ? 60 : Math.Clamp(value, 1, 60);
+        return Math.Clamp(value, 1, 60);
     }
 }
