@@ -65,13 +65,13 @@ public class Entry
     /// The song containing this entry.
     /// </summary>
     public Song? Song = null;
-    
-    
-    
+
+
+
     /// <summary>
     /// The unique identifier of the chart.
     /// </summary>
-    public string Id = $"SAT{Guid.NewGuid()}";
+    public string Id = NewId;
 
     /// <summary>
     /// The format version of the file that defined this entry.
@@ -606,6 +606,8 @@ public class Entry
 
         return result;
     }
+    
+    public static string NewId => $"SAT{Guid.NewGuid()}";
     
     private static readonly HashSet<char> ValidCharacters =
     [
