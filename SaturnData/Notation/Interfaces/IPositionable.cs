@@ -140,11 +140,11 @@ public interface IPositionable
     }
 
     /// <summary>
-    /// Returns the
+    /// Returns the <see cref="OverlapResult"/> of a shape and a specific lane.
     /// </summary>
-    /// <param name="pos"></param>
-    /// <param name="size"></param>
-    /// <param name="lane"></param>
+    /// <param name="pos">The position to test.</param>
+    /// <param name="size">The size to test.</param>
+    /// <param name="lane">The lane to check in.</param>
     /// <returns></returns>
     public static OverlapResult HitTestResult(int pos, int size, int lane)
     {
