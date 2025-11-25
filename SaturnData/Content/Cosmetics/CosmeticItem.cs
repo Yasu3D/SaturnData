@@ -15,6 +15,14 @@ public abstract class CosmeticItem : ContentItem
     public string Author { get; set; } = "";
 
     /// <summary>
+    /// The description of the <see cref="CosmeticItem"/>.
+    /// </summary>
+    /// <remarks>
+    /// - Some CosmeticItems may not display their description.
+    /// </remarks>
+    public string Description { get; set; } = "";
+
+    /// <summary>
     /// The rarity of the <see cref="CosmeticItem"/>.
     /// </summary>
     /// <remarks>
