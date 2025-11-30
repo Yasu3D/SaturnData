@@ -52,7 +52,7 @@ public class Entry
     public event EventHandler? VideoChanged;
 
     /// <summary>
-    /// 
+    /// Does a chart file exist for this entry?
     /// </summary>
     public bool Exists => File.Exists(ChartPath);
     
@@ -550,18 +550,40 @@ public class Entry
     public bool VideoExists => File.Exists(VideoFile);
     
     /// <summary>
-    /// Returns the integer part of the level, and adds a + if the decimal part is >= 0.7.
+    /// Returns the integer part of the <see cref="Level"/>, and adds a + if the decimal part is >= 0.7.<br/>
+    /// Returns '?' if <see cref="Level"/> is below 0.
+    /// Returns 'X' if chart file does not exist.
     /// </summary>
     /// <code>
-    /// 12.6 -> "12"
-    /// 12.7 -> "12+"
-    /// 13.2 -> "13"
+    ///  12.6    -> "12"
+    ///  12.7    -> "12+"
+    ///  13.2    -> "13"
+    /// -1.0     -> "?"
+    ///  No File -> "X"
     /// </code>
     public string LevelString
     {
         get
         {
             if (!Exists) return "X";
+            return RawLevelString;
+        }
+    }
+
+    /// <summary>
+    /// Returns the integer part of the <see cref="Level"/>, and adds a + if the decimal part is >= 0.7.<br/>
+    /// Returns '?' if <see cref="Level"/> is below 0.
+    /// </summary>
+    /// <code>
+    ///  12.6    -> "12"
+    ///  12.7    -> "12+"
+    ///  13.2    -> "13"
+    /// -1.0     -> "?"
+    /// </code>
+    public string RawLevelString
+    {
+        get
+        {
             if (Level < 0) return "?";
             
             return Math.Round(Level * 10) - (int)Level * 10 >= 7
