@@ -198,6 +198,8 @@ public static class SatV2Writer
         {
             if (note is HoldNote holdNote)
             {
+                holdNote = NotationHelpers.BakeHoldNote(holdNote);
+                
                 for (int i = 0; i < holdNote.Points.Count; i++)
                 {
                     HoldPointNote point = holdNote.Points[i];
