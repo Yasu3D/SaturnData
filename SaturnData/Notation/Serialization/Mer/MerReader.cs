@@ -379,10 +379,15 @@ public static class MerReader
                     if (NotationHelpers.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 
                     // MER COMPATIBILITY
-                    if (NotationHelpers.ContainsKey(line, "#MUSIC_FILE_PATH ", out value)) { entry.AudioFile = value; }
+                    if (NotationHelpers.ContainsKey(line, "#MUSIC_FILE_PATH ", out value))
+                    {
+                        // Only write path from MER format if nothing else exists.
+                        if (!string.IsNullOrEmpty(entry.AudioFile)) continue;
+                        entry.AudioFile = value;
+                    }
                     if (NotationHelpers.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                     if (NotationHelpers.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                
+                    
                     // PROTOTYPE MER COMPATIBILITY
                     if (NotationHelpers.ContainsKey(line, "#MUSIC_NAME @JPN ",               out value)) { entry.Title = value; }
                     if (NotationHelpers.ContainsKey(line, "#MUSIC_NAME_RUBY @JPN ",          out value)) { entry.Reading = value; }
