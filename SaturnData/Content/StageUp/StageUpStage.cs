@@ -63,6 +63,20 @@ public class StageUpStage : ContentItem
     /// The threshold where a clear counts as a silver clear. (50%)
     /// </summary>
     public int SilverClearThreshold => (int)Math.Ceiling(Health * 0.5);
+
+    /// <summary>
+    /// Returns the <see cref="StageUpSong"/> by its zero-indexed Id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public StageUpSong SongById(int id)
+    {
+        if (id == 0) return Song1;
+        if (id == 1) return Song2;
+        if (id == 2) return Song3;
+
+        return Song1;
+    }
 }
 
 /// <summary>
