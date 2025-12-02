@@ -160,7 +160,10 @@ public static class MerReader
                     // Lane Show
                     if (noteType is 12)
                     {
-                        LaneSweepDirection direction = (LaneSweepDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        int directionIndex = Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        directionIndex = Math.Clamp(directionIndex, 0, 2);
+                        
+                        LaneSweepDirection direction = (LaneSweepDirection)directionIndex;
                         LaneShowNote laneShowNote = new(timestamp, position, size, direction);
                         chart.LaneToggles.Add(laneShowNote);
                     }
@@ -168,7 +171,10 @@ public static class MerReader
                     // Lane Hide
                     if (noteType is 13)
                     {
-                        LaneSweepDirection direction = (LaneSweepDirection)Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        int directionIndex = Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
+                        directionIndex = Math.Clamp(directionIndex, 0, 2);
+                        
+                        LaneSweepDirection direction = (LaneSweepDirection)directionIndex;
                         LaneHideNote laneHideNote = new(timestamp, position, size, direction);
                         chart.LaneToggles.Add(laneHideNote);
                     }
