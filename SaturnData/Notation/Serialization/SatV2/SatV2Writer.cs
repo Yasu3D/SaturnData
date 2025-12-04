@@ -177,12 +177,35 @@ public static class SatV2Writer
         {
             foreach (Note note in layer.Notes)
             {
+                if (note is SyncNote) continue;
+                if (note is MeasureLineNote) continue;
+                
                 notes.Add(note);
                 layerIndices.Add(note, layerIndex);
             }
             
             layerIndex++;
             if (layerIndex > 9) break;
+        }
+
+        foreach (Note note in chart.LaneToggles)
+        {
+            if (note is not ILaneToggle laneToggle) continue;
+
+            if (laneToggle.Direction == LaneSweepDirection.Instant)
+            {
+                List<ILaneToggle> parts = NotationHelpers.BakeLaneToggle(laneToggle);
+
+                foreach (ILaneToggle part in parts)
+                {
+                    if (part is not Note partNote) continue;
+                    notes.Add(partNote);
+                }
+            }
+            else
+            {
+                notes.Add(note);
+            }
         }
         
         notes.AddRange(chart.LaneToggles);
@@ -227,7 +250,6 @@ public static class SatV2Writer
             }
             else
             {
-                Timestamp timestamp = ((ITimeable)note).Timestamp;
                 int position = ((IPositionable)note).Position;
                 int size = ((IPositionable)note).Size;
                 string type = note switch
@@ -263,14 +285,13 @@ public static class SatV2Writer
                         LaneSweepDirection.Counterclockwise => ".CCW",
                         LaneSweepDirection.Clockwise => ".CW",
                         LaneSweepDirection.Center => ".CENTER",
-                        LaneSweepDirection.Instant => ".CENTER",
-                        _ => "",
+                        _ => ".CENTER",
                     };
                 }
                 
                 int? layer = layerIndices.TryGetValue(note, out int value) ? value : null;
                 attributes += LayerAttribute2String(layer, args);
-                sb.Append($"{timestamp.Measure,-4} {timestamp.Tick,-4} {index,-4} {position,-4} {size,-4} {type}{attributes}\n");
+                sb.Append($"{note.Timestamp.Measure,-4} {note.Timestamp.Tick,-4} {index,-4} {position,-4} {size,-4} {type}{attributes}\n");
                 
                 index++;
             }

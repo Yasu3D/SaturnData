@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SaturnData.Notation.Core;
+using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
 using SaturnData.Utilities;
 
@@ -153,5 +154,27 @@ internal static class NotationHelpers
         }
         
         return holdNote;
+    }
+
+    internal static List<ILaneToggle> BakeLaneToggle(ILaneToggle source)
+    {
+        if (source.Direction != LaneSweepDirection.Instant) return [source];
+
+        ITimeable sourceTimeable = (ITimeable)source;
+        IPositionable sourcePositionable = (IPositionable)source;
+        bool laneShow = source is LaneShowNote;
+        
+        List<ILaneToggle> result = [];
+        
+        for (int i = sourcePositionable.Position; i < sourcePositionable.Position + sourcePositionable.Size; i++)
+        {
+            ILaneToggle part = laneShow
+                ? new LaneShowNote(new(sourceTimeable.Timestamp), i % 60, 1, LaneSweepDirection.Center)
+                : new LaneHideNote(new(sourceTimeable.Timestamp), i % 60, 1, LaneSweepDirection.Center);
+
+            result.Add(part);
+        }
+
+        return result;
     }
 }

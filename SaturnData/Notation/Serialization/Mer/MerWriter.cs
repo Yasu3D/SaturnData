@@ -432,68 +432,38 @@ public static class MerWriter
         // Add all lane toggle notes.
         foreach (Note note in chart.LaneToggles)
         {
-            if (note is LaneShowNote laneShowNote)
-            {
-                if (laneShowNote.Direction == LaneSweepDirection.Instant)
-                {
-                    for (int i = laneShowNote.Position; i < laneShowNote.Position + laneShowNote.Size; i++)
-                    {
-                        notes.Add(new()
-                        {
-                            Timestamp = laneShowNote.Timestamp,
-                            NoteType = 12,
-                            Position = i,
-                            Size = 1,
-                            Render = 1,
-                            Direction = (int)LaneSweepDirection.Center,
-                        });
-                    }
+            if (note is not ILaneToggle laneToggle) continue;
+            List<ILaneToggle> parts = NotationHelpers.BakeLaneToggle(laneToggle);
 
+            foreach (ILaneToggle part in parts)
+            {
+                if (part is LaneShowNote laneShowNote)
+                {
+                    notes.Add(new()
+                    {
+                        Timestamp = laneShowNote.Timestamp,
+                        NoteType = 12,
+                        Position = laneShowNote.Position,
+                        Size = laneShowNote.Size,
+                        Render = 1,
+                        Direction = (int)laneShowNote.Direction,
+                    });
+                    
                     continue;
                 }
-                
-                notes.Add(new()
-                {
-                    Timestamp = laneShowNote.Timestamp,
-                    NoteType = 12,
-                    Position = laneShowNote.Position,
-                    Size = laneShowNote.Size,
-                    Render = 1,
-                    Direction = (int)laneShowNote.Direction,
-                });
 
-                continue;
-            }
-
-            if (note is LaneHideNote laneHideNote)
-            {
-                if (laneHideNote.Direction == LaneSweepDirection.Instant)
+                if (part is LaneHideNote laneHideNote)
                 {
-                    for (int i = laneHideNote.Position; i < laneHideNote.Position + laneHideNote.Size; i++)
+                    notes.Add(new()
                     {
-                        notes.Add(new()
-                        {
-                            Timestamp = laneHideNote.Timestamp,
-                            NoteType = 13,
-                            Position = i,
-                            Size = 1,
-                            Render = 1,
-                            Direction = (int)LaneSweepDirection.Center,
-                        });
-                    }
-
-                    continue;
+                        Timestamp = laneHideNote.Timestamp,
+                        NoteType = 13,
+                        Position = laneHideNote.Position,
+                        Size = laneHideNote.Size,
+                        Render = 1,
+                        Direction = (int)laneHideNote.Direction,
+                    });
                 }
-                
-                notes.Add(new()
-                {
-                    Timestamp = laneHideNote.Timestamp,
-                    NoteType = 13,
-                    Position = laneHideNote.Position,
-                    Size = laneHideNote.Size,
-                    Render = 1,
-                    Direction = (int)laneHideNote.Direction,
-                }); 
             }
         }
         
