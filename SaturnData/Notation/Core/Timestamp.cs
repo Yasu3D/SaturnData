@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using SaturnData.Notation.Events;
+using SaturnData.Utilities;
 
 namespace SaturnData.Notation.Core;
 
@@ -185,21 +187,51 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     }
 
     /// <summary>
-    /// Converts millisecond time to a timestamp struct based on all tempo and metre changes in a chart.
+    /// Converts millisecond time to a timestamp based on all tempo and metre changes in a chart.
     /// </summary>
     /// <param name="chart">The chart to reference tempo and metre changes off of.</param>
-    /// <param name="time">The time to convert in milliseconds.</param>
-    /// <param name="division">The beat division to round the result to (optional)</param>
+    /// <param name="time">The time in milliseconds to convert to a timestamp.</param>
+    /// <param name="division">The beat division to round the result to. (optional)</param>
     public static Timestamp TimestampFromTime(Chart chart, float time, int division = 1920)
     {
-        TempoChangeEvent? tempo = chart.LastTempoChange(time);
-        MetreChangeEvent? metre = chart.LastMetreChange(time);
-        if (tempo == null || metre == null) return Zero;
+        TempoChangeEvent? lastTempoChange = chart.LastTempoChange(time);
+        MetreChangeEvent? lastMetreChange = chart.LastMetreChange(time);
+        if (lastTempoChange == null || lastMetreChange == null) return Zero;
+
+        return TimestampFromTime(lastTempoChange, lastMetreChange, time, division);
+    }
+
+    /// <summary>
+    /// Converts millisecond time to a timestamp based on all provided tempo and metre changes.
+    /// </summary>
+    /// <param name="tempoChanges">The collection of tempo changes.</param>
+    /// <param name="metreChanges">The collection of metre changes.</param>
+    /// <param name="time">The time in milliseconds to convert to a timestamp.</param>
+    /// <param name="division">The beat division to round the result to. (optional)</param>
+    /// <returns></returns>
+    public static Timestamp TimestampFromTime(List<TempoChangeEvent> tempoChanges, List<MetreChangeEvent> metreChanges, float time, int division = 1920)
+    {
+        TempoChangeEvent? lastTempoChange = BinarySearch.Last(tempoChanges, x => x.Timestamp.Time < time);
+        MetreChangeEvent? lastMetreChange = BinarySearch.Last(metreChanges, x => x.Timestamp.Time < time);
+        if (lastTempoChange == null || lastMetreChange == null) return Zero;
         
-        Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
+        return TimestampFromTime(lastTempoChange, lastMetreChange, time, division);
+    }
+    
+    /// <summary>
+    /// Converts millisecond time to a timestamp based on the provided tempo and metre changes.
+    /// </summary>
+    /// <param name="lastTempoChange">The last tempo change.</param>
+    /// <param name="lastMetreChange">The last metre change.</param>
+    /// <param name="time">The time in milliseconds to convert to a timestamp.</param>
+    /// <param name="division">The beat division to round the result to. (optional)</param>
+    /// <returns></returns>
+    private static Timestamp TimestampFromTime(TempoChangeEvent lastTempoChange, MetreChangeEvent lastMetreChange, float time, int division = 1920)
+    {
+        Timestamp last = Max(lastTempoChange.Timestamp, lastMetreChange.Timestamp);
 
         float timeDifference = time - last.Time;
-        int tickDifference = (int)(timeDifference / TimePerTick(tempo.Tempo, metre.Ratio));
+        int tickDifference = (int)(timeDifference / TimePerTick(lastTempoChange.Tempo, lastMetreChange.Ratio));
 
         int fullTick = last.FullTick + tickDifference;
         
@@ -218,62 +250,134 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     /// Converts a timestamp struct to millisecond time based on all tempo and metre changes in a chart.
     /// </summary>
     /// <param name="chart">The chart to reference tempo and metre changes off of.</param>
-    /// <param name="timestamp">The timestamp struct to convert.</param>
+    /// <param name="timestamp">The timestamp to convert to milliseconds.</param>
     public static float TimeFromTimestamp(Chart chart, Timestamp timestamp)
     {
-        TempoChangeEvent? tempo = chart.LastTempoChange(timestamp);
-        MetreChangeEvent? metre = chart.LastMetreChange(timestamp);
-        if (tempo == null || metre == null) return 0;
-        
-        Timestamp last = Max(tempo.Timestamp, metre.Timestamp);
+        TempoChangeEvent? lastTempoChange = chart.LastTempoChange(timestamp);
+        MetreChangeEvent? lastMetreChange = chart.LastMetreChange(timestamp);
+        if (lastTempoChange == null || lastMetreChange == null) return 0;
 
-        int tickDifference = timestamp.FullTick - last.FullTick;
-        float timeDifference = tickDifference * TimePerTick(tempo.Tempo, metre.Ratio);
-        return last.Time + timeDifference;
+        return TimeFromTimestamp(lastTempoChange, lastMetreChange, timestamp);
     }
 
+    /// <summary>
+    /// Converts a timestamp struct to millisecond time based on all provided tempo and metre changes.
+    /// </summary>
+    /// <param name="tempoChangeEvents">The collection of tempo changes.</param>
+    /// <param name="metreChangeEvents">The collection of metre changes.</param>
+    /// <param name="timestamp">The timestamp to convert to milliseconds.</param>
+    /// <returns></returns>
+    public static float TimeFromTimestamp(List<TempoChangeEvent> tempoChanges, List<MetreChangeEvent> metreChanges, Timestamp timestamp)
+    {
+        TempoChangeEvent? lastTempoChange = BinarySearch.Last(tempoChanges, x => x.Timestamp.FullTick < timestamp.FullTick);
+        MetreChangeEvent? lastMetreChange = BinarySearch.Last(metreChanges, x => x.Timestamp.FullTick < timestamp.FullTick);
+        if (lastTempoChange == null || lastMetreChange == null) return 0;
+
+        return TimeFromTimestamp(lastTempoChange, lastMetreChange, timestamp);
+    }
+    
+    /// <summary>
+    /// Converts a timestamp struct to millisecond time based on the provided tempo and metre changes.
+    /// </summary>
+    /// <param name="lastTempoChange">The last tempo change.</param>
+    /// <param name="lastMetreChange">The last metre change.</param>
+    /// <param name="timestamp">The timestamp to convert to milliseconds.</param>
+    /// <returns></returns>
+    private static float TimeFromTimestamp(TempoChangeEvent lastTempoChange, MetreChangeEvent lastMetreChange, Timestamp timestamp)
+    {
+        Timestamp last = Max(lastTempoChange.Timestamp, lastMetreChange.Timestamp);
+
+        int tickDifference = timestamp.FullTick - last.FullTick;
+        float timeDifference = tickDifference * TimePerTick(lastTempoChange.Tempo, lastMetreChange.Ratio);
+        return last.Time + timeDifference;
+    }
+    
     /// <summary>
     /// Converts millisecond time into scaled time based on all speed changes in a layer.
     /// </summary>
     /// <param name="layer">The layer to reference speed changes off of.</param>
-    /// <param name="time">The time to convert in milliseconds.</param>
+    /// <param name="time">The time in milliseconds to convert.</param>
     public static float ScaledTimeFromTime(Layer layer, float time, bool ignoreReverse = false)
     {
         // Reverse Effects overrule all other speed changes.
-        ReverseEffectEvent? reverseEffect = layer.LastReverseEffect(time);
-        if (!ignoreReverse && reverseEffect != null && reverseEffect.IsActive(time))
+        ReverseEffectEvent? lastReverseEffect = layer.LastReverseEffect(time);
+        
+        if (!ignoreReverse && lastReverseEffect != null && lastReverseEffect.IsActive(time))
         {
-            return reverseEffect.SampleReversedTime(time);
+            return lastReverseEffect.SampleReversedTime(time);
         }
         
         SpeedChangeEvent? speedChange = layer.LastSpeedChange(time);
         StopEffectEvent? stopEffect = layer.LastStopEffect(time);
+
+        return ScaledTimeFromTime(speedChange, stopEffect, time);
+    }
+
+    /// <summary>
+    /// Converts millisecond time into scaled time based on all provided speed changes and effects.
+    /// </summary>
+    /// <param name="speedChanges">The collection of speed changes.</param>
+    /// <param name="stopEffects">The collection of stop effects.</param>
+    /// <param name="reverseEffects">The collection of reverse effects.</param>
+    /// <param name="time">The time in milliseconds to convert.</param>
+    /// <param name="ignoreReverse"></param>
+    /// <returns></returns>
+    public static float ScaledTimeFromTime(List<SpeedChangeEvent> speedChanges, List<StopEffectEvent> stopEffects, List<ReverseEffectEvent> reverseEffects, float time, bool ignoreReverse = false)
+    {
+        ReverseEffectEvent? lastReverseEffect = time == 0 
+        ? BinarySearch.Last(reverseEffects, x => x.Timestamp.Time == 0)
+        : BinarySearch.Last(reverseEffects, x => x.Timestamp.Time < time);
+
+        if (!ignoreReverse && lastReverseEffect != null && lastReverseEffect.IsActive(time))
+        {
+            return lastReverseEffect.SampleReversedTime(time);
+        }
+
+        SpeedChangeEvent? lastSpeedChange = time == 0
+            ? BinarySearch.Last(speedChanges, x => x.Timestamp.Time == 0)
+            : BinarySearch.Last(speedChanges, x => x.Timestamp.Time < time);
         
-        if (speedChange == null && stopEffect == null) return time; // This is fine, just means there are no speed changes or stops.
+        StopEffectEvent? lastStopEffect = time == 0
+            ? BinarySearch.Last(stopEffects, x => x.Timestamp.Time == 0)
+            : BinarySearch.Last(stopEffects, x => x.Timestamp.Time < time);
+
+        return ScaledTimeFromTime(lastSpeedChange, lastStopEffect, time);
+    }
+
+    /// <summary>
+    /// Converts millisecond time into scaled time based on the provided speed change and stop effect.
+    /// </summary>
+    /// <param name="lastSpeedChange">The last speed change.</param>
+    /// <param name="lastStopEffect">The last stop effect.</param>
+    /// <param name="time">The time in milliseconds to convert.</param>
+    /// <returns></returns>
+    private static float ScaledTimeFromTime(SpeedChangeEvent? lastSpeedChange, StopEffectEvent? lastStopEffect, float time)
+    {
+        if (lastSpeedChange == null && lastStopEffect == null) return time;
 
         float eventTime;
         float eventScaledTime;
         float scrollSpeed;
 
-        if (speedChange != null && stopEffect == null)
+        if (lastSpeedChange != null && lastStopEffect == null)
         {
             // Speed change exists - Stop doesn't exist.
-            eventTime = speedChange.Timestamp.Time;
-            eventScaledTime = speedChange.Timestamp.ScaledTime;
-            scrollSpeed = speedChange.Speed;
+            eventTime = lastSpeedChange.Timestamp.Time;
+            eventScaledTime = lastSpeedChange.Timestamp.ScaledTime;
+            scrollSpeed = lastSpeedChange.Speed;
         }
-        else if (speedChange == null && stopEffect != null)
+        else if (lastSpeedChange == null && lastStopEffect != null)
         {
             // Speed change doesn't exist - Stop exists.
-            bool stopPassed = time > stopEffect.SubEvents[1].Timestamp.Time;
+            bool stopPassed = time > lastStopEffect.SubEvents[1].Timestamp.Time;
             
             eventTime = stopPassed 
-                ? stopEffect.SubEvents[1].Timestamp.Time 
-                : stopEffect.SubEvents[0].Timestamp.Time;
+                ? lastStopEffect.SubEvents[1].Timestamp.Time 
+                : lastStopEffect.SubEvents[0].Timestamp.Time;
             
             eventScaledTime = stopPassed 
-                ? stopEffect.SubEvents[1].Timestamp.ScaledTime 
-                : stopEffect.SubEvents[0].Timestamp.ScaledTime;
+                ? lastStopEffect.SubEvents[1].Timestamp.ScaledTime 
+                : lastStopEffect.SubEvents[0].Timestamp.ScaledTime;
 
             scrollSpeed = stopPassed ? 1 : 0;
         }
@@ -281,29 +385,29 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
         {
             // Speed change exists - Stop exists.
             
-            if (speedChange!.Timestamp.Time > stopEffect!.SubEvents[1].Timestamp.Time)
+            if (lastSpeedChange!.Timestamp.Time > lastStopEffect!.SubEvents[1].Timestamp.Time)
             {
                 // Speed change comes after the stop.
                 // Ignore the stop.
-                eventTime = speedChange.Timestamp.Time;
-                eventScaledTime = speedChange.Timestamp.ScaledTime;
-                scrollSpeed = speedChange.Speed;
+                eventTime = lastSpeedChange.Timestamp.Time;
+                eventScaledTime = lastSpeedChange.Timestamp.ScaledTime;
+                scrollSpeed = lastSpeedChange.Speed;
             }
             else
             {
                 // Speed change comes during or before the stop.
                 // It gets overruled by the stop until it has passed.
-                bool stopPassed = time > stopEffect.SubEvents[1].Timestamp.Time;
+                bool stopPassed = time > lastStopEffect.SubEvents[1].Timestamp.Time;
             
                 eventTime = stopPassed 
-                    ? stopEffect.SubEvents[1].Timestamp.Time 
-                    : stopEffect.SubEvents[0].Timestamp.Time;
+                    ? lastStopEffect.SubEvents[1].Timestamp.Time 
+                    : lastStopEffect.SubEvents[0].Timestamp.Time;
                 
                 eventScaledTime = stopPassed 
-                    ? stopEffect.SubEvents[1].Timestamp.ScaledTime 
-                    : stopEffect.SubEvents[0].Timestamp.ScaledTime;
+                    ? lastStopEffect.SubEvents[1].Timestamp.ScaledTime 
+                    : lastStopEffect.SubEvents[0].Timestamp.ScaledTime;
 
-                scrollSpeed = stopPassed ? speedChange.Speed : 0;
+                scrollSpeed = stopPassed ? lastSpeedChange.Speed : 0;
             }
         }
         
@@ -312,7 +416,7 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
         
         return eventScaledTime + scaledTimeDifference;
     }
-
+    
     /// <summary>
     /// The length of a tick (1/1920th of a measure) in milliseconds at a specific tempo and metre.
     /// </summary>

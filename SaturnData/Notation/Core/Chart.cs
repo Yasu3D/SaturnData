@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
@@ -189,49 +190,61 @@ public class Chart
     {
         lock (this)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            
             // Sort everything.
             Events = Events.OrderBy(x => x.Timestamp.FullTick).ToList();
             LaneToggles = LaneToggles.OrderBy(x => x.Timestamp.FullTick).ToList();
             Bookmarks = Bookmarks.OrderBy(x => x.Timestamp.FullTick).ToList();
+
+            List<TempoChangeEvent> tempoChanges = Events.OfType<TempoChangeEvent>().ToList();
+            List<MetreChangeEvent> metreChanges = Events.OfType<MetreChangeEvent>().ToList();
+
+            Dictionary<Layer, List<SpeedChangeEvent>> speedChangesByLayer = [];
+            Dictionary<Layer, List<StopEffectEvent>> stopEffectsByLayer = [];
+            Dictionary<Layer, List<ReverseEffectEvent>> reverseEffectsByLayer = [];
             
-            foreach (Layer layer in Layers)
-            {
-                layer.Notes = layer.Notes.OrderBy(x => x.Timestamp.FullTick).ToList();
-                layer.Events = layer.Events.OrderBy(x => x.Timestamp.FullTick).ToList();
-            }
+            // Collection of all playable notes for judge area calculations done later.
+            List<Note> playableNotes = [];
+            List<HoldNote> playableHoldNotes = [];
+            Dictionary<int, List<HoldPointNote>> holdEndNotes = [];
             
             // Update Millisecond Time & ScaledTime.
-            // Clear Generated Notes on all layers.
             foreach (Event @event in Events)
             {
-                float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
+                float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, @event.Timestamp);
                 @event.Timestamp.Time = time;
                 @event.Timestamp.ScaledTime = time;
             }
 
             foreach (Bookmark bookmark in Bookmarks)
             {
-                float time = Timestamp.TimeFromTimestamp(this, bookmark.Timestamp);
+                float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, bookmark.Timestamp);
                 bookmark.Timestamp.Time = time;
                 bookmark.Timestamp.ScaledTime = time;
             }
 
             foreach (Note laneToggle in LaneToggles)
             {
-                float time = Timestamp.TimeFromTimestamp(this, laneToggle.Timestamp);
+                float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, laneToggle.Timestamp);
                 laneToggle.Timestamp.Time = time;
                 laneToggle.Timestamp.ScaledTime = time;
             }
-
-            // Collection of all playable notes for judge area calculations done later.
-            List<Note> playableNotes = [];
-            List<HoldNote> playableHoldNotes = [];
-            Dictionary<int, List<HoldPointNote>> holdEndNotes = [];
             
             foreach (Layer layer in Layers)
             {
-                layer.GeneratedNotes.Clear(); // Clear Generated Notes here to save an enumeration.
-            
+                layer.GeneratedNotes.Clear();
+                layer.Notes = layer.Notes.OrderBy(x => x.Timestamp.FullTick).ToList();
+                layer.Events = layer.Events.OrderBy(x => x.Timestamp.FullTick).ToList();
+                
+                List<SpeedChangeEvent> speedChanges = layer.Events.OfType<SpeedChangeEvent>().ToList();
+                List<StopEffectEvent> stopEffects = layer.Events.OfType<StopEffectEvent>().ToList();
+                List<ReverseEffectEvent> reverseEffects = layer.Events.OfType<ReverseEffectEvent>().ToList();
+                
+                speedChangesByLayer[layer] = speedChanges;
+                stopEffectsByLayer[layer] = stopEffects;
+                reverseEffectsByLayer[layer] = reverseEffects;
+                
                 // Generate Time and ScaledTime in separate loops, because Timestamp.ScaledTimeFromTime() relies on all events having a valid Time.
                 foreach (Event @event in layer.Events)
                 {
@@ -241,7 +254,7 @@ public class Chart
                     
                         foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
                         {
-                            float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
+                            float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, subEvent.Timestamp);
                             subEvent.Timestamp.Time = time;
                         }
                     }
@@ -251,13 +264,13 @@ public class Chart
                     
                         foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
                         {
-                            float time = Timestamp.TimeFromTimestamp(this, subEvent.Timestamp);
+                            float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, subEvent.Timestamp);
                             subEvent.Timestamp.Time = time;
                         }
                     }
                     else
                     {
-                        float time = Timestamp.TimeFromTimestamp(this, @event.Timestamp);
+                        float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, @event.Timestamp);
                         @event.Timestamp.Time = time;
                     }
                 }
@@ -270,7 +283,7 @@ public class Chart
                     
                         foreach (EffectSubEvent subEvent in stopEffectEvent.SubEvents)
                         {
-                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time);
+                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, subEvent.Timestamp.Time);
                         }
                     }
                     else if (@event is ReverseEffectEvent reverseEffectEvent)
@@ -279,12 +292,12 @@ public class Chart
                     
                         foreach (EffectSubEvent subEvent in reverseEffectEvent.SubEvents)
                         {
-                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, subEvent.Timestamp.Time, true);
+                            subEvent.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, subEvent.Timestamp.Time, true);
                         }
                     }
                     else
                     {
-                        @event.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, @event.Timestamp.Time);
+                        @event.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, @event.Timestamp.Time);
                     }
                 }
 
@@ -294,9 +307,9 @@ public class Chart
                     {
                         foreach (HoldPointNote point in holdNote.Points)
                         {
-                            float time = Timestamp.TimeFromTimestamp(this, point.Timestamp);
+                            float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, point.Timestamp);
                             point.Timestamp.Time = time;
-                            point.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
+                            point.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, time);
                         }
 
                         holdNote.Points = holdNote.Points.OrderBy(x => x.Timestamp.FullTick).ToList();
@@ -318,9 +331,9 @@ public class Chart
                     }
                     else
                     {
-                        float time = Timestamp.TimeFromTimestamp(this, note.Timestamp);
+                        float time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, note.Timestamp);
                         note.Timestamp.Time = time;
-                        note.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, time);
+                        note.Timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, time);
                     }
                     
                     if (note is IPlayable playable)
@@ -357,6 +370,10 @@ public class Chart
             for (int l = 0; l < Layers.Count; l++)
             {
                 Layer layer = Layers[l];
+                
+                List<SpeedChangeEvent> speedChanges = speedChangesByLayer[layer];
+                List<StopEffectEvent> stopEffects = stopEffectsByLayer[layer];
+                List<ReverseEffectEvent> reverseEffects = reverseEffectsByLayer[layer];
             
                 // Create Measure and Beat Lines
                 if (l == 0)
@@ -364,8 +381,8 @@ public class Chart
                     for (int i = 0; i <= entry.ChartEnd.Measure; i++)
                     {
                         Timestamp timestamp = new(i, 0);
-                        timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
-                        timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
+                        timestamp.Time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, timestamp);
+                        timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, timestamp.Time);
                     
                         layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, false));
                     }
@@ -393,8 +410,8 @@ public class Chart
                             // if (j % 1920 == 0) continue;
                         
                             Timestamp timestamp = new(j);
-                            timestamp.Time = Timestamp.TimeFromTimestamp(this, timestamp);
-                            timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(layer, timestamp.Time);
+                            timestamp.Time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, timestamp);
+                            timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, timestamp.Time);
                         
                             layer.GeneratedNotes.Add(new MeasureLineNote(timestamp, true));
                         }
@@ -695,18 +712,24 @@ public class Chart
             
             // Create Scaled Timing areas for rendering.
             foreach (Layer layer in Layers)
-            foreach (Note note in layer.Notes)
             {
-                if (note is not IPlayable playable) continue;
+                List<SpeedChangeEvent> speedChanges = speedChangesByLayer[layer];
+                List<StopEffectEvent> stopEffects = stopEffectsByLayer[layer];
+                List<ReverseEffectEvent> reverseEffects = reverseEffectsByLayer[layer];
                 
-                playable.JudgeArea.ScaledMarvelousEarly = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.MarvelousEarly);
-                playable.JudgeArea.ScaledMarvelousLate  = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.MarvelousLate);
-                playable.JudgeArea.ScaledGreatEarly     = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GreatEarly);
-                playable.JudgeArea.ScaledGreatLate      = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GreatLate);
-                playable.JudgeArea.ScaledGoodEarly      = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodEarly);
-                playable.JudgeArea.ScaledGoodLate       = Timestamp.ScaledTimeFromTime(layer, playable.JudgeArea.GoodLate);
+                foreach (Note note in layer.Notes)
+                {
+                    if (note is not IPlayable playable) continue;
+                
+                    playable.JudgeArea.ScaledMarvelousEarly = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, playable.JudgeArea.MarvelousEarly);
+                    playable.JudgeArea.ScaledMarvelousLate  = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, playable.JudgeArea.MarvelousLate);
+                    playable.JudgeArea.ScaledGreatEarly     = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, playable.JudgeArea.GreatEarly);
+                    playable.JudgeArea.ScaledGreatLate      = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, playable.JudgeArea.GreatLate);
+                    playable.JudgeArea.ScaledGoodEarly      = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, playable.JudgeArea.GoodEarly);
+                    playable.JudgeArea.ScaledGoodLate       = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, playable.JudgeArea.GoodLate);
+                }
             }
-            
+
             // Update PreviewBegin and PreviewEnd
             if (entry.PreviewBeginTime != null && entry.PreviewLengthTime != null)
             {
@@ -718,12 +741,14 @@ public class Chart
             }
             else
             {
-                entry.PreviewBegin.Time = Timestamp.TimeFromTimestamp(this, entry.PreviewBegin);
+                entry.PreviewBegin.Time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, entry.PreviewBegin);
                 entry.PreviewBegin.ScaledTime = entry.PreviewBegin.Time;
                 
-                entry.PreviewEnd.Time = Timestamp.TimeFromTimestamp(this, entry.PreviewEnd);
+                entry.PreviewEnd.Time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, entry.PreviewEnd);
                 entry.PreviewEnd.ScaledTime = entry.PreviewEnd.Time;
             }
+            
+            Console.WriteLine(stopwatch.ElapsedTicks);
         }
     }
 }
