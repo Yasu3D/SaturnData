@@ -185,18 +185,18 @@ public class Chart
     /// <summary>
     /// Pre-calculates all values for rendering or gameplay to function properly.
     /// </summary>
-    /// <param name="entry"></param>
+    /// <param name="entry">The entry to use for metadata.</param>
+    /// <param name="audioLength">The length in milliseconds of the chart's audio file</param>
+    /// <param name="saturnJudgeAreas">Determines if judge areas should follow MER or SATURN spec.</param>
     public void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = false)
     {
         lock (this)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            
             // Sort everything.
             Events = Events.OrderBy(x => x.Timestamp.FullTick).ToList();
             LaneToggles = LaneToggles.OrderBy(x => x.Timestamp.FullTick).ToList();
             Bookmarks = Bookmarks.OrderBy(x => x.Timestamp.FullTick).ToList();
-
+            
             List<TempoChangeEvent> tempoChanges = Events.OfType<TempoChangeEvent>().ToList();
             List<MetreChangeEvent> metreChanges = Events.OfType<MetreChangeEvent>().ToList();
 
@@ -355,7 +355,7 @@ public class Chart
                     }
                 }
             }
-
+            
             // Update Chart End.
             if (entry.AutoChartEnd)
             {
@@ -365,7 +365,7 @@ public class Chart
             {
                 entry.ChartEnd.Time = Timestamp.TimeFromTimestamp(this, entry.ChartEnd);
             }
-        
+            
             // Create new generated notes.
             for (int l = 0; l < Layers.Count; l++)
             {
@@ -447,7 +447,7 @@ public class Chart
 
                 layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => x.Timestamp.FullTick).ToList();
             }
-        
+            
             // Re-build reverse effect note lists.
             foreach (Layer layer in Layers)
             {
@@ -516,7 +516,7 @@ public class Chart
                         break;
                     }
                 }
-
+                
                 // Slide & Snap notes on hold starts
                 // - All early areas of the hold note are converted to MARVELOUS.
                 for (int i = 0; i < playableNotes.Count; i++)
@@ -553,36 +553,48 @@ public class Chart
                         judgeArea.GreatEarly = judgeArea.GoodEarly;
                     }
                 }
-
+                
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                
                 // Notes inside holds
-                // - Early GREAT/GOOD areas are cut in half.
-                for (int i = 0; i < playableHoldNotes.Count; i++)
+                // - Early GOOD areas are removed.
+                // - Early GREAT areas are cut in half.
+                Dictionary<HoldNote, List<Note>> containedNotes = [];
+                HashSet<HoldNote> activeHoldNotes = [];
+                for (int i = 0; i < playableNotes.Count; i++)
                 {
-                    HoldNote holdNote = playableHoldNotes[i];
-                    
-                    for (int j = 0; j < playableNotes.Count; j++)
+                    // TODO: explain what the fuck I'm doing here
+                    Note note = playableNotes[i];
+
+                    if (note is HoldNote holdNote && holdNote.Points.Count > 1)
                     {
-                        Note note = playableNotes[j];
+                        activeHoldNotes.Add(holdNote);
+                        containedNotes.Add(holdNote, []);
+                    }
+                    
+                    foreach (HoldNote activeHoldNote in activeHoldNotes.ToArray())
+                    {
+                        if (note == activeHoldNote) continue;
+                        
+                        if (note.Timestamp.FullTick >= activeHoldNote.Points[^1].Timestamp.FullTick)
+                        {
+                            activeHoldNotes.Remove(activeHoldNote);
+                            continue;
+                        }
+
+                        containedNotes[activeHoldNote].Add(note);
+                    }
+                }
+
+                foreach (HoldNote holdNote in playableHoldNotes)
+                {
+                    foreach (Note note in containedNotes[holdNote])
+                    {
                         if (note is not IPositionable positionable) continue;
                         if (note is not IPlayable playable) continue;
 
-                        if (note.Timestamp.FullTick <= holdNote.Points[0].Timestamp.FullTick) continue;
-                        if (note.Timestamp.FullTick >= holdNote.Points[^1].Timestamp.FullTick) continue;
-
-                        HoldPointNote? start = null;
-                        HoldPointNote? end = null;
-
-                        // Find first point that's later than note.
-                        for (int k = 0; k < holdNote.Points.Count; k++)
-                        {
-                            HoldPointNote point = holdNote.Points[k];
-                            if (point.Timestamp.FullTick <= note.Timestamp.FullTick) continue;
-
-                            end = point;
-                            break;
-                        }
-                        
                         // Find last point that's earlier than note.
+                        HoldPointNote? start = null;
                         for (int k = holdNote.Points.Count - 1; k >= 0; k--)
                         {
                             HoldPointNote point = holdNote.Points[k];
@@ -591,13 +603,24 @@ public class Chart
                             start = point;
                             break;
                         }
-                        
                         if (start == null) continue;
-                        if (end == null) continue;
-
-                        float t = SaturnMath.InverseLerp(start.Timestamp.FullTick, end.Timestamp.FullTick, note.Timestamp.FullTick);
                         
-                        int position = (int)Math.Round(SaturnMath.LerpCyclic(start.Position, end.Position, t, 60));
+                        // Find first point that's later than note.
+                        HoldPointNote? end = null;
+                        for (int k = 0; k < holdNote.Points.Count; k++)
+                        {
+                            HoldPointNote point = holdNote.Points[k];
+                            if (point.Timestamp.FullTick <= note.Timestamp.FullTick) continue;
+
+                            end = point;
+                            break;
+                        }
+                        if (end == null) continue;
+                        
+                        float t = SaturnMath.InverseLerp(start.Timestamp.FullTick, end.Timestamp.FullTick, note.Timestamp.FullTick);
+                        bool flip = SaturnMath.FlipHoldInterpolation(start, end);
+
+                        int position = (int)Math.Round(SaturnMath.LerpCyclicManual(start.Position, end.Position, t, 60, flip));
                         int size = (int)Math.Round(SaturnMath.Lerp(start.Size, end.Size, t));
 
                         if (!IPositionable.IsAnyOverlap(positionable.Position, positionable.Size, position, size)) continue;
@@ -606,6 +629,8 @@ public class Chart
                         playable.JudgeArea.GoodEarly = playable.JudgeArea.GreatEarly;
                     }
                 }
+                
+                Console.WriteLine($"HOLD SURFACE {stopwatch.ElapsedTicks}");
                 
                 // Overlapping judge areas
                 // - Do not truncate MARVELOUS area.
@@ -709,7 +734,7 @@ public class Chart
                     }
                 }
             }
-            
+
             // Create Scaled Timing areas for rendering.
             foreach (Layer layer in Layers)
             {
@@ -729,7 +754,7 @@ public class Chart
                     playable.JudgeArea.ScaledGoodLate       = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, playable.JudgeArea.GoodLate);
                 }
             }
-
+            
             // Update PreviewBegin and PreviewEnd
             if (entry.PreviewBeginTime != null && entry.PreviewLengthTime != null)
             {
@@ -747,8 +772,6 @@ public class Chart
                 entry.PreviewEnd.Time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, entry.PreviewEnd);
                 entry.PreviewEnd.ScaledTime = entry.PreviewEnd.Time;
             }
-            
-            Console.WriteLine(stopwatch.ElapsedTicks);
         }
     }
 }
