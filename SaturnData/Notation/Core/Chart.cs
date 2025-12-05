@@ -554,8 +554,6 @@ public class Chart
                     }
                 }
                 
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                
                 // Notes inside holds
                 // - Early GOOD areas are removed.
                 // - Early GREAT areas are cut in half.
@@ -563,7 +561,10 @@ public class Chart
                 HashSet<HoldNote> activeHoldNotes = [];
                 for (int i = 0; i < playableNotes.Count; i++)
                 {
-                    // TODO: explain what the fuck I'm doing here
+                    // Sneaky optimization:
+                    // Instead of looping over every note for every hold note,
+                    // loop over all notes once and keep track of active holds
+                    // to collect which notes are at the same time as an ongoing hold.
                     Note note = playableNotes[i];
 
                     if (note is HoldNote holdNote && holdNote.Points.Count > 1)
@@ -629,8 +630,6 @@ public class Chart
                         playable.JudgeArea.GoodEarly = playable.JudgeArea.GreatEarly;
                     }
                 }
-                
-                Console.WriteLine($"HOLD SURFACE {stopwatch.ElapsedTicks}");
                 
                 // Overlapping judge areas
                 // - Do not truncate MARVELOUS area.
