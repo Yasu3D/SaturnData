@@ -69,8 +69,11 @@ public class Entry
 
 
     /// <summary>
-    /// The unique identifier of the chart.
+    /// The string used to identify an <see cref="Entry"/>.
     /// </summary>
+    /// <remarks>
+    /// It's recommended to use a universally unique identifier (UUID) for the Id, but the value doesn't have to conform to any standard.
+    /// </remarks>
     public string Id = NewId;
 
     /// <summary>
@@ -149,8 +152,11 @@ public class Entry
     
     
     /// <summary>
-    /// The current revision of the chart. Optional and only used for users to keep track of different chart revisions.
+    /// The current revision of the chart.
     /// </summary>
+    /// <remarks>
+    /// This property is optional and only meant for users to keep track of different chart revisions.
+    /// </remarks>
     public string Revision
     {
         get => revision;

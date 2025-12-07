@@ -187,7 +187,7 @@ public class Chart
     /// <param name="entry">The entry to use for metadata.</param>
     /// <param name="audioLength">The length in milliseconds of the chart's audio file</param>
     /// <param name="saturnJudgeAreas">Determines if judge areas should follow MER or SATURN spec.</param>
-    public void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = false)
+    public void Build(Entry entry, float audioLength = 0, bool saturnJudgeAreas = true)
     {
         lock (this)
         {
