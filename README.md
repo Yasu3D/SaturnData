@@ -1,6 +1,6 @@
-# SaturnData
+# SATURN DATA
+SATURN DATA is the core library for SATURN and SATURN EDIT.
+It defines all chart notation and custom content types, 
+and handles their serialization and deserialization.
 
-SaturnData is the core data library for **Saturn**. It defines all chart notation objects and cosmetic types, and handles serialization and deserialization of chart and cosmetic files.
-## Getting Started
-
-TODO
+For more info, please refer to xml docs in the code or the [SATURN DATA documentation](https://saturn.yasu3d.art/documentation/saturn-data/index.html).
