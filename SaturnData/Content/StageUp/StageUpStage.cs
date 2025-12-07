@@ -1,5 +1,7 @@
 using System;
+using SaturnData.Content.Items;
 using SaturnData.Notation.Core;
+using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Content.StageUp;
 
@@ -77,21 +79,4 @@ public class StageUpStage : ContentItem
 
         return Song1;
     }
-}
-
-/// <summary>
-/// A song to play in stage-up mode.
-/// </summary>
-[Serializable]
-public class StageUpSong
-{
-    /// <summary>
-    /// The <see cref="Entry.Id"/> of the song difficulty to play.
-    /// </summary>
-    public string EntryId { get; set; } = "";
-    
-    /// <summary>
-    /// Should the song be displayed as <c>???</c> on the stage select and song preview screen?
-    /// </summary>
-    public bool Secret { get; set; } = false;
 }

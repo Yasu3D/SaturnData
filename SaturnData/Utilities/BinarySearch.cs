@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SaturnData.Utilities;
 
-public static class BinarySearch
+internal static class BinarySearch
 {
-    public static T? Run<T>(List<T> collection, Func<T, bool> predicate) where T : class
+    internal static T? Run<T>(List<T> collection, Func<T, bool> predicate) where T : class
     {
         int minimum = 0;
         int maximum = collection.Count - 1;
@@ -30,7 +30,7 @@ public static class BinarySearch
         return result;
     }
 
-    public static T? First<T>(List<T> collection, Func<T, bool> predicate) where T : class
+    internal static T? First<T>(List<T> collection, Func<T, bool> predicate) where T : class
     {
         int minimum = 0;
         int maximum = collection.Count - 1;
@@ -68,7 +68,7 @@ public static class BinarySearch
         return result;
     }
     
-    public static T? Last<T>(List<T> collection, Func<T, bool> predicate) where T : class
+    internal static T? Last<T>(List<T> collection, Func<T, bool> predicate) where T : class
     {
         int minimum = 0;
         int maximum = collection.Count - 1;

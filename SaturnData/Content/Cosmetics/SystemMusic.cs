@@ -1,4 +1,6 @@
 using System;
+using SaturnData.Content.Cosmetics.Items;
+using SaturnData.Content.Items;
 
 namespace SaturnData.Content.Cosmetics;
 
@@ -29,17 +31,17 @@ public class SystemMusic : CosmeticItem
     public string AudioResultPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "stage-up select" bgm audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "stage-up select bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     public string AudioStageUpSelectPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "stage-up secret" bgm audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "stage-up secret bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     public string AudioStageUpSecretPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "see-you" bgm audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "see-you bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     public string AudioSeeYouPath { get; set; } = "";
     

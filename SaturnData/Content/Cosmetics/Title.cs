@@ -1,4 +1,5 @@
 using System;
+using SaturnData.Content.Cosmetics.Items;
 
 namespace SaturnData.Content.Cosmetics;
 

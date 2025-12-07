@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SaturnData.Content.Items;
 using Tomlyn;
 
 namespace SaturnData.Content.Lists;

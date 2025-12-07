@@ -1,4 +1,6 @@
-namespace SaturnData.Content.Cosmetics;
+using SaturnData.Content.Items;
+
+namespace SaturnData.Content.Cosmetics.Items;
 
 /// <summary>
 /// Defines the base data for a user-defined cosmetic.

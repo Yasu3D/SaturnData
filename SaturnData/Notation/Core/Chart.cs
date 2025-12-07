@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SaturnData.Content.Items;
 using SaturnData.Notation.Core;
 
 namespace SaturnData.Content.Music;
@@ -65,7 +66,7 @@ public enum FolderBackgroundStyle
     Level = 10,
     
     /// <summary>
-    /// Green triangles on a white-green background
+    /// Green triangles on a white-green background.
     /// </summary>
     Name = 11,
 }

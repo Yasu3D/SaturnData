@@ -1,9 +1,11 @@
 using System;
+using SaturnData.Content.Cosmetics.Items;
+using SaturnData.Content.Items;
 
 namespace SaturnData.Content.Cosmetics;
 
 /// <summary>
-/// A secondary icon to display on the user profile, often denoting a stage-up clear.
+/// A secondary icon to display on the user profile, often denoting a stage up clear.
 /// </summary>
 [Serializable]
 public class Emblem : CosmeticItem

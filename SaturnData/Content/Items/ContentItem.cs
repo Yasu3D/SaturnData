@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace SaturnData.Content;
+namespace SaturnData.Content.Items;
 
 /// <summary>
 /// Defines the base data for a piece of user-defined content.
