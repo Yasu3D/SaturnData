@@ -390,25 +390,25 @@ public class Chart
 
                     for (int i = 0; i < metreChangeEvents.Count; i++)
                     {
-                        int step = 1920 / metreChangeEvents[i].Upper;
-                        float m = 1920.0f / metreChangeEvents[i].Upper;
-                        
-                        int roundedStartTick = (int)(Math.Floor(metreChangeEvents[i].Timestamp.FullTick / m) * m);
+                        MetreChangeEvent metre = metreChangeEvents[i];
 
-                        int startTick = roundedStartTick < metreChangeEvents[i].Timestamp.FullTick 
-                            ? roundedStartTick + step 
-                            : roundedStartTick;
+                        int minFullTick = metre.Timestamp.FullTick;
                         
-                        int endTick = i == metreChangeEvents.Count - 1
+                        int maxFullTick = i == metreChangeEvents.Count - 1
                             ? entry.ChartEnd.FullTick
                             : metreChangeEvents[i + 1].Timestamp.FullTick;
                         
-                        for (int j = startTick; j < endTick; j += step)
-                        {
-                            // I prefer giving people the option to have only beat lines.
-                            // if (j % 1920 == 0) continue;
+                        int start = Timestamp.BeatFromTick(minFullTick, metre.Upper);
+                        int end = Timestamp.BeatFromTick(maxFullTick, metre.Upper);
                         
-                            Timestamp timestamp = new(j);
+                        for (int j = start; j < end; j++)
+                        {
+                            int tick = Timestamp.TickFromBeat(j, metre.Upper);
+
+                            if (tick < minFullTick) continue;
+                            if (tick > maxFullTick) break;
+                            
+                            Timestamp timestamp = new(tick);
                             timestamp.Time = Timestamp.TimeFromTimestamp(tempoChanges, metreChanges, timestamp);
                             timestamp.ScaledTime = Timestamp.ScaledTimeFromTime(speedChanges, stopEffects, reverseEffects, timestamp.Time);
                         
