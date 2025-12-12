@@ -8,7 +8,7 @@ using SaturnData.Notation.Notes;
 
 namespace SaturnData.Notation.Serialization.SatV3;
 
-public static class SatV3Writer
+internal static class SatV3Writer
 {
     /// <summary>
     /// Converts a chart into a string.
@@ -17,7 +17,7 @@ public static class SatV3Writer
     /// <remarks>
     /// This overload doesn't write any metadata. Certain format specs may not support this.
     /// </remarks>
-    public static string ToString(Chart chart, NotationWriteArgs args)
+    internal static string ToString(Chart chart, NotationWriteArgs args)
     {
         string prefix = $"# {args.ExportWatermark}\n{"@SAT_VERSION",-16}3\n\n";
         return prefix + ToString(null, chart, args);
@@ -29,7 +29,7 @@ public static class SatV3Writer
     /// <param name="entry">The entry to serialize.</param>
     /// <param name="chart">The chart to serialize.</param>
     /// <returns></returns>
-    public static string ToString(Entry? entry, Chart chart, NotationWriteArgs args)
+    internal static string ToString(Entry? entry, Chart chart, NotationWriteArgs args)
     {
         StringBuilder sb = new();
 
@@ -46,7 +46,7 @@ public static class SatV3Writer
         return sb.ToString();
     }
 
-    public static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteArgs args)
+    private static void WriteMetadata(StringBuilder sb, Entry entry, NotationWriteArgs args)
     {
         try
         {
@@ -131,8 +131,8 @@ public static class SatV3Writer
             return b ? "TRUE" : "FALSE";
         }
     }
-    
-    public static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteArgs args)
+
+    private static void WriteBookmarks(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@BOOKMARKS\n");
         
@@ -143,8 +143,8 @@ public static class SatV3Writer
 
         sb.Append('\n');
     }
-    
-    public static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteArgs args)
+
+    private static void WriteEvents(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@EVENTS\n");
 
@@ -168,8 +168,8 @@ public static class SatV3Writer
         
         sb.Append('\n');
     }
-    
-    public static void WriteLaneToggles(StringBuilder sb, Chart chart, NotationWriteArgs args)
+
+    private static void WriteLaneToggles(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         sb.Append("@LANE\n");
 
@@ -201,8 +201,8 @@ public static class SatV3Writer
             };
         }
     }
-    
-    public static void WriteLayers(StringBuilder sb, Chart chart, NotationWriteArgs args)
+
+    private static void WriteLayers(StringBuilder sb, Chart chart, NotationWriteArgs args)
     {
         for (int l = 0; l < chart.Layers.Count; l++)
         {

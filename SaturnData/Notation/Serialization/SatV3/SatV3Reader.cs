@@ -10,7 +10,7 @@ using SaturnData.Notation.Notes;
 
 namespace SaturnData.Notation.Serialization.SatV3;
 
-public static class SatV3Reader
+internal static class SatV3Reader
 {
     private enum Region
     {
@@ -29,7 +29,7 @@ public static class SatV3Reader
     /// </summary>
     /// <param name="lines">Chart file data separated into individual lines.</param>
     /// <returns></returns>
-    public static Chart ToChart(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
+    internal static Chart ToChart(string[] lines, NotationReadArgs args, out List<Exception> exceptions)
     {
         Chart chart = new();
         exceptions = [];

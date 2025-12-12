@@ -55,7 +55,7 @@ public enum MergeExtraLayersOption
 public enum ConvertExtendedBonusTypesOption
 {
     ConvertToNormal = 0,
-    ConvertToRNote = 1,
+    ConvertToR = 1,
 }
 
 public enum WriteMusicFilePathOption

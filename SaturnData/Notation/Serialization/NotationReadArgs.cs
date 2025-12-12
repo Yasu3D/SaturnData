@@ -3,12 +3,7 @@ namespace SaturnData.Notation.Serialization;
 public class NotationReadArgs
 {
     /// <summary>
-    /// Should all objects in collections be sorted by their timestamp?
-    /// </summary>
-    public bool SortCollections { get; set; } = true;
-
-    /// <summary>
-    /// Should hidden hold segments be removed?
+    /// Should hold points with their <see cref="SaturnData.Notation.Notes.HoldPointRenderType"/> set to <see cref="SaturnData.Notation.Notes.HoldPointRenderType.Hidden"/> be removed?
     /// </summary>
     public bool OptimizeHoldNotes { get; set; } = true;
 

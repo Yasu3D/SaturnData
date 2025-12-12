@@ -36,6 +36,16 @@ public class NoteSound : CosmeticItem
     public float ReHoldLoopEndTime { get; set; } = 0;
 
     /// <summary>
+    /// The local filepath of the "click" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioClickPath { get; set; } = "";
+    
+    /// <summary>
+    /// The local filepath of the "guide" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioGuidePath { get; set; } = "";
+
+    /// <summary>
     /// The local filepath of the "touch marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     public string AudioTouchMarvelousPath { get; set; } = "";
@@ -91,6 +101,21 @@ public class NoteSound : CosmeticItem
     public string AudioRPath { get; set; } = "";
     
     /// <summary>
+    /// The local filepath of the "damage" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioDamagePath { get; set; } = "";
+    
+    /// <summary>
+    /// The absolute filepath of the "click" audio file.
+    /// </summary>
+    public string AbsoluteAudioClickPath => AbsolutePath(AudioClickPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "guide" audio file.
+    /// </summary>
+    public string AbsoluteAudioGuidePath => AbsolutePath(AudioGuidePath);
+    
+    /// <summary>
     /// The absolute filepath of the "touch marvelous" audio file.
     /// </summary>
     public string AbsoluteAudioTouchMarvelousPath => AbsolutePath(AudioTouchMarvelousPath);
@@ -144,4 +169,9 @@ public class NoteSound : CosmeticItem
     /// The absolute filepath of the "r" audio file.
     /// </summary>
     public string AbsoluteAudioRPath => AbsolutePath(AudioRPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "damage" audio file.
+    /// </summary>
+    public string AbsoluteAudioDamagePath => AbsolutePath(AudioDamagePath);
 }

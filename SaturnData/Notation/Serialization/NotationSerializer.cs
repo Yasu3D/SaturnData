@@ -96,7 +96,7 @@ public static class NotationSerializer
                 FormatVersion.SatV3 => SatV3Reader.ToChart(lines, args, out exceptions),
                 _ => throw new(),
             };
-
+            
             return chart;
         }
         catch (Exception ex)

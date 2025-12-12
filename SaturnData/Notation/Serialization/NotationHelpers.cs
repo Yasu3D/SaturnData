@@ -46,20 +46,6 @@ internal static class NotationHelpers
     
     internal static void PostProcessChart(Chart chart, NotationReadArgs args)
     {
-        if (args.SortCollections)
-        {
-            chart.Events = chart.Events.OrderBy(x => x.Timestamp.FullTick).ToList();
-            chart.LaneToggles = chart.LaneToggles.OrderBy(x => x.Timestamp.FullTick).ToList();
-            chart.Bookmarks = chart.Bookmarks.OrderBy(x => x.Timestamp.FullTick).ToList();
-
-            foreach (Layer layer in chart.Layers)
-            {
-                layer.Events = layer.Events.OrderBy(x => x.Timestamp.FullTick).ToList();
-                layer.Notes = layer.Notes.OrderBy(x => x.Timestamp.FullTick).ToList();
-                layer.GeneratedNotes = layer.GeneratedNotes.OrderBy(x => x.Timestamp.FullTick).ToList();
-            }
-        }
-        
         if (args.OptimizeHoldNotes)
         {
             foreach (Layer layer in chart.Layers)
