@@ -425,16 +425,14 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     public static float TimePerTick(float tempo, float ratio) => (240.0f / tempo * ratio / 1920.0f) * 1000.0f;
     
     /// <summary>
-    /// 
+    /// Converts ticks to beats, based on the provided beat division.
     /// </summary>
-    /// <param name="tick"></param>
-    /// <returns></returns>
+    /// <param name="tick">The tick to convert.</param>
     public static int BeatFromTick(int tick, int division) => (int)Math.Round(division * tick / 1920.0);
     
     /// <summary>
-    /// 
+    /// Converts beats to ticks, based on the provided beat division.
     /// </summary>
-    /// <param name="beat"></param>
-    /// <returns></returns>
+    /// <param name="beat">The beat to convert.</param>
     public static int TickFromBeat(int beat, int division) => 1920 * beat / division;
 }
