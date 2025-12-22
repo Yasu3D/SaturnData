@@ -588,7 +588,9 @@ public class Chart
 
                 foreach (HoldNote holdNote in playableHoldNotes)
                 {
-                    foreach (Note note in containedNotes[holdNote])
+                    if (!containedNotes.TryGetValue(holdNote, out List<Note>? notes)) return;
+                    
+                    foreach (Note note in notes)
                     {
                         if (note is not IPositionable positionable) continue;
                         if (note is not IPlayable playable) continue;
