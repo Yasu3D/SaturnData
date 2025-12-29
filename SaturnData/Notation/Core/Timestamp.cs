@@ -5,6 +5,13 @@ using SaturnData.Utilities;
 
 namespace SaturnData.Notation.Core;
 
+public enum TimestampRounding
+{
+    Round = 0,
+    Ceiling = 1,
+    Floor = 2,
+}
+
 /// <summary>
 /// Contains information about an object's position in time.
 /// </summary>
@@ -192,13 +199,13 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="chart">The chart to reference tempo and metre changes off of.</param>
     /// <param name="time">The time in milliseconds to convert to a timestamp.</param>
     /// <param name="division">The beat division to round the result to. (optional)</param>
-    public static Timestamp TimestampFromTime(Chart chart, float time, int division = 1920)
+    public static Timestamp TimestampFromTime(Chart chart, float time, TimestampRounding rounding, int division = 1920)
     {
         TempoChangeEvent? lastTempoChange = chart.LastTempoChange(time);
         MetreChangeEvent? lastMetreChange = chart.LastMetreChange(time);
         if (lastTempoChange == null || lastMetreChange == null) return Zero;
 
-        return TimestampFromTime(lastTempoChange, lastMetreChange, time, division);
+        return TimestampFromTime(lastTempoChange, lastMetreChange, time, rounding, division);
     }
 
     /// <summary>
@@ -209,13 +216,13 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="time">The time in milliseconds to convert to a timestamp.</param>
     /// <param name="division">The beat division to round the result to. (optional)</param>
     /// <returns></returns>
-    public static Timestamp TimestampFromTime(List<TempoChangeEvent> tempoChanges, List<MetreChangeEvent> metreChanges, float time, int division = 1920)
+    public static Timestamp TimestampFromTime(List<TempoChangeEvent> tempoChanges, List<MetreChangeEvent> metreChanges, float time, TimestampRounding rounding, int division = 1920)
     {
         TempoChangeEvent? lastTempoChange = BinarySearch.Last(tempoChanges, x => x.Timestamp.Time < time);
         MetreChangeEvent? lastMetreChange = BinarySearch.Last(metreChanges, x => x.Timestamp.Time < time);
         if (lastTempoChange == null || lastMetreChange == null) return Zero;
         
-        return TimestampFromTime(lastTempoChange, lastMetreChange, time, division);
+        return TimestampFromTime(lastTempoChange, lastMetreChange, time, rounding, division);
     }
     
     /// <summary>
@@ -226,7 +233,7 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="time">The time in milliseconds to convert to a timestamp.</param>
     /// <param name="division">The beat division to round the result to. (optional)</param>
     /// <returns></returns>
-    private static Timestamp TimestampFromTime(TempoChangeEvent lastTempoChange, MetreChangeEvent lastMetreChange, float time, int division = 1920)
+    private static Timestamp TimestampFromTime(TempoChangeEvent lastTempoChange, MetreChangeEvent lastMetreChange, float time, TimestampRounding rounding, int division = 1920)
     {
         Timestamp last = Max(lastTempoChange.Timestamp, lastMetreChange.Timestamp);
 
@@ -238,7 +245,14 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
         if (division != 1920)
         {
             float m = 1920.0f / division;
-            fullTick = (int)(Math.Floor(fullTick / m) * m);
+
+            fullTick = rounding switch
+            {
+                TimestampRounding.Ceiling => (int)(Math.Ceiling(fullTick / m) * m),
+                TimestampRounding.Floor   => (int)(Math.Floor(fullTick / m) * m),
+                TimestampRounding.Round   => (int)(Math.Round(fullTick / m) * m),
+                _ => fullTick,
+            };
         }
 
         fullTick = Math.Max(last.FullTick, fullTick);

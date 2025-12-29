@@ -119,7 +119,7 @@ public class Chart
     /// <returns></returns>
     public Timestamp FindIdealChartEnd(float audioLength = 0)
     {
-        Timestamp audioEnd = Timestamp.TimestampFromTime(this, audioLength);
+        Timestamp audioEnd = Timestamp.TimestampFromTime(this, audioLength, TimestampRounding.Floor);
         Timestamp chartEnd = Timestamp.Zero;
 
         foreach (Layer layer in Layers)
@@ -136,7 +136,7 @@ public class Chart
             }
         }
         
-        chartEnd = Timestamp.TimestampFromTime(this, chartEnd.Time + 2000);
+        chartEnd = Timestamp.TimestampFromTime(this, chartEnd.Time + 2000, TimestampRounding.Floor);
         
         // Round up to next measure.
         if (chartEnd.Tick != 0)
@@ -758,8 +758,8 @@ public class Chart
             // Update PreviewBegin and PreviewEnd
             if (entry.PreviewBeginTime != null && entry.PreviewLengthTime != null)
             {
-                entry.PreviewBegin = Timestamp.TimestampFromTime(this, entry.PreviewBeginTime.Value);
-                entry.PreviewEnd = Timestamp.TimestampFromTime(this, entry.PreviewBeginTime.Value + entry.PreviewLengthTime.Value);
+                entry.PreviewBegin = Timestamp.TimestampFromTime(this, entry.PreviewBeginTime.Value, TimestampRounding.Floor);
+                entry.PreviewEnd = Timestamp.TimestampFromTime(this, entry.PreviewBeginTime.Value + entry.PreviewLengthTime.Value, TimestampRounding.Floor);
                 
                 entry.PreviewBeginTime = null;
                 entry.PreviewLengthTime = null;

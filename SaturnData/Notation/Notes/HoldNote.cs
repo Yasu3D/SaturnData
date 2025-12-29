@@ -62,8 +62,31 @@ public class HoldNote : Note, IPositionable, IPlayable, ICloneable
     /// <summary>
     /// The size of the largest point in the hold note.
     /// </summary>
-    public int MaxSize => Points.Max(x => x.Size);
-    
+    public int MaxSize
+    {
+        get
+        {
+            try
+            {
+                int max = 1;
+                
+                for (int i = 0; i < Points.Count; i++)
+                {
+                    max = Math.Max(max, Points[i].Size);
+                }
+                
+                return max;
+            }
+            catch (Exception ex)
+            {
+                // Don't throw.
+                Console.WriteLine(ex);
+            }
+
+            return 60;
+        }
+    }
+
     public object Clone()
     {
         HoldNote clone = new(BonusType, JudgementType)
