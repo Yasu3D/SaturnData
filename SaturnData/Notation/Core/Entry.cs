@@ -245,12 +245,6 @@ public class Entry
             if (previewBegin == value) return;
             
             previewBegin = value;
-
-            if (previewEnd.FullTick <= previewBegin.FullTick)
-            {
-                previewEnd = new(previewBegin.FullTick + 7680);
-            }
-            
             EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
@@ -267,12 +261,6 @@ public class Entry
             if (previewEnd == value) return;
             
             previewEnd = value;
-
-            if (previewBegin.FullTick >= previewEnd.FullTick)
-            {
-                previewBegin = new(previewEnd.FullTick - 7680);
-            }
-            
             EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
