@@ -400,6 +400,8 @@ public class Chart
                         
                         int start = Timestamp.BeatFromTick(minFullTick, metre.Upper);
                         int end = Timestamp.BeatFromTick(maxFullTick, metre.Upper);
+
+                        start = Math.Max(0, start);
                         
                         for (int j = start; j < end; j++)
                         {
