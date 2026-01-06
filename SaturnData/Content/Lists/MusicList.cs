@@ -133,6 +133,11 @@ public class MusicList
     private SortType activeSortType = SortType.Level;
 
     /// <summary>
+    /// Should entries be grouped individually, or as songs?
+    /// </summary>
+    public bool UseEntryGrouping => ActiveGroupType is GroupType.Level or GroupType.NotesDesigner;
+
+    /// <summary>
     /// Scans a directory and all of its subdirectories for music data, then loads it into memory.
     /// </summary>
     /// <param name="musicDirectoryPath">The absolute path of the directory to scan.</param>
@@ -692,7 +697,7 @@ public class MusicList
         }
         
         // Entry Grouping
-        if (ActiveGroupType is GroupType.Level or GroupType.NotesDesigner)
+        if (UseEntryGrouping)
         {
             List<MusicMeshNode> allNodes = [];
 
@@ -711,6 +716,7 @@ public class MusicList
                 linkNodesAcrossRow(node);
             }
         }
+        
         // Song Grouping
         else
         {

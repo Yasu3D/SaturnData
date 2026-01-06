@@ -10,30 +10,9 @@ namespace SaturnData.Content.Lists;
 public class ContentList<T> where T : ContentItem, new()
 {
     /// <summary>
-    /// Invoked whenever the selected item changes.
-    /// </summary>
-    public event EventHandler? SelectionChanged;
-    
-    /// <summary>
     /// A list of all items.
     /// </summary>
     public List<T> Items { get; private set; } = [];
-
-    /// <summary>
-    /// The currently selected item.
-    /// </summary>
-    public T? SelectedItem
-    {
-        get => selectedItem;
-        set
-        {
-            if (selectedItem == value) return;
-            selectedItem = value;
-            
-            SelectionChanged?.Invoke(null, EventArgs.Empty);
-        }
-    }
-    private T? selectedItem = null;
 
     /// <summary>
     /// Scans a directory and all of its subdirectories for content data, then loads it into memory.
@@ -80,4 +59,10 @@ public class ContentList<T> where T : ContentItem, new()
             Console.WriteLine(ex);
         }
     }
+
+    /// <summary>
+    /// Returns the first 
+    /// </summary>
+    /// <param name="id">The Id of the <see cref="ContentItem"/> to find.</param>
+    public T? TryGetItem(string id) => Items.FirstOrDefault(x => x.Id == id);
 }
