@@ -17,6 +17,14 @@ public static class SaturnMath
         return r < 0 ? r + m : r;
     }
     
+    public static float Modulo(float x, int m)
+    {
+        if (m <= 0) return 0;
+        
+        float r = x % m;
+        return r < 0 ? r + m : r;
+    }
+    
     /// <summary>
     /// Linearly interpolates between <c>a</c> and <c>b</c>, controlled by <c>t</c>
     /// </summary>
