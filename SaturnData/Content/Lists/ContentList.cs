@@ -28,7 +28,9 @@ public class ContentList<T> where T : ContentItem, new()
             if (!Directory.Exists(contentDirectoryPath)) return;
             
             // Go through all subdirectories.
-            string[] subDirectories = Directory.GetDirectories(contentDirectoryPath, "*", SearchOption.AllDirectories);
+            List<string> subDirectories = Directory.GetDirectories(contentDirectoryPath, "*", SearchOption.AllDirectories).ToList();
+            subDirectories.Add(contentDirectoryPath);
+            
             foreach (string directory in subDirectories)
             {
                 // Go through all files in the directory.

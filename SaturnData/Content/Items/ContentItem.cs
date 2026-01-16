@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace SaturnData.Content.Items;
@@ -7,6 +8,8 @@ namespace SaturnData.Content.Items;
 /// </summary>
 public abstract class ContentItem
 {
+    public event EventHandler? PropertyChanged;
+
     /// <summary>
     /// The string used to identify a <see cref="ContentItem"/>.<br/>
     /// </summary>
@@ -14,18 +17,40 @@ public abstract class ContentItem
     /// It's recommended to use a universally unique identifier (UUID) for the Id,
     /// but the value doesn't have to conform to any standard.
     /// </remarks>
-    public string Id { get; set; } = "";
-    
+    public string Id
+    {
+        get => id;
+        set
+        {
+            if (id == value) return;
+
+            id = value;
+            PropertyChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    private string id = "";
+
     /// <summary>
     /// The name for a <see cref="ContentItem"/> to display to users.
     /// </summary>
-    public string Name { get; set; }  = "";
+    public string Name
+    {
+        get => name;
+        set
+        {
+            if (name == value) return;
+
+            name = value;
+            PropertyChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    private string name = "";
     
     /// <summary>
     /// The absolute path to the file that defined the <see cref="ContentItem"/>.
     /// </summary>
     public string AbsoluteSourcePath = "";
-
+    
     /// <summary>
     /// Returns the absolute filepath of a file at the specified local path.
     /// </summary>
