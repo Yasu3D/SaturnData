@@ -697,7 +697,7 @@ internal static class SatV3Reader
 
                     entry.PreviewBegin = new(measure, tick);
                 }
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_LENGTH ", out value))
+                if (NotationHelpers.ContainsKey(line, "@PREVIEW_END ", out value))
                 {
                     string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
