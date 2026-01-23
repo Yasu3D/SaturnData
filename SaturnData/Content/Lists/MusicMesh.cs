@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SaturnData.Content.Music;
 using SaturnData.Notation.Core;
 
 namespace SaturnData.Content.Lists;
@@ -103,36 +102,6 @@ public class MusicMesh
             SelectedNode = Nodes[0];
         }
     }
-
-    public void Select(Folder? folder)
-    {
-        if (Nodes.Count == 0)
-        {
-            SelectedNode = null;
-            return;
-        }
-
-        if (folder == null)
-        {
-            SelectedNode = Nodes[0];
-            return;
-        }
-
-        bool folderFound = false;
-        foreach (MusicMeshNode node in Nodes)
-        {
-            if (node.Folder != folder) continue;
-            
-            SelectedNode = node;
-            folderFound = true;
-            break;
-        }
-
-        if (!folderFound)
-        {
-            SelectedNode = Nodes[0];
-        }
-    }
 }
 
 public class MusicMeshNode
@@ -142,11 +111,6 @@ public class MusicMeshNode
     /// </summary>
     public Entry? Entry = null;
 
-    /// <summary>
-    /// The folder associated with this node.
-    /// </summary>
-    public Folder? Folder = null;
-    
     /// <summary>
     /// The node to the left of the current node, representing a neighboring entry.
     /// </summary>

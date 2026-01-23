@@ -95,12 +95,7 @@ public class MusicList
     /// <summary>
     /// All entries, laid out in a cylinder-like mesh.
     /// </summary>
-    public readonly MusicMesh EntryMesh = new();
-
-    /// <summary>
-    /// All folders, laid out in a cylinder-like mesh.
-    /// </summary>
-    public readonly MusicMesh FolderMesh = new();
+    public readonly MusicMesh Mesh = new();
     
     /// <summary>
     /// The criteria content is currently grouped into folders by.
@@ -692,28 +687,13 @@ public class MusicList
     private void Remesh()
     {
         // Save current selection
-        Folder? selectedFolder = FolderMesh.SelectedNode?.Folder;
-        Entry? selectedEntry = EntryMesh.SelectedNode?.Entry;
+        Entry? selectedEntry = Mesh.SelectedNode?.Entry;
         
-        // Create Folder nodes.
-        List<MusicMeshNode> folderNodes = [];
-        foreach (Folder folder in Folders)
-        {
-            MusicMeshNode node = new()
-            {
-                Folder = folder,
-            };
-
-            folderNodes.Add(node);
-        }
-        
-        linkNodesInRow(folderNodes);
-        
-        // Create Entry nodes.
-        Dictionary<Entry, MusicMeshNode> entryNodes = [];
+        // Create Entries
+        Dictionary<Entry, MusicMeshNode> nodes = [];
         foreach (Entry entry in Entries.Values)
         {
-            entryNodes.Add(entry, new() { Entry = entry });
+            nodes.Add(entry, new() { Entry = entry });
         }
         
         // Entry Grouping
@@ -724,7 +704,7 @@ public class MusicList
             foreach (Folder folder in Folders)
             foreach (Entry entry in folder.Entries)
             {
-                allNodes.Add(entryNodes[entry]);
+                allNodes.Add(nodes[entry]);
             }
             
             // Link together nodes within a row. [Left | Right]
@@ -764,7 +744,7 @@ public class MusicList
                         Entry? entry = song.EntryByDifficulty(difficulty);
                         if (entry == null) continue;
                         
-                        row.Add(entryNodes[entry]);
+                        row.Add(nodes[entry]);
                     }
                 }
             }
@@ -783,12 +763,10 @@ public class MusicList
             }
         }
         
-        EntryMesh.Nodes = entryNodes.Values.ToList();
-        FolderMesh.Nodes = folderNodes;
+        Mesh.Nodes = nodes.Values.ToList();
 
         // Reapply current selection
-        FolderMesh.Select(selectedFolder);
-        EntryMesh.Select(selectedEntry);
+        Mesh.Select(selectedEntry);
 
         return;
         
@@ -813,11 +791,11 @@ public class MusicList
 
                 Song song = node.Entry!.Song!;
 
-                MusicMeshNode normalNode    = entryNodes[song.Normal!];
-                MusicMeshNode hardNode      = entryNodes[song.Hard!];
-                MusicMeshNode expertNode    = entryNodes[song.Expert!];
-                MusicMeshNode infernoNode   = entryNodes[song.Inferno!];
-                MusicMeshNode worldsEndNode = entryNodes[song.WorldsEnd!];
+                MusicMeshNode normalNode    = nodes[song.Normal!];
+                MusicMeshNode hardNode      = nodes[song.Hard!];
+                MusicMeshNode expertNode    = nodes[song.Expert!];
+                MusicMeshNode infernoNode   = nodes[song.Inferno!];
+                MusicMeshNode worldsEndNode = nodes[song.WorldsEnd!];
 
                 normalNode.Top = hardNode;
 
