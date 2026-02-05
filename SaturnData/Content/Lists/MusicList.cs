@@ -82,10 +82,58 @@ public enum SortType
 /// </summary>
 public class MusicList
 {
+    public MusicList()
+    {
+        Mesh = new();
+        Mesh.SelectionChanged += Mesh_OnSelectionChanged;
+    }
+
+    public event EventHandler? FolderSelectStateChanged;
+    
     /// <summary>
     /// All folders, generated based on the ActiveFolderSortType and ActiveSongSortType.
     /// </summary>
     public readonly List<Folder> Folders = [];
+
+    /// <summary>
+    /// The currently selected Folder.
+    /// </summary>
+    /// <remarks>
+    /// This is used in SATURN to keep track of the selected Folder in a Folder-Select Scene without changing the selected MusicMesh Node.<br/>
+    /// This field is updated every time the MusicMesh selection changes, but changing it directly has no effect on the MusicMesh selection. The update only goes one way.
+    /// </remarks>
+    public Folder? SelectedFolder
+    {
+        get => selectedFolder;
+        set
+        {
+            if (selectedFolder == value) return;
+            
+            selectedFolder = value;
+            FolderSelectStateChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    private Folder? selectedFolder;
+
+    /// <summary>
+    /// The currently selected Difficulty.
+    /// </summary>
+    /// <remarks>
+    /// This is used in SATURN to keep track of the selected Difficulty in a Folder-Select Scene without changing the selected MusicMesh Node.<br/>
+    /// This field is updated every time the MusicMesh selection changes, but changing it directly has no effect on the MusicMesh selection. The update only goes one way.
+    /// </remarks>
+    public Difficulty? SelectedDifficulty
+    {
+        get => selectedDifficulty;
+        set
+        {
+            if (selectedDifficulty == value) return;
+            
+            selectedDifficulty = value;
+            FolderSelectStateChanged?.Invoke(null, EventArgs.Empty);
+        }
+    }
+    private Difficulty? selectedDifficulty;
     
     /// <summary>
     /// All entries, listed by their Id.
@@ -95,7 +143,7 @@ public class MusicList
     /// <summary>
     /// All entries, laid out in a cylinder-like mesh.
     /// </summary>
-    public readonly MusicMesh Mesh = new();
+    public readonly MusicMesh Mesh;
     
     /// <summary>
     /// The criteria content is currently grouped into folders by.
@@ -113,7 +161,7 @@ public class MusicList
             Remesh();
         }
     }
-    private GroupType activeGroupType = GroupType.Level;
+    private GroupType activeGroupType = GroupType.Directory;
     
     /// <summary>
     /// The criteria folder contents are currently sorted by.
@@ -130,7 +178,7 @@ public class MusicList
             Remesh();
         }
     }
-    private SortType activeSortType = SortType.Level;
+    private SortType activeSortType = SortType.Directory;
 
     /// <summary>
     /// Should entries be grouped individually, or as songs?
@@ -381,7 +429,7 @@ public class MusicList
                     if (entry.Song == null) continue;
                     
                     folder.Entries.Add(entry);
-                    entry.Folder = folder;                    
+                    entry.Folder = folder;
 
                     switch (entry.Difficulty)
                     {
@@ -393,6 +441,8 @@ public class MusicList
                         default: continue;
                     }
                 }
+
+                Folders.Add(folder);
             }
         }
         
@@ -427,6 +477,8 @@ public class MusicList
                         default: continue;
                     }
                 }
+                
+                Folders.Add(folder);
             }
         }
 
@@ -461,6 +513,8 @@ public class MusicList
                         default: continue;
                     }
                 }
+                
+                Folders.Add(folder);
             }
         }
         
@@ -815,5 +869,13 @@ public class MusicList
                 // ignored
             }
         }
+    }
+
+    private void Mesh_OnSelectionChanged(object? sender, EventArgs e)
+    {
+        selectedFolder = Mesh.SelectedNode?.Entry?.Folder;
+        selectedDifficulty = Mesh.SelectedNode?.Entry?.Difficulty ?? Difficulty.None;
+        
+        FolderSelectStateChanged?.Invoke(null, EventArgs.Empty);
     }
 }

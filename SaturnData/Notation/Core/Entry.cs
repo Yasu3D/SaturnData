@@ -539,7 +539,7 @@ public class Entry
     /// <summary>
     /// Does a file exist at <c>VideoPath</c>?
     /// </summary>
-    public bool VideoExists => File.Exists(VideoFile);
+    public bool VideoExists => File.Exists(VideoPath);
     
     /// <summary>
     /// Returns the integer part of the <see cref="Level"/>, and adds a + if the decimal part is >= 0.7.<br/>
