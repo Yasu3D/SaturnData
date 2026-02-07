@@ -274,8 +274,10 @@ public class MusicList
                             Artist = source.Artist,
                             BpmMessage = source.BpmMessage,
                             Difficulty = difficulty,
-                            JacketFile = source.JacketFile,
                             RootDirectory = source.RootDirectory,
+                            JacketFile = source.JacketFile,
+                            AudioFile = source.AudioFile,
+                            VideoFile = source.VideoFile,
                             Song = source.Song,
                         };
                     }
