@@ -420,14 +420,22 @@ public class Chart
                 }
             
                 // Create Sync Notes
+                for (int i = 0; i < layer.Notes.Count; i++)
+                {
+                    layer.Notes[i].IsSync = false;
+                }
+                
                 for (int i = 1; i < layer.Notes.Count; i++)
                 {
                     Note current = layer.Notes[i];
                     Note previous = layer.Notes[i - 1];
-
-                    if (!current.IsSync(previous)) continue;
+                    
                     if (current is not IPositionable currentPositionable) continue;
                     if (previous is not IPositionable previousPositionable) continue;
+                    if (!current.IsSyncWithOtherNote(previous)) continue;
+
+                    current.IsSync = true;
+                    previous.IsSync = true;
 
                     // -1 + 60
                     // => + 59

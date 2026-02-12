@@ -8,9 +8,14 @@ public abstract class Note : ITimeable
     public virtual Timestamp Timestamp { get; set; } = Timestamp.Zero;
     
     /// <summary>
+    /// Does this note have a valid neighbouring note on the same timestamp?
+    /// </summary>
+    public bool IsSync { get; set; } = false;
+
+    /// <summary>
     /// Determines if two notes should have a "Sync" outline or not.
     /// </summary>
-    public bool IsSync(Note? other)
+    public bool IsSyncWithOtherNote(Note? other)
     {
         if (other == null) return false;
         if (Timestamp != other.Timestamp) return false;
