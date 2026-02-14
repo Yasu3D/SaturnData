@@ -199,7 +199,7 @@ public class MusicList
             if (!Directory.Exists(musicDirectoryPath)) return;
             
             // Go through all files in all directories and subdirectories.
-            string[] files = Directory.EnumerateFiles(musicDirectoryPath, "*", SearchOption.TopDirectoryOnly).ToArray();
+            string[] files = Directory.EnumerateFiles(musicDirectoryPath, "*", SearchOption.AllDirectories).ToArray();
             if (files.Length == 0) return;
 
             // Try to load entries.
