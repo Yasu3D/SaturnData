@@ -198,146 +198,97 @@ public class MusicList
             // Nothing to load if the specified directory doesn't exist.
             if (!Directory.Exists(musicDirectoryPath)) return;
             
-            // Go through all files in all directories and subdirectories.
-            string[] files = Directory.EnumerateFiles(musicDirectoryPath, "*", SearchOption.AllDirectories).ToArray();
-            if (files.Length == 0) return;
-
-            // Try to load entries.
-            List<Entry> entries = [];
-            NotationReadArgs args = new();
-            foreach (string file in files)
+            // Go through all subdirectories.
+            string[] subDirectories = Directory.GetDirectories(musicDirectoryPath, "*", SearchOption.AllDirectories);
+            foreach (string directory in subDirectories)
             {
-                FormatVersion formatVersion = NotationSerializer.DetectFormatVersion(file);
-                if (formatVersion == FormatVersion.Unknown) continue;
-                if (formatVersion == FormatVersion.Mer) continue;
-
-                try
+                // Go through all files in the directory.
+                string[] files = Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly).ToArray();
+                if (files.Length == 0) continue;
+                
+                // Try to load entries.
+                List<Entry> entries = [];
+                NotationReadArgs args = new();
+                foreach (string file in files)
                 {
-                    Entry entry = NotationSerializer.ToEntry(file, args, out _);
+                    FormatVersion formatVersion = NotationSerializer.DetectFormatVersion(file);
+                    if (formatVersion == FormatVersion.Unknown) continue;
+                    if (formatVersion == FormatVersion.Mer) continue;
 
-                    // Filter out entries without an Id.
-                    if (string.IsNullOrWhiteSpace(entry.Id)) continue;
-
-                    entries.Add(entry);
+                    try
+                    {
+                        Entry entry = NotationSerializer.ToEntry(file, args, out _);
+                        
+                        // Filter out entries without an Id.
+                        if (string.IsNullOrWhiteSpace(entry.Id)) continue;
+                        
+                        entries.Add(entry);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
-                catch
+                
+                if (entries.Count == 0) continue;
+                
+                // Build song from entries.
+                Song song = new() { ParentDirectory = Directory.GetParent(directory)?.FullName ?? "" };
+                foreach (Entry entry in entries)
                 {
-                    // ignored
+                    entry.Song = song;
+                    
+                    switch (entry.Difficulty)
+                    {
+                        case Difficulty.Normal:    { song.Normal    = entry; break; }
+                        case Difficulty.Hard:      { song.Hard      = entry; break; }
+                        case Difficulty.Expert:    { song.Expert    = entry; break; }
+                        case Difficulty.Inferno:   { song.Inferno   = entry; break; }
+                        case Difficulty.WorldsEnd: { song.WorldsEnd = entry; break; }
+                        case Difficulty.None: break;
+                    }
                 }
-            }
+                
+                // Fill empty entries with content from existing entries.
+                Entry? sourceEntry = null;
+                if      (song.Normal    != null) { sourceEntry = song.Normal; }
+                else if (song.Hard      != null) { sourceEntry = song.Hard; }
+                else if (song.Expert    != null) { sourceEntry = song.Expert; }
+                else if (song.Inferno   != null) { sourceEntry = song.Inferno; }
+                else if (song.WorldsEnd != null) { sourceEntry = song.WorldsEnd; }
 
-            if (entries.Count == 0) return;
-
-            // Build song from entries.
-            Song song = new() { ParentDirectory = Directory.GetParent(musicDirectoryPath)?.FullName ?? "" };
-            foreach (Entry entry in entries)
-            {
-                entry.Song = song;
-
-                switch (entry.Difficulty)
+                if (sourceEntry != null && sourceEntry.Exists)
                 {
-                    case Difficulty.Normal:
+                    song.Normal    ??= copyEntry(sourceEntry, Difficulty.Normal);
+                    song.Hard      ??= copyEntry(sourceEntry, Difficulty.Hard);
+                    song.Expert    ??= copyEntry(sourceEntry, Difficulty.Expert);
+                    song.Inferno   ??= copyEntry(sourceEntry, Difficulty.Inferno);
+                    song.WorldsEnd ??= copyEntry(sourceEntry, Difficulty.WorldsEnd);
+                    
+                    Entry copyEntry(Entry source, Difficulty difficulty)
                     {
-                        song.Normal = entry;
-                        break;
+                        return new()
+                        {
+                            Title = source.Title,
+                            Reading = source.Reading,
+                            Artist = source.Artist,
+                            BpmMessage = source.BpmMessage,
+                            Difficulty = difficulty,
+                            RootDirectory = source.RootDirectory,
+                            JacketFile = source.JacketFile,
+                            AudioFile = source.AudioFile,
+                            VideoFile = source.VideoFile,
+                            Song = source.Song,
+                        };
                     }
-                    case Difficulty.Hard:
-                    {
-                        song.Hard = entry;
-                        break;
-                    }
-                    case Difficulty.Expert:
-                    {
-                        song.Expert = entry;
-                        break;
-                    }
-                    case Difficulty.Inferno:
-                    {
-                        song.Inferno = entry;
-                        break;
-                    }
-                    case Difficulty.WorldsEnd:
-                    {
-                        song.WorldsEnd = entry;
-                        break;
-                    }
-                    case Difficulty.None: break;
                 }
-            }
-
-            // Fill empty entries with content from existing entries.
-            Entry? sourceEntry = null;
-            if (song.Normal != null)
-            {
-                sourceEntry = song.Normal;
-            }
-            else if (song.Hard != null)
-            {
-                sourceEntry = song.Hard;
-            }
-            else if (song.Expert != null)
-            {
-                sourceEntry = song.Expert;
-            }
-            else if (song.Inferno != null)
-            {
-                sourceEntry = song.Inferno;
-            }
-            else if (song.WorldsEnd != null)
-            {
-                sourceEntry = song.WorldsEnd;
-            }
-
-            if (sourceEntry != null && sourceEntry.Exists)
-            {
-                song.Normal ??= copyEntry(sourceEntry, Difficulty.Normal);
-                song.Hard ??= copyEntry(sourceEntry, Difficulty.Hard);
-                song.Expert ??= copyEntry(sourceEntry, Difficulty.Expert);
-                song.Inferno ??= copyEntry(sourceEntry, Difficulty.Inferno);
-                song.WorldsEnd ??= copyEntry(sourceEntry, Difficulty.WorldsEnd);
-
-                Entry copyEntry(Entry source, Difficulty difficulty)
-                {
-                    return new()
-                    {
-                        Title = source.Title,
-                        Reading = source.Reading,
-                        Artist = source.Artist,
-                        BpmMessage = source.BpmMessage,
-                        Difficulty = difficulty,
-                        RootDirectory = source.RootDirectory,
-                        JacketFile = source.JacketFile,
-                        AudioFile = source.AudioFile,
-                        VideoFile = source.VideoFile,
-                        Song = source.Song,
-                    };
-                }
-            }
-
-            // Add final valid entries to entry list.
-            if (song.Normal != null)
-            {
-                Entries[song.Normal.Id] = song.Normal;
-            }
-
-            if (song.Hard != null)
-            {
-                Entries[song.Hard.Id] = song.Hard;
-            }
-
-            if (song.Expert != null)
-            {
-                Entries[song.Expert.Id] = song.Expert;
-            }
-
-            if (song.Inferno != null)
-            {
-                Entries[song.Inferno.Id] = song.Inferno;
-            }
-
-            if (song.WorldsEnd != null)
-            {
-                Entries[song.WorldsEnd.Id] = song.WorldsEnd;
+                
+                // Add final valid entries to entry list.
+                if (song.Normal    != null) { Entries[song.Normal.Id]    = song.Normal;    }
+                if (song.Hard      != null) { Entries[song.Hard.Id]      = song.Hard;      }
+                if (song.Expert    != null) { Entries[song.Expert.Id]    = song.Expert;    }
+                if (song.Inferno   != null) { Entries[song.Inferno.Id]   = song.Inferno;   }
+                if (song.WorldsEnd != null) { Entries[song.WorldsEnd.Id] = song.WorldsEnd; }
             }
 
             Group();
