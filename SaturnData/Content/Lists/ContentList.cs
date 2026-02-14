@@ -28,31 +28,27 @@ public class ContentList<T> where T : ContentItem, new()
             if (!Directory.Exists(contentDirectoryPath)) return;
             
             // Go through all subdirectories.
-            List<string> subDirectories = Directory.GetDirectories(contentDirectoryPath, "*", SearchOption.AllDirectories).ToList();
-            subDirectories.Add(contentDirectoryPath);
+            // Go through all files in the directory.
+            string[] files = Directory.EnumerateFiles(contentDirectoryPath, "*", SearchOption.AllDirectories).ToArray();
+            if (files.Length == 0) return;
             
-            foreach (string directory in subDirectories)
+            // Try to load items.
+            foreach (string file in files)
             {
-                // Go through all files in the directory.
-                string[] files = Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly).ToArray();
-                if (files.Length == 0) continue;
+                if (!file.EndsWith(".toml")) continue;
                 
-                // Try to load items.
-                foreach (string file in files)
+                try
                 {
-                    try
-                    {
-                        string data = File.ReadAllText(file);
-                        
-                        T item = Toml.ToModel<T>(data);
-                        item.AbsoluteSourcePath = file;
-                        
-                        Items.Add(item);
-                    }
-                    catch
-                    {
-                        // ignored.
-                    }
+                    string data = File.ReadAllText(file);
+                    
+                    T item = Toml.ToModel<T>(data);
+                    item.AbsoluteSourcePath = file;
+                    
+                    Items.Add(item);
+                }
+                catch
+                {
+                    // ignored.
                 }
             }
         }

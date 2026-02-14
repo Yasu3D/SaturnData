@@ -159,6 +159,16 @@ public static class NotationSerializer
     
     public static FormatVersion DetectFormatVersion(string path)
     {
+        bool isMer = path.EndsWith(".mer", StringComparison.OrdinalIgnoreCase);
+        bool isSat = path.EndsWith(".sat", StringComparison.OrdinalIgnoreCase);
+        bool isMap = path.EndsWith(".map", StringComparison.OrdinalIgnoreCase);
+        bool isTxt = path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase);
+
+        if (!isMer && !isSat && !isMap && !isTxt)
+        {
+            return FormatVersion.Unknown;
+        }
+        
         try
         {
             string[] lines = File.ReadAllLines(path);
