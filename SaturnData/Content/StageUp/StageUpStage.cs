@@ -5,6 +5,13 @@ using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Content.StageUp;
 
+public enum ErrorThreshold
+{
+    Miss = 1,
+    GoodOrBelow = 2,
+    GreatOrBelow = 3,
+}
+
 /// <summary>
 /// A set of three songs to play in stage-up mode.
 /// </summary>
@@ -34,7 +41,7 @@ public class StageUpStage : ContentItem
     /// <summary>
     /// The threshold where anything below or equal to the specified <see cref="JudgementType"/> will count as an error and subtract health.
     /// </summary>
-    public JudgementGrade ErrorThreshold { get; set; } = JudgementGrade.Miss;
+    public ErrorThreshold ErrorThreshold { get; set; } = ErrorThreshold.Miss;
 
     /// <summary>
     /// The number of mistakes a player is allowed to make before failing the stage.
