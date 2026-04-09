@@ -207,8 +207,6 @@ public static class SatV2Writer
                 notes.Add(note);
             }
         }
-        
-        notes.AddRange(chart.LaneToggles);
 
         notes = notes
             .OrderBy(x => ((ITimeable)x).Timestamp)
