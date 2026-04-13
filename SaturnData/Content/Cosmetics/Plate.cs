@@ -11,6 +11,11 @@ namespace SaturnData.Content.Cosmetics;
 public class Plate : CosmeticItem
 {
     /// <summary>
+    /// A string listing all contributors of a <see cref="Plate"/>.
+    /// </summary>
+    public override string Copyright => $"(c) {Author}, {Artist}";
+        
+    /// <summary>
     /// The creator of the <see cref="Plate"/> image.
     /// </summary>
     public string Artist { get; set; } = "";

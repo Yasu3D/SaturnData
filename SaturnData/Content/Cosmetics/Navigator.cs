@@ -32,6 +32,11 @@ public enum NavigatorBlinkState
 public class Navigator : CosmeticItem
 {
     /// <summary>
+    /// A string listing all contributors of a <see cref="Navigator"/>.
+    /// </summary>
+    public override string Copyright => $"(c) {Author}, {Artist}, {Voice}";
+    
+    /// <summary>
     /// The creator of the <see cref="Navigator"/> artwork.
     /// </summary>
     public string Artist { get; set; } = "";

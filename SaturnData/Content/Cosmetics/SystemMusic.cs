@@ -11,6 +11,11 @@ namespace SaturnData.Content.Cosmetics;
 public class SystemMusic : CosmeticItem
 {
     /// <summary>
+    /// A string listing all contributors of a <see cref="SystemMusic"/> pack.
+    /// </summary>
+    public override string Copyright => $"(c) {Author}, {Artist}";
+        
+    /// <summary>
     /// The creator of the <see cref="SystemMusic"/>.
     /// </summary>
     public string Artist { get; set; } = "";

@@ -1,6 +1,5 @@
 using System;
 using SaturnData.Content.Items;
-using SaturnData.Notation.Core;
 using SaturnData.Notation.Interfaces;
 
 namespace SaturnData.Content.StageUp;
@@ -21,8 +20,23 @@ public class StageUpStage : ContentItem
     /// <summary>
     /// The local filepath of the icon image file to display next to the stage song list, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
-    public string IconPath { get; set; } = "";
+    public string ImagePath { get; set; } = "";
 
+    /// <summary>
+    /// The threshold where anything below or equal to the specified <see cref="JudgementType"/> will count as an error and subtract health.
+    /// </summary>
+    public ErrorThreshold ErrorThreshold { get; set; } = ErrorThreshold.Miss;
+
+    /// <summary>
+    /// The number of mistakes a player is allowed to make before failing the stage.
+    /// </summary>
+    public int Health { get; set; } = 100;
+
+    /// <summary>
+    /// The amount of health to recover between songs.
+    /// </summary>
+    public int HealthRecovery { get; set; } = 10;
+    
     /// <summary>
     /// The first song to play.
     /// </summary>
@@ -39,24 +53,9 @@ public class StageUpStage : ContentItem
     public StageUpSong Song3 { get; set; } = new();
 
     /// <summary>
-    /// The threshold where anything below or equal to the specified <see cref="JudgementType"/> will count as an error and subtract health.
-    /// </summary>
-    public ErrorThreshold ErrorThreshold { get; set; } = ErrorThreshold.Miss;
-
-    /// <summary>
-    /// The number of mistakes a player is allowed to make before failing the stage.
-    /// </summary>
-    public int Health { get; set; } = 100;
-
-    /// <summary>
-    /// The amount of health to recover between songs.
-    /// </summary>
-    public int HealthRecovery { get; set; } = 10;
-
-    /// <summary>
     /// The absolute filepath of the icon image file to display next to the stage songlist.
     /// </summary>
-    public string AbsoluteIconPath => AbsolutePath(IconPath);
+    public string AbsoluteIconPath => AbsolutePath(ImagePath);
     
     /// <summary>
     /// The threshold where a clear counts as a rainbow clear. (100%)
