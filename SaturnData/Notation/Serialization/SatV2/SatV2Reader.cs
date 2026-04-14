@@ -8,6 +8,7 @@ using SaturnData.Notation.Core;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
+using SaturnData.Utilities;
 
 namespace SaturnData.Notation.Serialization.SatV2;
 
@@ -583,7 +584,7 @@ internal static class SatV2Reader
     {
         Entry entry = new()
         {
-            FormatVersion = FormatVersion.SatV2,
+            ChartFormatVersion = ChartFormatVersion.SatV2,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
             ChartFile = Path.GetFileName(path),
         };
@@ -599,28 +600,28 @@ internal static class SatV2Reader
 
                 string value;
 
-                if (NotationHelpers.ContainsKey(line, "@GUID ",     out value)) { entry.Id = value; }
-                if (NotationHelpers.ContainsKey(line, "@VERSION ",  out value)) { entry.Revision = value; }
-                if (NotationHelpers.ContainsKey(line, "@TITLE ",    out value)) { entry.Title = value; }
-                if (NotationHelpers.ContainsKey(line, "@RUBI ",     out value)) { entry.Reading = value; }
-                if (NotationHelpers.ContainsKey(line, "@ARTIST ",   out value)) { entry.Artist = value; }
-                if (NotationHelpers.ContainsKey(line, "@AUTHOR ",   out value)) { entry.NotesDesigner = value; }
-                if (NotationHelpers.ContainsKey(line, "@BPM_TEXT ", out value)) { entry.BpmMessage = value; }
+                if (SerializationHelpers.ContainsKey(line, "@GUID ",     out value)) { entry.Id = value; }
+                if (SerializationHelpers.ContainsKey(line, "@VERSION ",  out value)) { entry.Revision = value; }
+                if (SerializationHelpers.ContainsKey(line, "@TITLE ",    out value)) { entry.Title = value; }
+                if (SerializationHelpers.ContainsKey(line, "@RUBI ",     out value)) { entry.Reading = value; }
+                if (SerializationHelpers.ContainsKey(line, "@ARTIST ",   out value)) { entry.Artist = value; }
+                if (SerializationHelpers.ContainsKey(line, "@AUTHOR ",   out value)) { entry.NotesDesigner = value; }
+                if (SerializationHelpers.ContainsKey(line, "@BPM_TEXT ", out value)) { entry.BpmMessage = value; }
 
-                if (NotationHelpers.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = (BackgroundOption)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+                if (SerializationHelpers.ContainsKey(line, "@BACKGROUND ", out value)) { entry.Background = (BackgroundOption)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
 
-                if (NotationHelpers.ContainsKey(line, "@DIFF ",  out value)) { entry.Difficulty = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
-                if (NotationHelpers.ContainsKey(line, "@LEVEL ", out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                if (NotationHelpers.ContainsKey(line, "@CLEAR ", out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (SerializationHelpers.ContainsKey(line, "@DIFF ",  out value)) { entry.Difficulty = (Difficulty)Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+                if (SerializationHelpers.ContainsKey(line, "@LEVEL ", out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (SerializationHelpers.ContainsKey(line, "@CLEAR ", out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
 
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.PreviewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.PreviewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (SerializationHelpers.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.PreviewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (SerializationHelpers.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.PreviewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (NotationHelpers.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketFile = value; }
-                if (NotationHelpers.ContainsKey(line, "@BGM ",        out value)) { entry.AudioFile  = value; }
-                if (NotationHelpers.ContainsKey(line, "@BGA ",        out value)) { entry.VideoFile  = value; }
-                if (NotationHelpers.ContainsKey(line, "@BGM_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationHelpers.ContainsKey(line, "@BGA_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (SerializationHelpers.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketFile = value; }
+                if (SerializationHelpers.ContainsKey(line, "@BGM ",        out value)) { entry.AudioFile  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@BGA ",        out value)) { entry.VideoFile  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@BGM_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (SerializationHelpers.ContainsKey(line, "@BGA_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
                 if (line.EndsWith("CHART_END"))
                 {

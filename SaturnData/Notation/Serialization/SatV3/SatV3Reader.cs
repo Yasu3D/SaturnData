@@ -7,6 +7,7 @@ using SaturnData.Notation.Core;
 using SaturnData.Notation.Events;
 using SaturnData.Notation.Interfaces;
 using SaturnData.Notation.Notes;
+using SaturnData.Utilities;
 
 namespace SaturnData.Notation.Serialization.SatV3;
 
@@ -661,7 +662,7 @@ internal static class SatV3Reader
     {
         Entry entry = new()
         {
-            FormatVersion = FormatVersion.SatV3,
+            ChartFormatVersion = ChartFormatVersion.SatV3,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
             ChartFile = Path.GetFileName(path),
         };
@@ -677,19 +678,19 @@ internal static class SatV3Reader
 
                 string value;
                 
-                if (NotationHelpers.ContainsKey(line, "@ID ",             out value)) { entry.Id = value; }
-                if (NotationHelpers.ContainsKey(line, "@TITLE ",          out value)) { entry.Title = value; }
-                if (NotationHelpers.ContainsKey(line, "@READING ",        out value)) { entry.Reading = value; }
-                if (NotationHelpers.ContainsKey(line, "@ARTIST ",         out value)) { entry.Artist = value; }
-                if (NotationHelpers.ContainsKey(line, "@BPM_MESSAGE ",    out value)) { entry.BpmMessage = value; }
+                if (SerializationHelpers.ContainsKey(line, "@ID ",             out value)) { entry.Id = value; }
+                if (SerializationHelpers.ContainsKey(line, "@TITLE ",          out value)) { entry.Title = value; }
+                if (SerializationHelpers.ContainsKey(line, "@READING ",        out value)) { entry.Reading = value; }
+                if (SerializationHelpers.ContainsKey(line, "@ARTIST ",         out value)) { entry.Artist = value; }
+                if (SerializationHelpers.ContainsKey(line, "@BPM_MESSAGE ",    out value)) { entry.BpmMessage = value; }
                 
-                if (NotationHelpers.ContainsKey(line, "@REVISION ",       out value)) { entry.Revision = value; }
-                if (NotationHelpers.ContainsKey(line, "@NOTES_DESIGNER ", out value)) { entry.NotesDesigner = value; }
-                if (NotationHelpers.ContainsKey(line, "@DIFFICULTY ",     out value)) { entry.Difficulty = string2Difficulty(value); }
-                if (NotationHelpers.ContainsKey(line, "@LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                if (NotationHelpers.ContainsKey(line, "@CLEAR",           out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (SerializationHelpers.ContainsKey(line, "@REVISION ",       out value)) { entry.Revision = value; }
+                if (SerializationHelpers.ContainsKey(line, "@NOTES_DESIGNER ", out value)) { entry.NotesDesigner = value; }
+                if (SerializationHelpers.ContainsKey(line, "@DIFFICULTY ",     out value)) { entry.Difficulty = string2Difficulty(value); }
+                if (SerializationHelpers.ContainsKey(line, "@LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
+                if (SerializationHelpers.ContainsKey(line, "@CLEAR",           out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                 
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_BEGIN ",  out value))
+                if (SerializationHelpers.ContainsKey(line, "@PREVIEW_BEGIN ",  out value))
                 {
                     string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
@@ -697,7 +698,7 @@ internal static class SatV3Reader
 
                     entry.PreviewBegin = new(measure, tick);
                 }
-                if (NotationHelpers.ContainsKey(line, "@PREVIEW_END ", out value))
+                if (SerializationHelpers.ContainsKey(line, "@PREVIEW_END ", out value))
                 {
                     string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);
@@ -705,21 +706,21 @@ internal static class SatV3Reader
 
                     entry.PreviewEnd = new(measure, tick);
                 }
-                if (NotationHelpers.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
+                if (SerializationHelpers.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
 
-                if (NotationHelpers.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketFile = value; }
-                if (NotationHelpers.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioFile  = value; }
-                if (NotationHelpers.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoFile  = value; }
-                if (NotationHelpers.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
-                if (NotationHelpers.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (SerializationHelpers.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketFile = value; }
+                if (SerializationHelpers.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioFile  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoFile  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
+                if (SerializationHelpers.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (NotationHelpers.ContainsKey(line, "@TUTORIAL ",       out value)) { entry.TutorialMode       = value == "TRUE"; }
-                if (NotationHelpers.ContainsKey(line, "@AUTO_READING ",   out value)) { entry.AutoReading        = value == "TRUE"; }
-                if (NotationHelpers.ContainsKey(line, "@AUTO_BPM_MSG ",   out value)) { entry.AutoBpmMessage     = value == "TRUE"; }
-                if (NotationHelpers.ContainsKey(line, "@AUTO_CLEAR ",     out value)) { entry.AutoClearThreshold = value == "TRUE"; }
-                if (NotationHelpers.ContainsKey(line, "@AUTO_END ",       out value)) { entry.AutoChartEnd       = value == "TRUE"; }
+                if (SerializationHelpers.ContainsKey(line, "@TUTORIAL ",       out value)) { entry.TutorialMode       = value == "TRUE"; }
+                if (SerializationHelpers.ContainsKey(line, "@AUTO_READING ",   out value)) { entry.AutoReading        = value == "TRUE"; }
+                if (SerializationHelpers.ContainsKey(line, "@AUTO_BPM_MSG ",   out value)) { entry.AutoBpmMessage     = value == "TRUE"; }
+                if (SerializationHelpers.ContainsKey(line, "@AUTO_CLEAR ",     out value)) { entry.AutoClearThreshold = value == "TRUE"; }
+                if (SerializationHelpers.ContainsKey(line, "@AUTO_END ",       out value)) { entry.AutoChartEnd       = value == "TRUE"; }
 
-                if (NotationHelpers.ContainsKey(line, "@END ",            out value))
+                if (SerializationHelpers.ContainsKey(line, "@END ",            out value))
                 {
                     string[] split = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     int measure = Convert.ToInt32(split[0], CultureInfo.InvariantCulture);

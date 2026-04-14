@@ -32,18 +32,6 @@ internal static class NotationHelpers
         }
     }
     
-    internal static bool ContainsKey(string input, string key, out string value)
-    {
-        if (input.StartsWith(key))
-        {
-            value = input[(input.IndexOf(key, StringComparison.Ordinal) + key.Length)..].Trim();
-            return true;
-        }
-
-        value = "";
-        return false;
-    }
-    
     internal static void PostProcessChart(Chart chart, NotationReadArgs args)
     {
         if (args.OptimizeHoldNotes)

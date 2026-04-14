@@ -5,7 +5,7 @@ namespace SaturnData.Notation.Serialization;
 /// <summary>
 /// The file format type and version. Dictates how a chart file is read.
 /// </summary>
-public enum FormatVersion
+public enum ChartFormatVersion
 {
     /// <summary>
     /// An unknown, unrecognized, or broken format that can't be parsed.
@@ -94,7 +94,7 @@ public class NotationWriteArgs
     /// <summary>
     /// The file format type and version to write the file in.
     /// </summary>
-    public FormatVersion FormatVersion { get; set; } = FormatVersion.SatV3;
+    public ChartFormatVersion ChartFormatVersion { get; set; } = ChartFormatVersion.SatV3;
     
     /// <summary>
     /// A watermark to write at the beginning of the chart file.

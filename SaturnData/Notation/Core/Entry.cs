@@ -81,7 +81,7 @@ public class Entry
     /// If the entry was not created by deserializing a file,
     /// the default value should be kept instead.
     /// </remarks>
-    public FormatVersion FormatVersion { get; set; } = FormatVersion.SatV3;
+    public ChartFormatVersion ChartFormatVersion { get; set; } = ChartFormatVersion.SatV3;
 
     /// <summary>
     /// The title of the chart's song.

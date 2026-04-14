@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SaturnData.Content.Items;
-using Tomlyn;
+using SaturnData.Content.Serialization;
+using SaturnData.Utilities;
 
 namespace SaturnData.Content.Lists;
 
@@ -40,13 +41,11 @@ public class ContentList<T> where T : ContentItem, new()
                 // Try to load items.
                 foreach (string file in files)
                 {
-                    if (!file.EndsWith(".toml")) continue;
+                    if (!file.EndsWith(SaturnFileExtensionList.SaturnContentFile)) continue;
                     
                     try
                     {
-                        string data = File.ReadAllText(file);
-                        
-                        T item = Toml.ToModel<T>(data);
+                        if (ContentSerializer.ToContentItem(file) is not T item) continue;
                         item.AbsoluteSourcePath = file;
                         
                         Items.Add(item);

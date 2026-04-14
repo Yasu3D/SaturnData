@@ -16,7 +16,7 @@ public static class SatContentV1Writer
     {
         StringBuilder sb = new();
 
-        sb.Append($"{"@SAT_C_VERSION",-16}1\n");
+        sb.Append($"{"@SATC_VERSION",-16}1\n");
 
         string type = contentItem switch
         {
@@ -87,7 +87,7 @@ public static class SatContentV1Writer
 
             sb.Append("\n");
 
-            sb.Append("@LANGUAGES\n");
+            sb.Append("@DIALOGUES\n");
             foreach (KeyValuePair<string, NavigatorDialogueLanguage> language in navigator.DialogueLanguages)
             {
                 sb.Append($"    {language.Key}\n");

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SaturnData.Content.Items;
 using SaturnData.Content.Music;
+using SaturnData.Content.Serialization;
 using SaturnData.Notation.Core;
 using SaturnData.Notation.Serialization;
-using Tomlyn;
+using SaturnData.Utilities;
 
 namespace SaturnData.Content.Lists;
 
@@ -211,9 +213,9 @@ public class MusicList
                 NotationReadArgs args = new();
                 foreach (string file in files)
                 {
-                    FormatVersion formatVersion = NotationSerializer.DetectFormatVersion(file);
-                    if (formatVersion == FormatVersion.Unknown) continue;
-                    if (formatVersion == FormatVersion.Mer) continue;
+                    ChartFormatVersion chartFormatVersion = NotationSerializer.DetectFormatVersion(file);
+                    if (chartFormatVersion == ChartFormatVersion.Unknown) continue;
+                    if (chartFormatVersion == ChartFormatVersion.Mer) continue;
 
                     try
                     {
@@ -329,14 +331,15 @@ public class MusicList
                 
                 try
                 {
-                    string folderDataPath = Path.Combine(grouping.Key, "folder.toml");
+                    string folderDataPath = Path.Combine(grouping.Key, $"folder{SaturnFileExtensionList.SaturnContentFile}");
                     Folder folder;
 
                     try
                     {
-                        string data = File.ReadAllText(folderDataPath);
-                        folder = Toml.ToModel<Folder>(data);
-
+                        ContentItem? contentItem = ContentSerializer.ToContentItem(folderDataPath);
+                        if (contentItem is not Folder f) continue;
+                        
+                        folder = f;
                         folder.AbsoluteSourcePath = folderDataPath;
                     }
                     catch
