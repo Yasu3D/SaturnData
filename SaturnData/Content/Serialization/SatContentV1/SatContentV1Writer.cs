@@ -16,7 +16,7 @@ public static class SatContentV1Writer
     {
         StringBuilder sb = new();
 
-        sb.Append($"{"@SATC_VERSION",-16}1\n");
+        sb.Append($"{"@SCT_VERSION",-16}1\n");
 
         string type = contentItem switch
         {
@@ -34,11 +34,11 @@ public static class SatContentV1Writer
             _ => throw new ArgumentOutOfRangeException(nameof(contentItem)),
         };
 
-        sb.Append($"{"@TYPE",-16}{type}");
+        sb.Append($"{"@TYPE",-16}{type}\n");
         sb.Append("\n");
 
         sb.Append($"{"@ID",-16}{contentItem.Id}\n");
-        sb.Append($"{"@NAME",-16}{contentItem.Name}");
+        sb.Append($"{"@NAME",-16}{contentItem.Name}\n");
         sb.Append("\n");
 
         if (contentItem is CosmeticItem cosmeticItem)
@@ -46,6 +46,7 @@ public static class SatContentV1Writer
             sb.Append($"{"@AUTHOR",-16}{cosmeticItem.Author}\n");
             sb.Append($"{"@DESCRIPTION",-16}{cosmeticItem.Description}\n");
             sb.Append($"{"@RARITY",-16}{cosmeticItem.Rarity}\n");
+            sb.Append("\n");
         }
 
         if (contentItem is ConsoleColor consoleColor)
@@ -82,7 +83,7 @@ public static class SatContentV1Writer
             sb.Append("@TEXTURES\n");
             foreach (KeyValuePair<string, string> pair in navigator.TexturePaths)
             {
-                sb.Append($"    {pair.Key,-17}{pair.Value}");
+                sb.Append($"    {pair.Key,-17}{pair.Value}\n");
             }
 
             sb.Append("\n");
@@ -98,11 +99,11 @@ public static class SatContentV1Writer
                     
                     foreach (NavigatorDialogue variant in dialogue.Value.Variants)
                     {
-                        sb.Append($"            {"message",-11}{variant.Message}");
-                        sb.Append($"            {"audio_path",-11}{variant.AudioPath}");
-                        sb.Append($"            {"duration",-11}{variant.Duration}");
-                        sb.Append($"            {"show_skip",-11}{(variant.ShowSkipButton ? "TRUE" : "FALSE")}");
-                        sb.Append($"            {"expression",-11}{variant.Expression}");
+                        sb.Append($"            {"message",-11}{variant.Message}\n");
+                        sb.Append($"            {"audio_path",-11}{variant.AudioPath}\n");
+                        sb.Append($"            {"duration",-11}{variant.Duration}\n");
+                        sb.Append($"            {"show_skip",-11}{(variant.ShowSkipButton ? "TRUE" : "FALSE")}\n");
+                        sb.Append($"            {"expression",-11}{variant.Expression}\n");
                         sb.Append("\n");
                     }
                 }
@@ -113,25 +114,25 @@ public static class SatContentV1Writer
         
         if (contentItem is NoteSound noteSound)
         {
-            sb.Append($"{"@ARTIST",-19}{noteSound.Artist}\n");
-            sb.Append($"{"@HOLD_LOOP_START",-19}{noteSound.HoldLoopStartTime}\n");
-            sb.Append($"{"@HOLD_LOOP_END",-19}{noteSound.HoldLoopEndTime}\n");
-            sb.Append($"{"@RE_HOLD_LOOP_START",-19}{noteSound.ReHoldLoopStartTime}\n");
-            sb.Append($"{"@RE_HOLD_LOOP_END",-19}{noteSound.ReHoldLoopEndTime}\n");
-            sb.Append($"{"@CLICK",-19}{noteSound.AudioClickPath}\n");
-            sb.Append($"{"@GUIDE",-19}{noteSound.AudioGuidePath}\n");
-            sb.Append($"{"@TOUCH_MARVELOUS",-19}{noteSound.AudioTouchMarvelousPath}\n");
-            sb.Append($"{"@TOUCH_GOOD",-19}{noteSound.AudioTouchGoodPath}\n");
-            sb.Append($"{"@SLIDE_MARVELOUS",-19}{noteSound.AudioSlideMarvelousPath}\n");
-            sb.Append($"{"@SLIDE_GOOD",-19}{noteSound.AudioSlideGoodPath}\n");
-            sb.Append($"{"@SNAP_MARVELOUS",-19}{noteSound.AudioSnapMarvelousPath}\n");
-            sb.Append($"{"@SNAP_GOOD",-19}{noteSound.AudioSnapGoodPath}\n");
-            sb.Append($"{"@HOLD",-19}{noteSound.AudioHoldPath}\n");
-            sb.Append($"{"@RE_HOLD",-19}{noteSound.AudioReHoldPath}\n");
-            sb.Append($"{"@CHAIN",-19}{noteSound.AudioChainPath}\n");
-            sb.Append($"{"@BONUS",-19}{noteSound.AudioBonusPath}\n");
-            sb.Append($"{"@R",-19}{noteSound.AudioRPath}\n");
-            sb.Append($"{"@DAMAGE",-19}{noteSound.AudioDamagePath}\n");
+            sb.Append($"{"@ARTIST",-20}{noteSound.Artist}\n");
+            sb.Append($"{"@HOLD_LOOP_START",-20}{noteSound.HoldLoopStartTime}\n");
+            sb.Append($"{"@HOLD_LOOP_END",-20}{noteSound.HoldLoopEndTime}\n");
+            sb.Append($"{"@RE_HOLD_LOOP_START",-20}{noteSound.ReHoldLoopStartTime}\n");
+            sb.Append($"{"@RE_HOLD_LOOP_END",-20}{noteSound.ReHoldLoopEndTime}\n");
+            sb.Append($"{"@CLICK",-20}{noteSound.AudioClickPath}\n");
+            sb.Append($"{"@GUIDE",-20}{noteSound.AudioGuidePath}\n");
+            sb.Append($"{"@TOUCH_MARVELOUS",-20}{noteSound.AudioTouchMarvelousPath}\n");
+            sb.Append($"{"@TOUCH_GOOD",-20}{noteSound.AudioTouchGoodPath}\n");
+            sb.Append($"{"@SLIDE_MARVELOUS",-20}{noteSound.AudioSlideMarvelousPath}\n");
+            sb.Append($"{"@SLIDE_GOOD",-20}{noteSound.AudioSlideGoodPath}\n");
+            sb.Append($"{"@SNAP_MARVELOUS",-20}{noteSound.AudioSnapMarvelousPath}\n");
+            sb.Append($"{"@SNAP_GOOD",-20}{noteSound.AudioSnapGoodPath}\n");
+            sb.Append($"{"@HOLD",-20}{noteSound.AudioHoldPath}\n");
+            sb.Append($"{"@RE_HOLD",-20}{noteSound.AudioReHoldPath}\n");
+            sb.Append($"{"@CHAIN",-20}{noteSound.AudioChainPath}\n");
+            sb.Append($"{"@BONUS",-20}{noteSound.AudioBonusPath}\n");
+            sb.Append($"{"@R",-20}{noteSound.AudioRPath}\n");
+            sb.Append($"{"@DAMAGE",-20}{noteSound.AudioDamagePath}\n");
         }
         
         if (contentItem is Plate plate)

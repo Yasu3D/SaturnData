@@ -55,8 +55,11 @@ public static class ContentSerializer
         }
         catch (Exception ex)
         {
-            return null;
+            // Don't throw.
+            Console.WriteLine(ex);
         }
+        
+        return null;
     }
     
     /// <summary>
@@ -80,9 +83,11 @@ public static class ContentSerializer
         }
         catch (Exception ex)
         {
+            // Don't throw.
             Console.WriteLine(ex);
-            return null;
         }
+        
+        return null;
     }
     
     public static ContentFormatVersion DetectFormatVersion(string path)
@@ -112,7 +117,7 @@ public static class ContentSerializer
         ContentFormatVersion version = ContentFormatVersion.Unknown;
         foreach (string line in lines)
         {
-            if (SerializationHelpers.ContainsKey(line, "@SAT_C_VERSION ", out string value))
+            if (SerializationHelpers.ContainsKey(line, "@SCT_VERSION ", out string value))
             {
                 version = value switch
                 {

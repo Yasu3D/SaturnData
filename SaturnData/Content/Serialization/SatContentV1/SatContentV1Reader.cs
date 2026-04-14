@@ -181,31 +181,31 @@ public static class SatContentV1Reader
 
                 if (contentItem is SystemSound systemSound)
                 {
-                    if (SerializationHelpers.ContainsKey(line, "@ARTIST",                    out value)) { systemSound.Artist = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@LOGIN",                     out value)) { systemSound.AudioLoginPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_MODE",                out value)) { systemSound.AudioCycleModePath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_FOLDER",              out value)) { systemSound.AudioCycleFolderPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_SONG",                out value)) { systemSound.AudioCycleSongPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_OPTION",              out value)) { systemSound.AudioCycleOptionPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@SELECT_OK",                 out value)) { systemSound.AudioSelectOkPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@SELECT_BACK",               out value)) { systemSound.AudioSelectBackPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@SELECT_DENIED",             out value)) { systemSound.AudioSelectDeniedPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@SELECT_DECIDE",             out value)) { systemSound.AudioSelectDecidePath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@SELECT_PREVIEW_SONG",       out value)) { systemSound.AudioSelectPreviewSongPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@SELECT_START_SONG",         out value)) { systemSound.AudioSelectStartSongPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@SELECT_START_SONG_ALT",     out value)) { systemSound.AudioSelectStartSongAltPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@FAVORITE_ADD",              out value)) { systemSound.AudioFavoriteAddPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@FAVORITE_REMOVE",           out value)) { systemSound.AudioFavoriteRemovePath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RESULT_SCORE_COUNT",        out value)) { systemSound.AudioResultScoreCountPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RESULT_SCORE_FINISHED",     out value)) { systemSound.AudioResultScoreFinishedPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RESULT_RATE_BAD",           out value)) { systemSound.AudioResultRateBadPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RESULT_RATE_GOOD",          out value)) { systemSound.AudioResultRateGoodPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_READY",         out value)) { systemSound.AudioRhythmGameReadyPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_FAIL",          out value)) { systemSound.AudioRhythmGameFailPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_CLEAR",         out value)) { systemSound.AudioRhythmGameClearPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_SPECIAL_CLEAR", out value)) { systemSound.AudioRhythmGameSpecialClearPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@TIMER_WARNING",             out value)) { systemSound.AudioTimerWarningPath = value; }
-                    if (SerializationHelpers.ContainsKey(line, "@TEXTBOX_APPEAR",            out value)) { systemSound.AudioTextboxAppearPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@ARTIST ",                    out value)) { systemSound.Artist = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@LOGIN ",                     out value)) { systemSound.AudioLoginPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_MODE ",                out value)) { systemSound.AudioCycleModePath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_FOLDER ",              out value)) { systemSound.AudioCycleFolderPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_SONG ",                out value)) { systemSound.AudioCycleSongPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@CYCLE_OPTION ",              out value)) { systemSound.AudioCycleOptionPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@SELECT_OK ",                 out value)) { systemSound.AudioSelectOkPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@SELECT_BACK ",               out value)) { systemSound.AudioSelectBackPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@SELECT_DENIED ",             out value)) { systemSound.AudioSelectDeniedPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@SELECT_DECIDE ",             out value)) { systemSound.AudioSelectDecidePath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@SELECT_PREVIEW_SONG ",       out value)) { systemSound.AudioSelectPreviewSongPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@SELECT_START_SONG ",         out value)) { systemSound.AudioSelectStartSongPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@SELECT_START_SONG_ALT ",     out value)) { systemSound.AudioSelectStartSongAltPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@FAVORITE_ADD ",              out value)) { systemSound.AudioFavoriteAddPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@FAVORITE_REMOVE ",           out value)) { systemSound.AudioFavoriteRemovePath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RESULT_SCORE_COUNT ",        out value)) { systemSound.AudioResultScoreCountPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RESULT_SCORE_FINISHED ",     out value)) { systemSound.AudioResultScoreFinishedPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RESULT_RATE_BAD ",           out value)) { systemSound.AudioResultRateBadPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RESULT_RATE_GOOD ",          out value)) { systemSound.AudioResultRateGoodPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_READY ",         out value)) { systemSound.AudioRhythmGameReadyPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_FAIL ",          out value)) { systemSound.AudioRhythmGameFailPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_CLEAR ",         out value)) { systemSound.AudioRhythmGameClearPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_SPECIAL_CLEAR ", out value)) { systemSound.AudioRhythmGameSpecialClearPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@TIMER_WARNING ",             out value)) { systemSound.AudioTimerWarningPath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@TEXTBOX_APPEAR ",            out value)) { systemSound.AudioTextboxAppearPath = value; }
                 }
 
                 if (contentItem is Title title)
