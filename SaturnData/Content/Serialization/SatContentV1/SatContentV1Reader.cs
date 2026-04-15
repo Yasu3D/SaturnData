@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using SaturnData.Content.Cosmetics;
 using SaturnData.Content.Cosmetics.Items;
 using SaturnData.Content.Items;
+using SaturnData.Content.Localization;
 using SaturnData.Content.Music;
 using SaturnData.Content.StageUp;
 using SaturnData.Utilities;
@@ -46,6 +47,7 @@ public static class SatContentV1Reader
                     "Title" => new Title(),
                     "Folder" => new Folder(),
                     "StageUpStage" => new StageUpStage(),
+                    "Locale" => new Locale(),
                     _ => null,
                 };
 
@@ -441,6 +443,33 @@ public static class SatContentV1Reader
                         // Don't throw.
                         Console.WriteLine(ex);
                     }
+                }
+            }
+        }
+
+        if (contentItem is Locale locale)
+        {
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (line.StartsWith('#')) continue;
+
+                try
+                {
+                    Match match = Regex.Match(line, DictionaryRegexPattern);
+                    if (!match.Success) continue;
+
+                    string key = match.Groups[1].Value;
+                    string value = match.Groups[2].Value;
+
+                    locale.Strings[key] = value;
+                }
+                catch (Exception ex)
+                {
+                    // Don't throw.
+                    Console.WriteLine(ex);
                 }
             }
         }

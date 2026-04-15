@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using SaturnData.Content.Cosmetics;
 using SaturnData.Content.Cosmetics.Items;
 using SaturnData.Content.Items;
+using SaturnData.Content.Localization;
 using SaturnData.Content.Music;
 using SaturnData.Content.StageUp;
 using ConsoleColor = SaturnData.Content.Cosmetics.ConsoleColor;
@@ -31,6 +33,7 @@ public static class SatContentV1Writer
             Title => "Title",
             Folder => "Folder",
             StageUpStage => "StageUpStage",
+            Locale => "Locale",
             _ => throw new ArgumentOutOfRangeException(nameof(contentItem)),
         };
 
@@ -208,6 +211,18 @@ public static class SatContentV1Writer
             sb.Append("@SONG_3\n");
             sb.Append($"    {"id",-7 }{stageUpStage.Song3.EntryId}\n");
             sb.Append($"    {"secret",-7}{(stageUpStage.Song3.Secret ? "TRUE" : "FALSE")}\n");
+        }
+
+        if (contentItem is Locale locale)
+        {
+            sb.Append("@STRINGS");
+
+            int maxLength = locale.Strings.Keys.Max(x => x.Length);
+            
+            foreach (KeyValuePair<string, string> pair in locale.Strings)
+            {
+                sb.Append($"    {pair.Key.PadRight(maxLength)} {pair.Value}\n");
+            }
         }
 
         return sb.ToString();
