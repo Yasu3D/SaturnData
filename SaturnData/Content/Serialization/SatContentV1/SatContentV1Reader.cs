@@ -13,7 +13,7 @@ namespace SaturnData.Content.Serialization.SatContentV1;
 
 public static class SatContentV1Reader
 {
-    private const string NavigatorDictionaryRegexPattern = @"^\s*([a-z_]+)\s+(.+)";
+    private const string DictionaryRegexPattern = @"^\s*([a-z_]+)\s+(.+)";
     private const string NavigatorLanguageRegexPattern = @"^\s{4}([a-zA-Z-]+)";
     private const string NavigatorDialogueRegexPattern = @"^\s{8}([a-z0-9_]+)";
     
@@ -212,6 +212,48 @@ public static class SatContentV1Reader
                 {
                     if (SerializationHelpers.ContainsKey(line, "@MESSAGE", out value)) { title.Message = value; }
                 }
+
+                if (contentItem is Folder folder)
+                {
+                    if (SerializationHelpers.ContainsKey(line, "@COLOR ", out value)) { folder.Color = Convert.ToUInt32(value, 16); }
+                    if (SerializationHelpers.ContainsKey(line, "@IMAGE ", out value)) { folder.ImagePath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@BACKGROUND ", out value))
+                    {
+                        folder.Background = value switch
+                        {
+                            "Checkers" => FolderBackgroundStyle.Checkers,
+                            "Triangles" => FolderBackgroundStyle.Triangles,
+                            "Circles" => FolderBackgroundStyle.Circles,
+                            "Sparkles" => FolderBackgroundStyle.Sparkles,
+                            "Arrows" => FolderBackgroundStyle.Arrows,
+                            "SquareMesh" => FolderBackgroundStyle.SquareMesh,
+                            "TrianglesMesh" => FolderBackgroundStyle.TrianglesMesh,
+                            "Stripes" => FolderBackgroundStyle.Stripes,
+                            "Dots" => FolderBackgroundStyle.Dots,
+                            "Stars" => FolderBackgroundStyle.Stars,
+                            "Level" => FolderBackgroundStyle.Level,
+                            "Name" => FolderBackgroundStyle.Name,
+                            _ => FolderBackgroundStyle.Checkers,
+                        };
+                    }
+                }
+                
+                if (contentItem is StageUpStage stageUpStage)
+                {
+                    if (SerializationHelpers.ContainsKey(line, "@IMAGE ",           out value)) { stageUpStage.ImagePath = value; }
+                    if (SerializationHelpers.ContainsKey(line, "@HEALTH ",          out value)) { stageUpStage.Health = Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+                    if (SerializationHelpers.ContainsKey(line, "@HEALTH_RECOVERY ", out value)) { stageUpStage.HealthRecovery = Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+                    if (SerializationHelpers.ContainsKey(line, "@ERROR_THRESHOLD ", out value))
+                    {
+                        stageUpStage.ErrorThreshold = value switch
+                        {
+                            "Miss" => ErrorThreshold.Miss,
+                            "GoodOrBelow" => ErrorThreshold.GoodOrBelow,
+                            "GreatOrBelow" => ErrorThreshold.GreatOrBelow,
+                            _ => ErrorThreshold.Miss,
+                        };
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -254,7 +296,7 @@ public static class SatContentV1Reader
                 {
                     try
                     {
-                        Match match = Regex.Match(line, NavigatorDictionaryRegexPattern);
+                        Match match = Regex.Match(line, DictionaryRegexPattern);
                         if (!match.Success) continue;
                     
                         navigator1.TexturePaths[match.Groups[1].Value] = match.Groups[2].Value;
@@ -300,7 +342,7 @@ public static class SatContentV1Reader
                     // Defining new variant.
                     if (currentDialogue == null) continue;
                     
-                    Match variantMatch = Regex.Match(line, NavigatorDictionaryRegexPattern);
+                    Match variantMatch = Regex.Match(line, DictionaryRegexPattern);
                     if (!variantMatch.Success) continue;
 
                     string key = variantMatch.Groups[1].Value;
@@ -346,6 +388,58 @@ public static class SatContentV1Reader
                             "Grinning" => NavigatorExpression.Grinning,
                             _ => NavigatorExpression.Neutral,
                         };
+                    }
+                }
+            }
+        }
+
+        if (contentItem is StageUpStage stageUpStage1)
+        {
+            StageUpSong? currentSong = null;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (line.StartsWith('#')) continue;
+
+                if (line.StartsWith("@SONG_1"))
+                {
+                    currentSong = stageUpStage1.Song1;
+                }
+                else if (line.StartsWith("@SONG_2"))
+                {
+                    currentSong = stageUpStage1.Song2;
+                }
+                else if (line.StartsWith("@SONG_3"))
+                {
+                    currentSong = stageUpStage1.Song3;
+                }
+
+                if (currentSong != null)
+                {
+                    try
+                    {
+                        Match match = Regex.Match(line, DictionaryRegexPattern);
+                        if (!match.Success) continue;
+
+                        string key = match.Groups[1].Value;
+                        string value = match.Groups[2].Value;
+
+                        if (key == "id")
+                        {
+                            currentSong.EntryId = value;
+                        }
+                        else if (key == "secret")
+                        {
+                            currentSong.Secret = value == "TRUE";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Don't throw.
+                        Console.WriteLine(ex);
                     }
                 }
             }
