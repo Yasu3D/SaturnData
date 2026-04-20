@@ -2,9 +2,9 @@ using System;
 
 namespace SaturnData.Utilities;
 
-internal static class SerializationHelpers
+public static class SerializationHelpers
 {
-    internal static bool ContainsKey(string input, string key, out string value)
+    public static bool ContainsKey(string input, string key, out string value)
     {
         if (input.StartsWith(key))
         {

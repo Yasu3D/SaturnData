@@ -337,10 +337,21 @@ public class MusicList
                     try
                     {
                         ContentItem? contentItem = ContentSerializer.ToContentItem(folderDataPath);
-                        if (contentItem is not Folder f) continue;
-                        
-                        folder = f;
-                        folder.AbsoluteSourcePath = folderDataPath;
+                        if (contentItem is Folder f)
+                        {
+                            folder = f;
+                            folder.AbsoluteSourcePath = folderDataPath;
+                        }
+                        else
+                        {
+                            folder = new()
+                            {
+                                Name = new DirectoryInfo(grouping.Key).Name,
+                                Color = 0xFF808080,
+                                ImagePath = "",
+                                Label = "",
+                            };
+                        }
                     }
                     catch
                     {
@@ -352,7 +363,7 @@ public class MusicList
                             Label = "",
                         };
                     }
-
+                    
                     HashSet<Song> addedSongs = [];
                     foreach (Entry entry in grouping.ToList())
                     {

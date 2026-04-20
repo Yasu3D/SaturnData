@@ -14,7 +14,7 @@ namespace SaturnData.Content.Serialization.SatContentV1;
 
 public static class SatContentV1Reader
 {
-    private const string DictionaryRegexPattern = @"^\s*([a-z_]+)\s+(.+)";
+    private const string DictionaryRegexPattern = @"^\s*([a-z_0-9-]+)\s+(.+)";
     private const string NavigatorLanguageRegexPattern = @"^\s{4}([a-zA-Z-]+)";
     private const string NavigatorDialogueRegexPattern = @"^\s{8}([a-z0-9_]+)";
     
@@ -462,7 +462,7 @@ public static class SatContentV1Reader
                     if (!match.Success) continue;
 
                     string key = match.Groups[1].Value;
-                    string value = match.Groups[2].Value;
+                    string value = match.Groups[2].Value.Replace(@"\n", "\n");
 
                     locale.Strings[key] = value;
                 }
