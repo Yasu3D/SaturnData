@@ -45,7 +45,9 @@ public class ContentList<T> where T : ContentItem, new()
                     
                     try
                     {
-                        if (ContentSerializer.ToContentItem(file) is not T item) continue;
+                        T? item = Deserialize(file);
+                        if (item == null) continue;
+                        
                         item.AbsoluteSourcePath = file;
                         
                         Items.Add(item);
@@ -63,6 +65,18 @@ public class ContentList<T> where T : ContentItem, new()
         }
     }
 
+    /// <summary>
+    /// Deserializes a file.
+    /// </summary>
+    /// <param name="file">The absolute path to the file to deserialize.</param>
+    /// <returns><c>T</c> if successful, <c>null</c> unsuccessful.</returns>
+    protected virtual T? Deserialize(string file)
+    {
+        if (ContentSerializer.ToContentItem(file) is T item) return item;
+        
+        return null;
+    }
+    
     /// <summary>
     /// Returns the first 
     /// </summary>

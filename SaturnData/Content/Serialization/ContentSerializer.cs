@@ -92,7 +92,7 @@ public static class ContentSerializer
     
     public static ContentFormatVersion DetectFormatVersion(string path)
     {
-        bool isSatContent = path.EndsWith(".satc", StringComparison.OrdinalIgnoreCase);
+        bool isSatContent = path.EndsWith(".sct", StringComparison.OrdinalIgnoreCase);
         bool isTxt = path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase);
 
         if (!isSatContent && !isTxt)
