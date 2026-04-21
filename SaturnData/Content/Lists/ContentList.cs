@@ -41,8 +41,6 @@ public class ContentList<T> where T : ContentItem, new()
                 // Try to load items.
                 foreach (string file in files)
                 {
-                    if (!file.EndsWith(SaturnFileExtensionList.SaturnContentFile)) continue;
-                    
                     try
                     {
                         T? item = Deserialize(file);
@@ -72,6 +70,7 @@ public class ContentList<T> where T : ContentItem, new()
     /// <returns><c>T</c> if successful, <c>null</c> unsuccessful.</returns>
     protected virtual T? Deserialize(string file)
     {
+        if (!file.EndsWith(SaturnFileExtensionList.SaturnContentFile)) return null;
         if (ContentSerializer.ToContentItem(file) is T item) return item;
         
         return null;
