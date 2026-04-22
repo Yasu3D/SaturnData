@@ -100,6 +100,11 @@ public class MusicList
     public readonly List<Folder> Folders = [];
 
     /// <summary>
+    /// All songs marked as favorite.
+    /// </summary>
+    public List<Song> Favorites = [];
+    
+    /// <summary>
     /// The currently selected Folder.
     /// </summary>
     /// <remarks>
@@ -326,6 +331,8 @@ public class MusicList
             case GroupType.NotesDesigner: { groupByNotesDesigner(); break; }
         }
 
+        return;
+        
         void groupByDirectory()
         {
             IEnumerable<IGrouping<string, Entry>> songsGroupedByDirectory = Entries.Values.GroupBy(entry => entry.Song?.ParentDirectory ?? "").OrderBy(grouping => grouping.Key);
@@ -374,7 +381,6 @@ public class MusicList
                         if (entry.Song == null) continue;
                         
                         folder.Entries.Add(entry);
-                        entry.Folder = folder;
                         
                         if (!addedSongs.Add(entry.Song)) continue;
                         folder.NormalSongs.Add(entry.Song);
@@ -391,6 +397,30 @@ public class MusicList
                     // ignored
                 }
             }
+
+            Folder favorites = new()
+            {
+                Name = "select_folder_title_favorites",
+                Color = 0xFF03FEDD,
+                Background = FolderBackgroundStyle.Stars,
+            };
+            
+            foreach (Song song in Favorites)
+            {
+                favorites.WorldsEndSongs.Add(song);
+                favorites.InfernoSongs.Add(song);
+                favorites.ExpertSongs.Add(song);
+                favorites.HardSongs.Add(song);
+                favorites.NormalSongs.Add(song);
+
+                foreach (Entry? entry in song.Entries)
+                {
+                    if (entry == null) continue;
+                    favorites.Entries.Add(entry);
+                }
+            }
+
+            Folders.Add(favorites);
         }
 
         void groupByLevel()
@@ -418,7 +448,6 @@ public class MusicList
                     foreach (Entry entry in grouping.ToList())
                     {
                         folder.Entries.Add(entry);
-                        entry.Folder = folder;
                     }
 
                     Folders.Add(folder);
@@ -456,7 +485,6 @@ public class MusicList
                     if (entry.Song == null) continue;
                     
                     folder.Entries.Add(entry);
-                    entry.Folder = folder;
 
                     switch (entry.Difficulty)
                     {
@@ -499,7 +527,6 @@ public class MusicList
                     if (entry.Song == null) continue;
                     
                     folder.Entries.Add(entry);
-                    entry.Folder = folder;   
 
                     switch (entry.Difficulty)
                     {
@@ -542,7 +569,6 @@ public class MusicList
                     if (entry.Song == null) continue;
                     
                     folder.Entries.Add(entry);
-                    entry.Folder = folder;   
 
                     switch (entry.Difficulty)
                     {
@@ -759,7 +785,7 @@ public class MusicList
                             {
                                 value = Math.Max(value, Convert.ToSingle(match.Value, CultureInfo.InvariantCulture));
                             }
-                            catch (Exception ex)
+                            catch
                             {
                                 // Don't throw.
                             }
@@ -796,40 +822,61 @@ public class MusicList
     private void Remesh()
     {
         // Save current selection
-        Entry? selectedEntry = Mesh.SelectedNode?.Entry;
+        Folder? savedFolder = Mesh.SelectedNode?.Folder;
+        Entry? savedEntry = Mesh.SelectedNode?.Entry;
         
-        // Create Entries
-        Dictionary<Entry, MusicMeshNode> nodes = [];
-        foreach (Entry entry in Entries.Values)
-        {
-            nodes.Add(entry, new() { Entry = entry });
-        }
-        
-        // Entry Grouping
         if (UseEntryGrouping)
         {
-            List<MusicMeshNode> allNodes = [];
+            remeshEntryGrouping();
+        }
+        else
+        {
+            if (ActiveGroupType == GroupType.Directory)
+            {
+                remeshSongGroupingWithFavorites();
+            }
+            else
+            {
+                remeshSongGrouping();
+            }
+        }
+        
+        // Reapply current selection
+        Mesh.Select(savedFolder, savedEntry);
+        
+        return;
 
+        void remeshEntryGrouping()
+        {
+            Dictionary<Entry, MusicMeshNode> nodes = [];
+            
             foreach (Folder folder in Folders)
             foreach (Entry entry in folder.Entries)
             {
-                allNodes.Add(nodes[entry]);
+                nodes.Add(entry, new() { Folder = folder, Entry = entry });
             }
             
             // Link together nodes within a row. [Left | Right]
-            linkNodesInRow(allNodes);
+            linkNodesInRow(nodes.Values.ToList());
 
             // Create "jumps" from one node to another. [Up | Down]
-            foreach (MusicMeshNode node in allNodes)
+            foreach (MusicMeshNode node in nodes.Values)
             {
-                linkNodesAcrossRow(node);
+                linkNodesAcrossRow(nodes, node);
             }
+
+            Mesh.Nodes = nodes.Values.ToList();
         }
-        
-        // Song Grouping
-        else
+
+        void remeshSongGrouping()
         {
-            // Create rows of nodes
+            Dictionary<Entry, MusicMeshNode> nodes = [];
+            foreach (Folder folder in Folders)
+            foreach (Entry entry in folder.Entries)
+            {
+                nodes[entry] = new() { Folder = folder, Entry = entry };
+            }
+            
             List<MusicMeshNode> normalNodes = [];
             List<MusicMeshNode> hardNodes = [];
             List<MusicMeshNode> expertNodes = [];
@@ -838,46 +885,119 @@ public class MusicList
 
             foreach (Folder folder in Folders)
             {
-                createNodeRow(folder.NormalSongs,    Difficulty.Normal,    normalNodes);
-                createNodeRow(folder.HardSongs,      Difficulty.Hard,      hardNodes);
-                createNodeRow(folder.ExpertSongs,    Difficulty.Expert,    expertNodes);
-                createNodeRow(folder.InfernoSongs,   Difficulty.Inferno,   infernoNodes);
+                createNodeRow(folder.NormalSongs, Difficulty.Normal, normalNodes);
+                createNodeRow(folder.HardSongs, Difficulty.Hard, hardNodes);
+                createNodeRow(folder.ExpertSongs, Difficulty.Expert, expertNodes);
+                createNodeRow(folder.InfernoSongs, Difficulty.Inferno, infernoNodes);
                 createNodeRow(folder.WorldsEndSongs, Difficulty.WorldsEnd, worldsEndNodes);
-                
+
                 continue;
-                
+
                 void createNodeRow(IEnumerable<Song> songs, Difficulty difficulty, List<MusicMeshNode> row)
                 {
                     foreach (Song song in songs)
                     {
                         Entry? entry = song.EntryByDifficulty(difficulty);
                         if (entry == null) continue;
-                        
+
                         row.Add(nodes[entry]);
                     }
                 }
             }
-            
+
             // Link together nodes within a row [Left | Right]
             linkNodesInRow(normalNodes);
             linkNodesInRow(hardNodes);
             linkNodesInRow(expertNodes);
             linkNodesInRow(infernoNodes);
             linkNodesInRow(worldsEndNodes);
-            
+
             // Link together nodes across rows [Up | Down]
             foreach (MusicMeshNode node in normalNodes)
             {
-                linkNodesAcrossRow(node);
+                linkNodesAcrossRow(nodes, node);
             }
+            
+            Mesh.Nodes = nodes.Values.ToList();
         }
         
-        Mesh.Nodes = nodes.Values.ToList();
+        void remeshSongGroupingWithFavorites()
+        {
+            Dictionary<(Folder, Song), MusicMeshNodeGroup> groups = [];
+            
+            foreach (Folder folder in Folders)
+            foreach (Song song in folder.NormalSongs)
+            {
+                MusicMeshNodeGroup group = new()
+                {
+                    Normal = new() { Folder = folder, Entry = song.Normal },
+                    Hard = new() { Folder = folder, Entry = song.Hard },
+                    Expert = new() { Folder = folder, Entry = song.Expert },
+                    Inferno = new() { Folder = folder, Entry = song.Inferno },
+                    WorldsEnd = new() { Folder = folder, Entry = song.WorldsEnd },
+                };
 
-        // Reapply current selection
-        Mesh.Select(selectedEntry);
+                group.WorldsEnd.Bottom = group.Inferno;
 
-        return;
+                group.Inferno.Top = group.WorldsEnd;
+                group.Inferno.Bottom = group.Expert;
+                
+                group.Expert.Top = group.Inferno;
+                group.Expert.Bottom = group.Hard;
+                
+                group.Hard.Top = group.Expert;
+                group.Hard.Bottom = group.Normal;
+                
+                group.Normal.Top = group.Hard;
+
+                groups[(folder, song)] = group;
+            }
+            
+            List<MusicMeshNode> nodes = [];
+            List<MusicMeshNode> normalRow = [];
+            List<MusicMeshNode> hardRow = [];
+            List<MusicMeshNode> expertRow = [];
+            List<MusicMeshNode> infernoRow = [];
+            List<MusicMeshNode> worldsEndRow = [];
+
+            foreach (Folder folder in Folders)
+            {
+                createNodeRow(folder.NormalSongs, Difficulty.Normal, normalRow);
+                createNodeRow(folder.HardSongs, Difficulty.Hard, hardRow);
+                createNodeRow(folder.ExpertSongs, Difficulty.Expert, expertRow);
+                createNodeRow(folder.InfernoSongs, Difficulty.Inferno, infernoRow);
+                createNodeRow(folder.WorldsEndSongs, Difficulty.WorldsEnd, worldsEndRow);
+                continue;
+
+                void createNodeRow(IEnumerable<Song> songs, Difficulty difficulty, List<MusicMeshNode> row)
+                {
+                    foreach (Song song in songs)
+                    {
+                        MusicMeshNodeGroup group = groups[(folder, song)];
+                        MusicMeshNode node = difficulty switch
+                        {
+                            Difficulty.Normal => group.Normal,
+                            Difficulty.Hard => group.Hard,
+                            Difficulty.Expert => group.Expert,
+                            Difficulty.Inferno => group.Inferno,
+                            Difficulty.WorldsEnd => group.WorldsEnd,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
+
+                        row.Add(node);
+                        nodes.Add(node);
+                    }
+                }
+            }
+            
+            linkNodesInRow(normalRow);
+            linkNodesInRow(hardRow);
+            linkNodesInRow(expertRow);
+            linkNodesInRow(infernoRow);
+            linkNodesInRow(worldsEndRow);
+            
+            Mesh.Nodes = nodes;
+        }
         
         void linkNodesInRow(List<MusicMeshNode> nodesToLink)
         {
@@ -890,8 +1010,8 @@ public class MusicList
                 left.Right = node;
             }
         }
-
-        void linkNodesAcrossRow(MusicMeshNode node)
+        
+        void linkNodesAcrossRow(Dictionary<Entry, MusicMeshNode> nodes, MusicMeshNode node)
         {
             try
             {
@@ -900,10 +1020,10 @@ public class MusicList
 
                 Song song = node.Entry!.Song!;
 
-                MusicMeshNode normalNode    = nodes[song.Normal!];
-                MusicMeshNode hardNode      = nodes[song.Hard!];
-                MusicMeshNode expertNode    = nodes[song.Expert!];
-                MusicMeshNode infernoNode   = nodes[song.Inferno!];
+                MusicMeshNode normalNode = nodes[song.Normal!];
+                MusicMeshNode hardNode = nodes[song.Hard!];
+                MusicMeshNode expertNode = nodes[song.Expert!];
+                MusicMeshNode infernoNode = nodes[song.Inferno!];
                 MusicMeshNode worldsEndNode = nodes[song.WorldsEnd!];
 
                 normalNode.Top = hardNode;
@@ -928,7 +1048,7 @@ public class MusicList
 
     private void Mesh_OnSelectionChanged(object? sender, EventArgs e)
     {
-        selectedFolder = Mesh.SelectedNode?.Entry?.Folder;
+        selectedFolder = Mesh.SelectedNode?.Folder;
         selectedDifficulty = Mesh.SelectedNode?.Entry?.Difficulty ?? Difficulty.None;
         
         FolderSelectStateChanged?.Invoke(null, EventArgs.Empty);

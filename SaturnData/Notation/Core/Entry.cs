@@ -53,11 +53,6 @@ public class Entry
     public bool Exists => File.Exists(ChartPath);
     
     /// <summary>
-    /// The folder containing this entry.
-    /// </summary>
-    public Folder? Folder = null;
-    
-    /// <summary>
     /// The song containing this entry.
     /// </summary>
     public Song? Song = null;

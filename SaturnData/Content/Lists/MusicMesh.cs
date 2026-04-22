@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SaturnData.Content.Music;
 using SaturnData.Notation.Core;
 
 namespace SaturnData.Content.Lists;
@@ -70,10 +71,10 @@ public class MusicMesh
     }
 
     /// <summary>
-    /// Selects a specific entry, if it's contained in the mesh. Otherwise, sets the selection to the first registered node.
+    /// Selects a specific node, if it's contained in the mesh. Otherwise, sets the selected to the first registered node.
     /// </summary>
-    /// <param name="entry">The <see cref="Entry"/> the node to select contains.</param>
-    public void Select(Entry? entry)
+    /// <param name="node">The <see cref="MusicMeshNode"/> to select.</param>
+    public void Select(MusicMeshNode node)
     {
         if (Nodes.Count == 0)
         {
@@ -81,7 +82,22 @@ public class MusicMesh
             return;
         }
 
-        if (entry == null)
+        SelectedNode = Nodes.Contains(node) ? node : Nodes[0];
+    }
+    
+    /// <summary>
+    /// Selects a specific entry, if it's contained in the mesh. Otherwise, sets the selection to the first registered node.
+    /// </summary>
+    /// <param name="entry">The <see cref="Entry"/> the node to select contains.</param>
+    public void Select(Folder? folder, Entry? entry)
+    {
+        if (Nodes.Count == 0)
+        {
+            SelectedNode = null;
+            return;
+        }
+
+        if (folder == null || entry == null)
         {
             SelectedNode = Nodes[0];
             return;
@@ -90,11 +106,24 @@ public class MusicMesh
         bool entryFound = false;
         foreach (MusicMeshNode node in Nodes)
         {
+            if (node.Folder != folder) continue;
             if (node.Entry != entry) continue;
             
             SelectedNode = node;
             entryFound = true;
             break;
+        }
+
+        if (!entryFound)
+        {
+            foreach (MusicMeshNode node in Nodes)
+            {
+                if (node.Entry != entry) continue;
+                
+                SelectedNode = node;
+                entryFound = true;
+                break;
+            }
         }
 
         if (!entryFound)
@@ -110,6 +139,11 @@ public class MusicMeshNode
     /// The entry associated with this node.
     /// </summary>
     public Entry? Entry = null;
+
+    /// <summary>
+    /// The folder associated with this node.
+    /// </summary>
+    public Folder? Folder = null;
 
     /// <summary>
     /// The node to the left of the current node, representing a neighboring entry.
@@ -130,4 +164,13 @@ public class MusicMeshNode
     /// The node below the current node, representing a lower difficulty.
     /// </summary>
     public MusicMeshNode? Bottom = null;
+}
+
+internal struct MusicMeshNodeGroup
+{
+    internal MusicMeshNode Normal;
+    internal MusicMeshNode Hard;
+    internal MusicMeshNode Expert;
+    internal MusicMeshNode Inferno;
+    internal MusicMeshNode WorldsEnd;
 }

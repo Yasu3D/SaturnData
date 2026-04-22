@@ -190,7 +190,7 @@ public class Folder : ContentItem
     /// <summary>
     /// The string to display on a small additional folder label.
     /// </summary>
-    public string Label = "";
+    public string Label { get; set; } = "";
 
     /// <summary>
     /// Entries sorted by individual metadata.
