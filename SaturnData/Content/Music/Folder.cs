@@ -160,12 +160,16 @@ public enum FolderCharacterGroup
     /// Latin alphabet | U V X Y Z
     /// </summary>
     RangeUxZ = 16,
+    
+    /// <summary>
+    /// Empty strings
+    /// </summary>
+    Blank = 17,
 }
 
 /// <summary>
 /// A collection of songs.
 /// </summary>
-[Serializable]
 public class Folder : ContentItem
 {
     /// <summary>
