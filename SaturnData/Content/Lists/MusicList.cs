@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using SaturnData.Content.Items;
 using SaturnData.Content.Music;
 using SaturnData.Content.Serialization;
@@ -158,9 +160,7 @@ public class MusicList
             if (activeGroupType == value) return;
             
             activeGroupType = value;
-            Group();
-            Sort();
-            Remesh();
+            Refresh();
         }
     }
     private GroupType activeGroupType = GroupType.Directory;
@@ -176,8 +176,7 @@ public class MusicList
             if (activeSortType == value) return;
             
             activeSortType = value;
-            Sort();
-            Remesh();
+            Refresh();
         }
     }
     private SortType activeSortType = SortType.Directory;
@@ -293,20 +292,28 @@ public class MusicList
                 if (song.WorldsEnd != null) { Entries[song.WorldsEnd.Id] = song.WorldsEnd; }
             }
 
-            Group();
-            Sort();
-            Remesh();
+            Refresh();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
     }
+
+    /// <summary>
+    /// Re-does grouping, sorting, and remeshing without loading new content.
+    /// </summary>
+    public void Refresh()
+    {
+        Group();
+        Sort();
+        Remesh();
+    }
     
     /// <summary>
     /// Groups all content based on the <see cref="ActiveGroupType"/>.
     /// </summary>
-    private void Group()
+    protected virtual void Group()
     {
         Folders.Clear();
 
@@ -317,10 +324,7 @@ public class MusicList
             case GroupType.Title:         { groupByTitle();         break; }
             case GroupType.Artist:        { groupByArtist();        break; }
             case GroupType.NotesDesigner: { groupByNotesDesigner(); break; }
-            default: return;
         }
-        
-        return;
 
         void groupByDirectory()
         {
@@ -439,6 +443,13 @@ public class MusicList
                     Color = 0xFF808080,
                     Background = FolderBackgroundStyle.Name,
                 };
+                
+                if (grouping.Key == FolderCharacterGroup.Blank)
+                {
+                    folder.Name = "select_folder_title_blank";
+                    folder.Label = "select_folder_label_blank";
+                    folder.Background = FolderBackgroundStyle.Checkers;
+                }
 
                 foreach (Entry entry in grouping)
                 {
@@ -475,6 +486,13 @@ public class MusicList
                     Color = 0xFF808080,
                     Background = FolderBackgroundStyle.Name,
                 };
+                
+                if (grouping.Key == FolderCharacterGroup.Blank)
+                {
+                    folder.Name = "select_folder_title_blank";
+                    folder.Label = "select_folder_label_blank";
+                    folder.Background = FolderBackgroundStyle.Checkers;
+                }
 
                 foreach (Entry entry in grouping)
                 {
@@ -512,6 +530,13 @@ public class MusicList
                     Background = FolderBackgroundStyle.Name,
                 };
 
+                if (grouping.Key == FolderCharacterGroup.Blank)
+                {
+                    folder.Name = "select_folder_title_blank";
+                    folder.Label = "select_folder_label_blank";
+                    folder.Background = FolderBackgroundStyle.Checkers;
+                }
+
                 foreach (Entry entry in grouping)
                 {
                     if (entry.Song == null) continue;
@@ -537,7 +562,7 @@ public class MusicList
         
         FolderCharacterGroup getCharacterGroup(string input)
         {
-            if (string.IsNullOrWhiteSpace(input)) return FolderCharacterGroup.Symbol;
+            if (string.IsNullOrWhiteSpace(input)) return FolderCharacterGroup.Blank;
 
             // Normalize Input
             input = input.Normalize(NormalizationForm.FormKC);
@@ -725,8 +750,22 @@ public class MusicList
                     
                     try
                     {
-                        string filtered = new(bpmMessage.Where(c => char.IsDigit(c) || c == '.').ToArray());
-                        return Convert.ToSingle(filtered);
+                        MatchCollection matches = Regex.Matches(bpmMessage, @"\d+[,\.]?\d*");
+
+                        float value = -1;
+                        foreach (Match match in matches)
+                        {
+                            try
+                            {
+                                value = Math.Max(value, Convert.ToSingle(match.Value, CultureInfo.InvariantCulture));
+                            }
+                            catch (Exception ex)
+                            {
+                                // Don't throw.
+                            }
+                        }
+                        
+                        return value;
                     }
                     catch
                     {
