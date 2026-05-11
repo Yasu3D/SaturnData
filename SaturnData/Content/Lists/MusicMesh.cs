@@ -97,21 +97,24 @@ public class MusicMesh
             return;
         }
 
-        if (folder == null || entry == null)
+        if (entry == null)
         {
             SelectedNode = Nodes[0];
             return;
         }
 
         bool entryFound = false;
-        foreach (MusicMeshNode node in Nodes)
+        if (folder != null)
         {
-            if (node.Folder != folder) continue;
-            if (node.Entry != entry) continue;
-            
-            SelectedNode = node;
-            entryFound = true;
-            break;
+            foreach (MusicMeshNode node in Nodes)
+            {
+                if (node.Folder != folder) continue;
+                if (node.Entry != entry) continue;
+
+                SelectedNode = node;
+                entryFound = true;
+                break;
+            }
         }
 
         if (!entryFound)

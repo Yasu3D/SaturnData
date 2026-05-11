@@ -583,7 +583,8 @@ internal static class SatV3Reader
             {
                 "<" => LaneSweepDirection.Counterclockwise,
                 ">" => LaneSweepDirection.Clockwise,
-                "X" => LaneSweepDirection.Center,
+                "X" => LaneSweepDirection.CenterOutward,
+                "O" => LaneSweepDirection.CenterInward,
                 "!" => LaneSweepDirection.Instant,
                 _ => LaneSweepDirection.Instant,
             };

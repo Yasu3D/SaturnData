@@ -195,7 +195,8 @@ internal static class SatV3Writer
             {
                 LaneSweepDirection.Counterclockwise => "<",
                 LaneSweepDirection.Clockwise => ">",
-                LaneSweepDirection.Center => "X",
+                LaneSweepDirection.CenterOutward => "X",
+                LaneSweepDirection.CenterInward => "O",
                 LaneSweepDirection.Instant => "!",
                 _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null),
             };

@@ -163,8 +163,14 @@ public static class MerReader
                     {
                         int directionIndex = Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
                         directionIndex = Math.Clamp(directionIndex, 0, 2);
-                        
-                        LaneSweepDirection direction = (LaneSweepDirection)directionIndex;
+
+                        LaneSweepDirection direction = directionIndex switch
+                        {
+                            0 => LaneSweepDirection.Counterclockwise,
+                            1 => LaneSweepDirection.Clockwise,
+                            2 => LaneSweepDirection.CenterOutward,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
                         LaneShowNote laneShowNote = new(timestamp, position, size, direction);
                         chart.LaneToggles.Add(laneShowNote);
                     }
@@ -175,7 +181,13 @@ public static class MerReader
                         int directionIndex = Convert.ToInt32(split[8], CultureInfo.InvariantCulture);
                         directionIndex = Math.Clamp(directionIndex, 0, 2);
                         
-                        LaneSweepDirection direction = (LaneSweepDirection)directionIndex;
+                        LaneSweepDirection direction = directionIndex switch
+                        {
+                            0 => LaneSweepDirection.Counterclockwise,
+                            1 => LaneSweepDirection.Clockwise,
+                            2 => LaneSweepDirection.CenterInward,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
                         LaneHideNote laneHideNote = new(timestamp, position, size, direction);
                         chart.LaneToggles.Add(laneHideNote);
                     }

@@ -282,7 +282,7 @@ public static class SatV2Writer
                     {
                         LaneSweepDirection.Counterclockwise => ".CCW",
                         LaneSweepDirection.Clockwise => ".CW",
-                        LaneSweepDirection.Center => ".CENTER",
+                        LaneSweepDirection.CenterOutward => ".CENTER",
                         _ => ".CENTER",
                     };
                 }

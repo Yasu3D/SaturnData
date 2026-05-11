@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -446,7 +447,15 @@ public static class MerWriter
                         Position = laneShowNote.Position,
                         Size = laneShowNote.Size,
                         Render = 1,
-                        Direction = (int)laneShowNote.Direction,
+                        Direction = laneShowNote.Direction switch
+                        {
+                            LaneSweepDirection.Counterclockwise => 0,
+                            LaneSweepDirection.Clockwise => 1,
+                            LaneSweepDirection.CenterOutward => 2,
+                            LaneSweepDirection.CenterInward => 0,
+                            LaneSweepDirection.Instant => 0,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        },
                     });
                     
                     continue;
@@ -461,7 +470,15 @@ public static class MerWriter
                         Position = laneHideNote.Position,
                         Size = laneHideNote.Size,
                         Render = 1,
-                        Direction = (int)laneHideNote.Direction,
+                        Direction = laneHideNote.Direction switch
+                        {
+                            LaneSweepDirection.Counterclockwise => 0,
+                            LaneSweepDirection.Clockwise => 1,
+                            LaneSweepDirection.CenterOutward => 0,
+                            LaneSweepDirection.CenterInward => 2,
+                            LaneSweepDirection.Instant => 0,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        },
                     });
                 }
             }

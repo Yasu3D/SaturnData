@@ -558,7 +558,7 @@ internal static class SatV2Reader
             {
                 if (a == "CW") return LaneSweepDirection.Clockwise;
                 if (a == "CCW") return LaneSweepDirection.Counterclockwise;
-                if (a == "CENTER") return LaneSweepDirection.Center;
+                if (a == "CENTER") return LaneSweepDirection.CenterOutward;
             }
 
             return LaneSweepDirection.Clockwise;

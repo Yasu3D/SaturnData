@@ -132,23 +132,54 @@ internal static class NotationHelpers
 
     internal static List<ILaneToggle> BakeLaneToggle(ILaneToggle source)
     {
-        if (source.Direction != LaneSweepDirection.Instant) return [source];
-
-        ITimeable sourceTimeable = (ITimeable)source;
-        IPositionable sourcePositionable = (IPositionable)source;
-        bool laneShow = source is LaneShowNote;
-        
-        List<ILaneToggle> result = [];
-        
-        for (int i = sourcePositionable.Position; i < sourcePositionable.Position + sourcePositionable.Size; i++)
+        if (source.Direction == LaneSweepDirection.Instant)
         {
-            ILaneToggle part = laneShow
-                ? new LaneShowNote(new(sourceTimeable.Timestamp), i % 60, 1, LaneSweepDirection.Center)
-                : new LaneHideNote(new(sourceTimeable.Timestamp), i % 60, 1, LaneSweepDirection.Center);
+            ITimeable sourceTimeable = (ITimeable)source;
+            IPositionable sourcePositionable = (IPositionable)source;
+            bool laneShow = source is LaneShowNote;
 
-            result.Add(part);
+            List<ILaneToggle> result = [];
+
+            for (int i = sourcePositionable.Position; i < sourcePositionable.Position + sourcePositionable.Size; i++)
+            {
+                ILaneToggle part = laneShow
+                    ? new LaneShowNote(new(sourceTimeable.Timestamp), i % 60, 1, LaneSweepDirection.Clockwise)
+                    : new LaneHideNote(new(sourceTimeable.Timestamp), i % 60, 1, LaneSweepDirection.Clockwise);
+
+                result.Add(part);
+            }
+
+            return result;
         }
 
-        return result;
+        if (source.Direction == LaneSweepDirection.CenterInward && source is LaneShowNote laneShowNote)
+        {
+            int sizeA = (int)(laneShowNote.Size * 0.5f);
+            int sizeB = laneShowNote.Size % 2 == 0 ? sizeA : sizeA + 1;
+            
+            List<ILaneToggle> result =
+            [
+                new LaneShowNote(new(laneShowNote.Timestamp), laneShowNote.Position, sizeA, LaneSweepDirection.Counterclockwise),
+                new LaneShowNote(new(laneShowNote.Timestamp), (laneShowNote.Position + sizeA) % 60, sizeB, LaneSweepDirection.Clockwise),
+            ];
+
+            return result;
+        }
+
+        if (source.Direction == LaneSweepDirection.CenterOutward && source is LaneHideNote laneHideNote)
+        {
+            int sizeA = (int)(laneHideNote.Size * 0.5f);
+            int sizeB = laneHideNote.Size % 2 == 0 ? sizeA : sizeA + 1;
+            
+            List<ILaneToggle> result =
+            [
+                new LaneShowNote(new(laneHideNote.Timestamp), laneHideNote.Position, sizeA, LaneSweepDirection.Clockwise),
+                new LaneShowNote(new(laneHideNote.Timestamp), (laneHideNote.Position + sizeA) % 60, sizeB, LaneSweepDirection.Counterclockwise),
+            ];
+            
+            return result;
+        }
+
+        return [source];
     }
 }

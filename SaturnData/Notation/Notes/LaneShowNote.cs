@@ -33,5 +33,7 @@ public sealed class LaneShowNote : Note, IPositionable, ILaneToggle, ICloneable
     
     public LaneSweepDirection Direction { get; set; }
     
+    public void SetState(bool[] state, float visualTime, bool isStartupSequence) => ILaneToggle.SetState(state, true, Timestamp.Time, visualTime, isStartupSequence, Position, Size, Direction);
+
     public object Clone() => new LaneShowNote(new(Timestamp), Position, Size, Direction);
 }
