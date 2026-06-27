@@ -173,8 +173,8 @@ internal static class NotationHelpers
             
             List<ILaneToggle> result =
             [
-                new LaneShowNote(new(laneHideNote.Timestamp), laneHideNote.Position, sizeA, LaneSweepDirection.Clockwise),
-                new LaneShowNote(new(laneHideNote.Timestamp), (laneHideNote.Position + sizeA) % 60, sizeB, LaneSweepDirection.Counterclockwise),
+                new LaneHideNote(new(laneHideNote.Timestamp), laneHideNote.Position, sizeA, LaneSweepDirection.Clockwise),
+                new LaneHideNote(new(laneHideNote.Timestamp), (laneHideNote.Position + sizeA) % 60, sizeB, LaneSweepDirection.Counterclockwise),
             ];
             
             return result;
