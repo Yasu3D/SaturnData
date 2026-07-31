@@ -55,7 +55,7 @@ public class StageUpStage : ContentItem
     /// <summary>
     /// The absolute filepath of the icon image file to display next to the stage songlist.
     /// </summary>
-    public string AbsoluteIconPath => AbsolutePath(ImagePath);
+    public string AbsoluteImagePath => AbsolutePath(ImagePath);
     
     /// <summary>
     /// The threshold where a clear counts as a rainbow clear. (100%)

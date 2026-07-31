@@ -24,6 +24,7 @@ public static class SatContentV1Writer
         {
             Emblem => "Emblem",
             Icon => "Icon",
+            JudgementLineColor => "JudgementLineColor",
             ConsoleColor => "ConsoleColor",
             Navigator => "Navigator",
             NoteSound => "NoteSound",
@@ -72,6 +73,11 @@ public static class SatContentV1Writer
         {
             sb.Append($"{"@ARTIST",-16}{icon.Artist}\n");
             sb.Append($"{"@IMAGE",-16}{icon.ImagePath}\n");
+        }
+
+        if (contentItem is JudgementLineColor judgementLine)
+        {
+            sb.Append($"{"@IMAGE",-16}{judgementLine.ImagePath}\n");
         }
         
         if (contentItem is Navigator navigator)

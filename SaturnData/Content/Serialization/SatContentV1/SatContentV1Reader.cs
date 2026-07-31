@@ -38,6 +38,7 @@ public static class SatContentV1Reader
                 {
                     "Emblem" => new Emblem(),
                     "Icon" => new Icon(),
+                    "JudgementLineColor" => new JudgementLineColor(),
                     "ConsoleColor" => new ConsoleColor(),
                     "Navigator" => new Navigator(),
                     "NoteSound" => new NoteSound(),
@@ -97,6 +98,11 @@ public static class SatContentV1Reader
                     else if (SerializationHelpers.ContainsKey(line, "@IMAGE ",  out value)) { icon.ImagePath = value; }
                 }
 
+                if (contentItem is JudgementLineColor judgementLine)
+                {
+                    if (SerializationHelpers.ContainsKey(line, "@IMAGE ", out value)) { judgementLine.ImagePath = value; }
+                }
+                
                 if (contentItem is Navigator navigator)
                 {
                     if (SerializationHelpers.ContainsKey(line, "@ARTIST ", out value)) { navigator.Artist = value; }
@@ -242,7 +248,7 @@ public static class SatContentV1Reader
                 
                 if (contentItem is StageUpStage stageUpStage)
                 {
-                    if (SerializationHelpers.ContainsKey(line, "@IMAGE ",           out value)) { stageUpStage.ImagePath = value; }
+                    if      (SerializationHelpers.ContainsKey(line, "@IMAGE ",           out value)) { stageUpStage.ImagePath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@HEALTH ",          out value)) { stageUpStage.Health = Convert.ToInt32(value, CultureInfo.InvariantCulture); }
                     else if (SerializationHelpers.ContainsKey(line, "@HEALTH_RECOVERY ", out value)) { stageUpStage.HealthRecovery = Convert.ToInt32(value, CultureInfo.InvariantCulture); }
                     else if (SerializationHelpers.ContainsKey(line, "@ERROR_THRESHOLD ", out value))
