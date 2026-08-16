@@ -154,6 +154,11 @@ internal static class NotationHelpers
 
         if (source.Direction == LaneSweepDirection.CenterInward && source is LaneShowNote laneShowNote)
         {
+            if (laneShowNote.Size <= 2)
+            {
+                return [new LaneShowNote(new(laneShowNote.Timestamp), laneShowNote.Position, laneShowNote.Size, LaneSweepDirection.CenterOutward)];
+            }
+            
             int sizeA = (int)(laneShowNote.Size * 0.5f);
             int sizeB = laneShowNote.Size % 2 == 0 ? sizeA : sizeA + 1;
             
@@ -168,6 +173,11 @@ internal static class NotationHelpers
 
         if (source.Direction == LaneSweepDirection.CenterOutward && source is LaneHideNote laneHideNote)
         {
+            if (laneHideNote.Size <= 2)
+            {
+                return [new LaneShowNote(new(laneHideNote.Timestamp), laneHideNote.Position, laneHideNote.Size, LaneSweepDirection.CenterInward)];
+            }
+            
             int sizeA = (int)(laneHideNote.Size * 0.5f);
             int sizeB = laneHideNote.Size % 2 == 0 ? sizeA : sizeA + 1;
             
