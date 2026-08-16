@@ -5,7 +5,7 @@ public class NotationReadArgs
     /// <summary>
     /// Should hold points with their <see cref="SaturnData.Notation.Notes.HoldPointRenderType"/> set to <see cref="SaturnData.Notation.Notes.HoldPointRenderType.Hidden"/> be removed?
     /// </summary>
-    public bool OptimizeHoldNotes { get; set; } = true;
+    public bool OptimizeHoldNotes { get; set; } = false;
 
     /// <summary>
     /// Should the clear threshold be inferred from the chosen Difficulty instead of the @CLEAR value?
