@@ -175,7 +175,7 @@ internal static class NotationHelpers
         {
             if (laneHideNote.Size <= 2)
             {
-                return [new LaneShowNote(new(laneHideNote.Timestamp), laneHideNote.Position, laneHideNote.Size, LaneSweepDirection.CenterInward)];
+                return [new LaneHideNote(new(laneHideNote.Timestamp), laneHideNote.Position, laneHideNote.Size, LaneSweepDirection.CenterInward)];
             }
             
             int sizeA = (int)(laneHideNote.Size * 0.5f);
