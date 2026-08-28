@@ -68,9 +68,9 @@ public class ReverseEffectEvent : Event, ICloneable
     public object Clone()
     {
         ReverseEffectEvent clone = new();
-        clone.SubEvents[0] = new(SubEvents[0].Timestamp, clone);
-        clone.SubEvents[1] = new(SubEvents[1].Timestamp, clone);
-        clone.SubEvents[2] = new(SubEvents[2].Timestamp, clone);
+        clone.SubEvents[0] = new(new(SubEvents[0].Timestamp), clone);
+        clone.SubEvents[1] = new(new(SubEvents[1].Timestamp), clone);
+        clone.SubEvents[2] = new(new(SubEvents[2].Timestamp), clone);
 
         return clone;
     }
