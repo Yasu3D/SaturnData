@@ -784,4 +784,94 @@ public class Chart
             }
         }
     }
+
+    /// <summary>
+    /// Mirrors the chart horizontally, and/or vertically.
+    /// </summary>
+    /// <remarks>
+    /// This method is intended to be called before <see cref="Chart.Build()"/>.<br/>If it is called <i>after</i>, you must call <see cref="Chart.Build()"/> again.
+    /// </remarks>
+    /// <param name="horizontal">Should the Chart be mirrored left/right?</param>
+    /// <param name="vertical">Should the Chart be mirrored up/down?</param>
+    public void Mirror(bool horizontal, bool vertical)
+    {
+        if (horizontal) Mirror(30);
+        if (vertical) Mirror(0);
+    }
+    
+    private void Mirror(int axis)
+    {
+        mirror(LaneToggles);
+        
+        foreach (Layer layer in Layers)
+        {
+            mirror(layer.Notes);
+        }
+        
+        return;
+
+        void mirror(List<Note> collection)
+        {
+            for (int index = 0; index < collection.Count; index++)
+            {
+                ITimeable obj = collection[index];
+                if (obj is not IPositionable positionable) continue;
+
+                if (obj is SlideClockwiseNote sourceClw)
+                {
+                    int newPosition = axis - sourceClw.Size - sourceClw.Position;
+
+                    SlideCounterclockwiseNote newNote = new
+                    (
+                        timestamp: new(sourceClw.Timestamp.FullTick),
+                        position: newPosition,
+                        size: sourceClw.Size,
+                        bonusType: sourceClw.BonusType,
+                        judgementType: sourceClw.JudgementType
+                    );
+
+                    collection[index] = newNote;
+                }
+                else if (obj is SlideCounterclockwiseNote sourceCcw)
+                {
+                    int newPosition = axis - sourceCcw.Size - sourceCcw.Position;
+
+                    SlideClockwiseNote newNote = new
+                    (
+                        timestamp: new(sourceCcw.Timestamp.FullTick),
+                        position: newPosition,
+                        size: sourceCcw.Size,
+                        bonusType: sourceCcw.BonusType,
+                        judgementType: sourceCcw.JudgementType
+                    );
+
+                    collection[index] = newNote;
+                }
+                else if (obj is HoldNote sourceHoldNote)
+                {
+                    for (int i = 0; i < sourceHoldNote.Points.Count; i++)
+                    {
+                        HoldPointNote holdPointNote = sourceHoldNote.Points[i];
+                        holdPointNote.Position = axis - holdPointNote.Size - holdPointNote.Position;
+                    }
+                }
+                else
+                {
+                    positionable.Position = axis - positionable.Size - positionable.Position;
+                }
+
+                if (obj is ILaneToggle laneToggle)
+                {
+                    if (laneToggle.Direction == LaneSweepDirection.Clockwise)
+                    {
+                        laneToggle.Direction = LaneSweepDirection.Counterclockwise;
+                    }
+                    else if (laneToggle.Direction == LaneSweepDirection.Counterclockwise)
+                    {
+                        laneToggle.Direction = LaneSweepDirection.Clockwise;
+                    }
+                }
+            }
+        }
+    }
 }
