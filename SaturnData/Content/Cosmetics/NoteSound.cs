@@ -96,10 +96,15 @@ public class NoteSound : CosmeticItem
     public string AudioChainPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "bonus" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "bonus marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
-    public string AudioBonusPath { get; set; } = "";
-    
+    public string AudioBonusMarvelousPath { get; set; } = "";
+
+    /// <summary>
+    /// The local filepath of the "bonus great" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioBonusGreatPath { get; set; } = "";
+
     /// <summary>
     /// The local filepath of the "r" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
@@ -166,9 +171,14 @@ public class NoteSound : CosmeticItem
     public string AbsoluteAudioChainPath => AbsolutePath(AudioChainPath);
     
     /// <summary>
-    /// The absolute filepath of the "bonus" audio file.
+    /// The absolute filepath of the "bonus marvelous" audio file.
     /// </summary>
-    public string AbsoluteAudioBonusPath => AbsolutePath(AudioBonusPath);
+    public string AbsoluteAudioBonusMarvelousPath => AbsolutePath(AudioBonusMarvelousPath);
+
+    /// <summary>
+    /// The absolute filepath of the "bonus great" audio file.
+    /// </summary>
+    public string AbsoluteAudioBonusGreatPath => AbsolutePath(AudioBonusGreatPath);
     
     /// <summary>
     /// The absolute filepath of the "r" audio file.

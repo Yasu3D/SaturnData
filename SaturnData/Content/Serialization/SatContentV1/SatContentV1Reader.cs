@@ -165,7 +165,8 @@ public static class SatContentV1Reader
                     else if (SerializationHelpers.ContainsKey(line, "@HOLD ",               out value)) { noteSound.AudioHoldPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@RE_HOLD ",            out value)) { noteSound.AudioReHoldPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@CHAIN ",              out value)) { noteSound.AudioChainPath = value; }
-                    else if (SerializationHelpers.ContainsKey(line, "@BONUS ",              out value)) { noteSound.AudioBonusPath = value; }
+                    else if (SerializationHelpers.ContainsKey(line, "@BONUS_MARVELOUS ",    out value)) { noteSound.AudioBonusMarvelousPath = value; }
+                    else if (SerializationHelpers.ContainsKey(line, "@BONUS_GREAT ",        out value)) { noteSound.AudioBonusGreatPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@R ",                  out value)) { noteSound.AudioRPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@DAMAGE ",             out value)) { noteSound.AudioDamagePath = value; }
                 }
@@ -204,6 +205,8 @@ public static class SatContentV1Reader
                     else if (SerializationHelpers.ContainsKey(line, "@SELECT_START_SONG_ALT ",     out value)) { systemSound.AudioSelectStartSongAltPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@FAVORITE_ADD ",              out value)) { systemSound.AudioFavoriteAddPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@FAVORITE_REMOVE ",           out value)) { systemSound.AudioFavoriteRemovePath = value; }
+                    else if (SerializationHelpers.ContainsKey(line, "@LEVELUP_COUNT ",             out value)) { systemSound.AudioLevelUpCountPath = value; }
+                    else if (SerializationHelpers.ContainsKey(line, "@LEVELUP_FINISHED ",          out value)) { systemSound.AudioLevelUpFinishedPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@RESULT_SCORE_COUNT ",        out value)) { systemSound.AudioResultScoreCountPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@RESULT_SCORE_FINISHED ",     out value)) { systemSound.AudioResultScoreFinishedPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@RESULT_RATE_BAD ",           out value)) { systemSound.AudioResultRateBadPath = value; }

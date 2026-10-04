@@ -437,6 +437,15 @@ public class Timestamp : IEquatable<Timestamp>, IComparable
     /// <param name="tempo">The tempo to use.</param>
     /// <param name="ratio">The metre ratio use.</param>
     public static float TimePerTick(float tempo, float ratio) => (240.0f / tempo * ratio / 1920.0f) * 1000.0f;
+
+    /// <summary>
+    /// The length of a beat in milliseconds at a specific tempo and metre.
+    /// </summary>
+    /// <param name="tempo">The tempo to use.</param>
+    /// <param name="ratio">The metre ratio to use.</param>
+    /// <param name="division">The beat division to use.</param>
+    /// <returns></returns>
+    public static float TimePerBeat(float tempo, float ratio, int division) => TimePerTick(tempo, ratio) * TickFromBeat(1, division);
     
     /// <summary>
     /// Converts ticks to beats, based on the provided beat division.

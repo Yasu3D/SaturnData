@@ -50,4 +50,6 @@ public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable, 
 
         return clone;
     }
+
+    public static float BonusEffectDuration(float tempo) => SlideClockwiseNote.BonusEffectDuration(tempo);
 }

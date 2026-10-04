@@ -91,6 +91,16 @@ public class SystemSound : CosmeticItem
     public string AudioFavoriteRemovePath { get; set; } = "";
     
     /// <summary>
+    /// The local filepath of the "level up count" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioLevelUpCountPath { get; set; } = "";
+    
+    /// <summary>
+    /// The local filepath of the "level up finished" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioLevelUpFinishedPath { get; set; } = "";
+    
+    /// <summary>
     /// The local filepath of the "score count" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     public string AudioResultScoreCountPath { get; set; } = "";
@@ -209,6 +219,16 @@ public class SystemSound : CosmeticItem
     /// The absolute filepath of the "favorite remove" audio file.
     /// </summary>
     public string AbsoluteAudioFavoriteRemovePath => AbsolutePath(AudioFavoriteRemovePath);
+    
+    /// <summary>
+    /// The absolute filepath of the "level up count" audio file.
+    /// </summary>
+    public string AbsoluteAudioLevelUpCountPath => AbsolutePath(AudioLevelUpCountPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "level up finished" audio file.
+    /// </summary>
+    public string AbsoluteAudioLevelUpFinishedPath => AbsolutePath(AudioLevelUpFinishedPath);
     
     /// <summary>
     /// The absolute filepath of the "score count" audio file.

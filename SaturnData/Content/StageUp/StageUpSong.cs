@@ -10,7 +10,7 @@ namespace SaturnData.Content.StageUp;
 public class StageUpSong
 {
     /// <summary>
-    /// The <see cref="Entry.Id"/> of the song difficulty to play.
+    /// The <see cref="Entry.Id"/> of the song entry to play.
     /// </summary>
     public string EntryId { get; set; } = "";
     

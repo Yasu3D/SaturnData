@@ -8,7 +8,6 @@ public static class SaturnMath
     /// <summary>
     /// Returns the Euclidean remainder of <c>x / m</c>.
     /// </summary>
-    /// <returns></returns>
     public static int Modulo(int x, int m)
     {
         if (m <= 0) return 0;
@@ -17,6 +16,9 @@ public static class SaturnMath
         return r < 0 ? r + m : r;
     }
     
+    /// <summary>
+    /// Returns the Euclidean remainder of <c>x / m</c>.
+    /// </summary>
     public static float Modulo(float x, int m)
     {
         if (m <= 0) return 0;

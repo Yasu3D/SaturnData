@@ -50,4 +50,11 @@ public sealed class SlideClockwiseNote : Note, IPositionable, IPlayable, IClonea
 
         return clone;
     }
+    
+    public static float BonusEffectDuration(float tempo)
+    {
+        if (tempo <= 100) return 60000.0f / tempo;
+        if (tempo <= 175) return 120000.0f / tempo;
+        return 240000.0f / tempo;
+    }
 }

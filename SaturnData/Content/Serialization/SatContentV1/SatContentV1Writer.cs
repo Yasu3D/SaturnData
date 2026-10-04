@@ -139,7 +139,8 @@ public static class SatContentV1Writer
             sb.Append($"{"@HOLD",-20}{noteSound.AudioHoldPath}\n");
             sb.Append($"{"@RE_HOLD",-20}{noteSound.AudioReHoldPath}\n");
             sb.Append($"{"@CHAIN",-20}{noteSound.AudioChainPath}\n");
-            sb.Append($"{"@BONUS",-20}{noteSound.AudioBonusPath}\n");
+            sb.Append($"{"@BONUS_MARVELOUS",-20}{noteSound.AudioBonusMarvelousPath}\n");
+            sb.Append($"{"@BONUS_GREAT",-20}{noteSound.AudioBonusGreatPath}\n");
             sb.Append($"{"@R",-20}{noteSound.AudioRPath}\n");
             sb.Append($"{"@DAMAGE",-20}{noteSound.AudioDamagePath}\n");
         }
@@ -178,6 +179,8 @@ public static class SatContentV1Writer
             sb.Append($"{"@SELECT_START_SONG_ALT",-27}{systemSound.AudioSelectStartSongAltPath}\n");
             sb.Append($"{"@FAVORITE_ADD",-27}{systemSound.AudioFavoriteAddPath}\n");
             sb.Append($"{"@FAVORITE_REMOVE",-27}{systemSound.AudioFavoriteRemovePath}\n");
+            sb.Append($"{"@LEVELUP_COUNT",-27}{systemSound.AudioLevelUpCountPath}\n");
+            sb.Append($"{"@LEVELUP_FINISHED",-27}{systemSound.AudioLevelUpFinishedPath}\n");
             sb.Append($"{"@RESULT_SCORE_COUNT",-27}{systemSound.AudioResultScoreCountPath}\n");
             sb.Append($"{"@RESULT_SCORE_FINISHED",-27}{systemSound.AudioResultScoreFinishedPath}\n");
             sb.Append($"{"@RESULT_RATE_BAD",-27}{systemSound.AudioResultRateBadPath}\n");
