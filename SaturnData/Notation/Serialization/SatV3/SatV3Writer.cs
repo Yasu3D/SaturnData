@@ -162,7 +162,7 @@ internal static class SatV3Writer
 
             if (@event is TutorialMarkerEvent tutorialTagEvent)
             {
-                sb.Append($"{"TUTORIAL",-9} {tutorialTagEvent.Timestamp.Measure,-4} {tutorialTagEvent.Timestamp.Tick,-4} {tutorialTagEvent.Key}");
+                sb.Append($"{"TUTORIAL",-9} {tutorialTagEvent.Timestamp.Measure,-4} {tutorialTagEvent.Timestamp.Tick,-4} {tutorialTagEvent.Key}\n");
             }
         }
         

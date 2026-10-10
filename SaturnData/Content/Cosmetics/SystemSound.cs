@@ -24,7 +24,17 @@ public class SystemSound : CosmeticItem
     /// The local filepath of the "login" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     public string AudioLoginPath { get; set; } = "";
-    
+
+    /// <summary>
+    /// The local filepath of the "login card success" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioLoginCardSuccessPath { get; set; } = "";
+
+    /// <summary>
+    /// The local filepath of the "login card error" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioLoginCardErrorPath { get; set; } = "";
+
     /// <summary>
     /// The local filepath of the "cycle mode" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
@@ -149,11 +159,26 @@ public class SystemSound : CosmeticItem
     /// The local filepath of the "textbox appear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     public string AudioTextboxAppearPath { get; set; } = "";
+
+    /// <summary>
+    /// The local filepath of the "message alert" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    public string AudioMessageAlertPath { get; set; } = "";
     
     /// <summary>
     /// The absolute filepath of the "login" audio file.
     /// </summary>
     public string AbsoluteAudioLoginPath => AbsolutePath(AudioLoginPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "login card success" audio file.
+    /// </summary>
+    public string AbsoluteAudioLoginCardSuccessPath => AbsolutePath(AudioLoginCardSuccessPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "login card error" audio file.
+    /// </summary>
+    public string AbsoluteAudioLoginCardErrorPath => AbsolutePath(AudioLoginCardErrorPath);
     
     /// <summary>
     /// The absolute filepath of the "cycle mode" audio file.
@@ -279,4 +304,9 @@ public class SystemSound : CosmeticItem
     /// The absolute filepath of the "textbox appear" audio file.
     /// </summary>
     public string AbsoluteAudioTextboxAppearPath => AbsolutePath(AudioTextboxAppearPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "message alert" audio file.
+    /// </summary>
+    public string AbsoluteAudioMessageAlertPath => AbsolutePath(AudioMessageAlertPath);
 }

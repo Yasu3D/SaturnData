@@ -192,6 +192,8 @@ public static class SatContentV1Reader
                 {
                     if (SerializationHelpers.ContainsKey(line, "@ARTIST ",                    out value)) { systemSound.Artist = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@LOGIN ",                     out value)) { systemSound.AudioLoginPath = value; }
+                    else if (SerializationHelpers.ContainsKey(line, "@LOGIN_CARD_SUCCESS ",        out value)) { systemSound.AudioLoginCardSuccessPath = value; }
+                    else if (SerializationHelpers.ContainsKey(line, "@LOGIN_CARD_ERROR ",          out value)) { systemSound.AudioLoginCardErrorPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@CYCLE_MODE ",                out value)) { systemSound.AudioCycleModePath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@CYCLE_FOLDER ",              out value)) { systemSound.AudioCycleFolderPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@CYCLE_SONG ",                out value)) { systemSound.AudioCycleSongPath = value; }
@@ -217,6 +219,7 @@ public static class SatContentV1Reader
                     else if (SerializationHelpers.ContainsKey(line, "@RHYTHM_GAME_SPECIAL_CLEAR ", out value)) { systemSound.AudioRhythmGameSpecialClearPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@TIMER_WARNING ",             out value)) { systemSound.AudioTimerWarningPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@TEXTBOX_APPEAR ",            out value)) { systemSound.AudioTextboxAppearPath = value; }
+                    else if (SerializationHelpers.ContainsKey(line, "@MESSAGE_ALERT ",             out value)) { systemSound.AudioMessageAlertPath = value; }
                 }
 
                 if (contentItem is Title title)

@@ -166,6 +166,8 @@ public static class SatContentV1Writer
         {
             sb.Append($"{"@ARTIST",-27}{systemSound.Artist}\n");
             sb.Append($"{"@LOGIN",-27}{systemSound.AudioLoginPath}\n");
+            sb.Append($"{"@LOGIN_CARD_SUCCESS",-27}{systemSound.AudioLoginCardSuccessPath}\n");
+            sb.Append($"{"@LOGIN_CARD_ERROR",-27}{systemSound.AudioLoginCardErrorPath}\n");
             sb.Append($"{"@CYCLE_MODE",-27}{systemSound.AudioCycleModePath}\n");
             sb.Append($"{"@CYCLE_FOLDER",-27}{systemSound.AudioCycleFolderPath}\n");
             sb.Append($"{"@CYCLE_SONG",-27}{systemSound.AudioCycleSongPath}\n");
@@ -191,6 +193,7 @@ public static class SatContentV1Writer
             sb.Append($"{"@RHYTHM_GAME_SPECIAL_CLEAR",-27}{systemSound.AudioRhythmGameSpecialClearPath}\n");
             sb.Append($"{"@TIMER_WARNING",-27}{systemSound.AudioTimerWarningPath}\n");
             sb.Append($"{"@TEXTBOX_APPEAR",-27}{systemSound.AudioTextboxAppearPath}\n");
+            sb.Append($"{"@MESSAGE_ALERT",-27}{systemSound.AudioMessageAlertPath}\n");
         }
 
         if (contentItem is Title title)
