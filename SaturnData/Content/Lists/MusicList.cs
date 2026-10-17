@@ -439,7 +439,7 @@ public class MusicList
                         Background = FolderBackgroundStyle.Level,
                     };
 
-                    if (grouping.Key == "X")
+                    if (grouping.Key == "-")
                     {
                         folder.Name = "select_folder_nochart";
                         folder.Background = FolderBackgroundStyle.Checkers;

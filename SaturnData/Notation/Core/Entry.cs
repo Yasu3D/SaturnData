@@ -539,20 +539,20 @@ public class Entry
     /// <summary>
     /// Returns the integer part of the <see cref="Level"/>, and adds a + if the decimal part is >= 0.7.<br/>
     /// Returns '?' if <see cref="Level"/> is below 0.
-    /// Returns 'X' if chart file does not exist.
+    /// Returns '-' if chart file does not exist.
     /// </summary>
     /// <code>
     ///  12.6    -> "12"
     ///  12.7    -> "12+"
     ///  13.2    -> "13"
     /// -1.0     -> "?"
-    ///  No File -> "X"
+    ///  No File -> "-"
     /// </code>
     public string LevelString
     {
         get
         {
-            if (!Exists) return "X";
+            if (!Exists) return "-";
             return RawLevelString;
         }
     }

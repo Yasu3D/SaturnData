@@ -169,7 +169,17 @@ public class Navigator : CosmeticItem
         }
         
         // Give up.
-        return NavigatorDialogue.ErrorDialogue;
+        // return NavigatorDialogue.ErrorDialogue;
+        
+        // Never give up! Return the dialogue key instead.
+        return new()
+        {
+            Message = $"No dialogue found. Key: {key}",
+            AudioPath = "",
+            Duration = 10000,
+            Expression = NavigatorExpression.Neutral,
+            ShowSkipButton = false,
+        };
     }
 }
 
