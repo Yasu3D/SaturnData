@@ -13,7 +13,17 @@ public class SystemMusic : CosmeticItem
     /// <summary>
     /// A string listing all contributors of a <see cref="SystemMusic"/> pack.
     /// </summary>
-    public override string Copyright => $"(c) {Author}, {Artist}";
+    public override string Copyright
+    {
+        get
+        {
+            if (Author == "" && Artist == "") return "";
+            if (Author == "" && Artist != "") return $"(c) {Artist}";
+            if (Author != "" && Artist == "") return $"(c) {Author}";
+            
+            return $"(c) {Author}, {Artist}";
+        }
+    }
         
     /// <summary>
     /// The creator of the <see cref="SystemMusic"/>.

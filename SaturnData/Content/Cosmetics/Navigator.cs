@@ -34,7 +34,18 @@ public class Navigator : CosmeticItem
     /// <summary>
     /// A string listing all contributors of a <see cref="Navigator"/>.
     /// </summary>
-    public override string Copyright => $"(c) {Author}, {Artist}, {Voice}";
+    public override string Copyright
+    {
+        get
+        {
+            if (Author == "" && Artist == "" && Voice == "") return "";
+
+            string author = Author == "" ? "" : $"{Author}{(Artist != "" || Voice != "" ? ", " : "")}";
+            string artist = Artist == "" ? "" : $"{Artist}{(Voice != "" ? ", " : "")}";
+
+            return $"(c) {author}{artist}{Voice}";
+        }
+    }
     
     /// <summary>
     /// The creator of the <see cref="Navigator"/> artwork.
