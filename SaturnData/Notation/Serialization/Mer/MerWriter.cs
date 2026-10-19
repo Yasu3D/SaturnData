@@ -103,8 +103,8 @@ public static class MerWriter
                 break;
         }
 
-        sb.Append($"#OFFSET {entry.AudioOffset / 1000}\n");
-        sb.Append($"#MOVIEOFFSET {entry.VideoOffset / 1000}\n");
+        sb.Append($"#OFFSET {(entry.AudioOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
+        sb.Append($"#MOVIEOFFSET {(entry.VideoOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
     }
 
     /// <summary>
