@@ -15,7 +15,6 @@ public enum TimestampRounding
 /// <summary>
 /// Contains information about an object's position in time.
 /// </summary>
-[Serializable]
 public class Timestamp : IEquatable<Timestamp>, IComparable
 {
     /// <summary>

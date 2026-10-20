@@ -1,14 +1,4 @@
-using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using SaturnData.Content.Cosmetics;
-using SaturnData.Content.Cosmetics.Items;
 using SaturnData.Content.Items;
-using SaturnData.Content.Localization;
-using SaturnData.Content.Music;
-using SaturnData.Content.StageUp;
-using SaturnData.Utilities;
-using ConsoleColor = SaturnData.Content.Cosmetics.ConsoleColor;
 
 namespace SaturnData.Content.Serialization.SatContentV1;
 
@@ -25,7 +15,9 @@ public static class SatContentV1Reader
     /// <returns>If unsuccessful, <c>null</c>. If successful, an instance of a class that inherits from <see cref="ContentItem"/>, depending on the defined type.</returns>
     public static ContentItem? ToContentItem(string[] lines)
     {
-        // Determine type.
+        return null;
+        
+        /*// Determine type.
         ContentItem? contentItem = null;
         foreach (string line in lines)
         {
@@ -114,8 +106,8 @@ public static class SatContentV1Reader
 
                         if (values.Length == 2)
                         {
-                            navigator.Width = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
-                            navigator.Height = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
+                            //navigator.Width = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
+                            //navigator.Height = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
                         }
                     }
                     
@@ -125,8 +117,8 @@ public static class SatContentV1Reader
 
                         if (values.Length == 2)
                         {
-                            navigator.OffsetX = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
-                            navigator.OffsetY = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
+                            //navigator.OffsetX = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
+                            //navigator.OffsetY = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
                         }
                     }
                     
@@ -136,10 +128,10 @@ public static class SatContentV1Reader
 
                         if (values.Length == 4)
                         {
-                            navigator.FaceMarginTop = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
-                            navigator.FaceMarginBottom = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
-                            navigator.FaceMarginLeft = Convert.ToSingle(values[2], CultureInfo.InvariantCulture);
-                            navigator.FaceMarginRight = Convert.ToSingle(values[3], CultureInfo.InvariantCulture);
+                            //navigator.FaceMarginTop = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
+                            //navigator.FaceMarginBottom = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
+                            //navigator.FaceMarginLeft = Convert.ToSingle(values[2], CultureInfo.InvariantCulture);
+                            //navigator.FaceMarginRight = Convert.ToSingle(values[3], CultureInfo.InvariantCulture);
                         }
                     }
                     
@@ -190,7 +182,7 @@ public static class SatContentV1Reader
 
                 if (contentItem is SystemSound systemSound)
                 {
-                    if (SerializationHelpers.ContainsKey(line, "@ARTIST ",                    out value)) { systemSound.Artist = value; }
+                    if      (SerializationHelpers.ContainsKey(line, "@ARTIST ",                    out value)) { systemSound.Artist = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@LOGIN ",                     out value)) { systemSound.AudioLoginPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@LOGIN_CARD_SUCCESS ",        out value)) { systemSound.AudioLoginCardSuccessPath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@LOGIN_CARD_ERROR ",          out value)) { systemSound.AudioLoginCardErrorPath = value; }
@@ -486,6 +478,6 @@ public static class SatContentV1Reader
             }
         }
         
-        return contentItem;
+        return contentItem;*/
     }
 }

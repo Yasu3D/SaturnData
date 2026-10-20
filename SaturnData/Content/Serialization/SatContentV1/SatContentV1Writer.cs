@@ -1,14 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SaturnData.Content.Cosmetics;
-using SaturnData.Content.Cosmetics.Items;
 using SaturnData.Content.Items;
-using SaturnData.Content.Localization;
-using SaturnData.Content.Music;
-using SaturnData.Content.StageUp;
-using ConsoleColor = SaturnData.Content.Cosmetics.ConsoleColor;
 
 namespace SaturnData.Content.Serialization.SatContentV1;
 
@@ -16,7 +6,9 @@ public static class SatContentV1Writer
 {
     public static string ToString(ContentItem contentItem)
     {
-        StringBuilder sb = new();
+        return "";
+        
+        /*StringBuilder sb = new();
 
         sb.Append($"{"@SCT_VERSION",-16}1\n");
 
@@ -84,9 +76,9 @@ public static class SatContentV1Writer
         {
             sb.Append($"{"@ARTIST",-16}{navigator.Artist}\n");
             sb.Append($"{"@VOICE",-16}{navigator.Voice}\n");
-            sb.Append($"{"@SIZE",-16}{navigator.Width,-4} {navigator.Height,-4}\n");
-            sb.Append($"{"@OFFSET",-16}{navigator.OffsetX,-4} {navigator.OffsetY,-4}\n");
-            sb.Append($"{"@MARGIN",-16}{navigator.FaceMarginTop,-4} {navigator.FaceMarginBottom,-4} {navigator.FaceMarginLeft,-4} {navigator.FaceMarginRight,-4}\n");
+            //sb.Append($"{"@SIZE",-16}{navigator.Width,-4} {navigator.Height,-4}\n");
+            //sb.Append($"{"@OFFSET",-16}{navigator.OffsetX,-4} {navigator.OffsetY,-4}\n");
+            //sb.Append($"{"@MARGIN",-16}{navigator.FaceMarginTop,-4} {navigator.FaceMarginBottom,-4} {navigator.FaceMarginLeft,-4} {navigator.FaceMarginRight,-4}\n");
             sb.Append($"{"@BLINK_INTERVAL",-16}{navigator.BlinkAnimationInterval}\n");
             sb.Append($"{"@BLINK_DURATION",-16}{navigator.BlinkAnimationDuration}\n");
             sb.Append("@TEXTURES\n");
@@ -237,6 +229,6 @@ public static class SatContentV1Writer
             }
         }
 
-        return sb.ToString();
+        return sb.ToString();*/
     }
 }

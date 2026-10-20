@@ -1,13 +1,11 @@
-using System;
-using SaturnData.Content.Cosmetics.Items;
 using SaturnData.Content.Items;
+using SaturnData.Content.Items.Attributes;
 
 namespace SaturnData.Content.Cosmetics;
 
 /// <summary>
 /// A background to display behind the user profile.
 /// </summary>
-[Serializable]
 public class Plate : CosmeticItem
 {
     /// <summary>
@@ -28,15 +26,19 @@ public class Plate : CosmeticItem
     /// <summary>
     /// The creator of the <see cref="Plate"/> image.
     /// </summary>
+    [SctLineBreak]
+    [SctKey("ARTIST", 10)]
     public string Artist { get; set; } = "";
 
     /// <summary>
     /// The local filepath of the <see cref="Plate"/> image, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
+    [SctKey("IMAGE_PATH", 10)]
     public string ImagePath { get; set; } = "";
 
     /// <summary>
     /// The absolute filepath of the <see cref="Plate"/> image.
     /// </summary>
+    [SctIgnore]
     public string AbsoluteImagePath => AbsolutePath(ImagePath);
 }

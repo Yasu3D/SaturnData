@@ -14,7 +14,6 @@ public enum ErrorThreshold
 /// <summary>
 /// A set of three songs to play in stage-up mode.
 /// </summary>
-[Serializable]
 public class StageUpStage : ContentItem
 {
     /// <summary>

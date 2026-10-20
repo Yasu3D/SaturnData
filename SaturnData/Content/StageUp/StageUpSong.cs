@@ -1,4 +1,3 @@
-using System;
 using SaturnData.Notation.Core;
 
 namespace SaturnData.Content.StageUp;
@@ -6,7 +5,6 @@ namespace SaturnData.Content.StageUp;
 /// <summary>
 /// A song to play in stage-up mode.
 /// </summary>
-[Serializable]
 public class StageUpSong
 {
     /// <summary>

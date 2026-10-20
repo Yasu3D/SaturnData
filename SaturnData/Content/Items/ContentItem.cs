@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using SaturnData.Content.Items.Attributes;
 
 namespace SaturnData.Content.Items;
 
@@ -17,6 +18,7 @@ public abstract class ContentItem
     /// It's recommended to use a universally unique identifier (UUID) for the Id,
     /// but the value doesn't have to conform to any standard.
     /// </remarks>
+    [SctKey("ID", 4)]
     public string Id
     {
         get => id;
@@ -33,6 +35,7 @@ public abstract class ContentItem
     /// <summary>
     /// The name for a <see cref="ContentItem"/> to display to users.
     /// </summary>
+    [SctKey("NAME", 4)]
     public string Name
     {
         get => name;
