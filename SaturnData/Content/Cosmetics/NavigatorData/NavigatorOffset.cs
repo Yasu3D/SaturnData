@@ -35,31 +35,29 @@ public struct NavigatorOffset : ISctSerializable
     /// </remarks>
     public float Vertical;
 
-    public string Serialize()
+    public string Serialize(ContentFormatVersion formatVersion)
     {
+        if (formatVersion != ContentFormatVersion.SatContentV2) return "";
+        
         return $"{Horizontal.ToString(CultureInfo.InvariantCulture),-4} {Vertical.ToString(CultureInfo.InvariantCulture),-4}";
     }
 
-    public static NavigatorOffset Deserialize(string[] data)
+    public void Deserialize(string[] data, ContentFormatVersion formatVersion)
     {
-        if (data.Length != 1) return new NavigatorOffset();
+        if (formatVersion != ContentFormatVersion.SatContentV2) return;
+        if (data.Length != 1) return;
             
         string[] split = data[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (split.Length != 2) return new NavigatorOffset();
-
-        float horizontal = 0;
-        float vertical = 0;
+        if (split.Length != 2) return;
         
         try
         {
-            horizontal = Convert.ToSingle(split[0], CultureInfo.InvariantCulture);
-            vertical = Convert.ToSingle(split[1], CultureInfo.InvariantCulture);
+            Horizontal = Convert.ToSingle(split[0], CultureInfo.InvariantCulture);
+            Vertical = Convert.ToSingle(split[1], CultureInfo.InvariantCulture);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-
-        return new NavigatorOffset(horizontal, vertical);
     }
 }

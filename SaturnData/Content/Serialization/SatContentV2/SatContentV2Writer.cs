@@ -65,79 +65,77 @@ public static class SatContentV2Writer
 
     public static string ValueToString(object? value)
     {
-        if (value is bool b)
+        if (value is bool boolValue)
         {
-            return b ? "TRUE" : "FALSE";
+            return boolValue ? "TRUE" : "FALSE";
         }
 
-        if (value is int i)
+        if (value is int intVaue)
         {
-            return i.ToString(CultureInfo.InvariantCulture);
+            return intVaue.ToString(CultureInfo.InvariantCulture);
         }
 
-        if (value is uint u)
+        if (value is uint uintValue)
         {
-            return u.ToString("X8", CultureInfo.InvariantCulture);
+            return uintValue.ToString("X8", CultureInfo.InvariantCulture);
         }
 
-        if (value is float f)
+        if (value is float floatValue)
         {
-            return f.ToString("F6", CultureInfo.InvariantCulture);
+            return floatValue.ToString("F6", CultureInfo.InvariantCulture);
         }
 
-        if (value is string s)
+        if (value is string stringValue)
         {
-            return s;
+            return stringValue;
         }
 
-        if (value is Enum e)
+        if (value is Enum enumValue)
         {
-            return e.ToString();
+            return enumValue.ToString();
         }
 
-        if (value is List<string> list)
+        if (value is List<string> listValue)
         {
-            if (list.Count == 0) return "";
+            if (listValue.Count == 0) return "";
             
             StringBuilder sb = new();
             sb.AppendLine();
             
-            for (int index = 0; index < list.Count; index++)
+            for (int i = 0; i < listValue.Count; i++)
             {
-                string item = list[index];
-
-                if (index < list.Count - 1)
+                if (i < listValue.Count - 1)
                 {
-                    sb.AppendLine($"{ContentSerializationHelpers.Indent}{item}");
+                    sb.AppendLine(listValue[i].Indent());
                 }
                 else
                 {
-                    sb.Append($"    {item}");
+                    sb.Append(listValue[i].Indent());
                 }
             }
 
             return sb.ToString();
         }
 
-        if (value is Dictionary<string, string> dictionary)
+        if (value is Dictionary<string, string> dictionaryValue)
         {
-            if (dictionary.Count == 0) return "";
+            if (dictionaryValue.Count == 0) return "";
             
             StringBuilder sb = new();
             sb.AppendLine();
 
-            int maxKeyLength = dictionary.Count == 0 ? 0 : dictionary.Keys.Max(x => x.Length);
+            int maxKeyLength = dictionaryValue.Count == 0 ? 0 : dictionaryValue.Keys.Max(x => x.Length);
             
             int count = 0;
-            foreach (KeyValuePair<string, string> pair in dictionary)
+            foreach (KeyValuePair<string, string> pair in dictionaryValue)
             {
-                if (count < dictionary.Count - 1)
+                if (count < dictionaryValue.Count - 1)
                 {
-                    sb.AppendLine($"{ContentSerializationHelpers.Indent}{pair.Key.PadRight(maxKeyLength)}  {pair.Value}");
+                    sb.AppendLine($"{pair.Key.PadRight(maxKeyLength)}  {pair.Value}".Indent());
                 }
                 else
                 {
-                    sb.Append($"{ContentSerializationHelpers.Indent}{pair.Key.PadRight(maxKeyLength)}  {pair.Value}");
+                    sb.Append($"{pair.Key.PadRight(maxKeyLength)}  {pair.Value}".Indent());
                 }
 
                 count++;
@@ -148,7 +146,7 @@ public static class SatContentV2Writer
         
         if (value is ISctSerializable sctSerializable)
         {
-            return sctSerializable.Serialize();
+            return sctSerializable.Serialize(ContentFormatVersion.SatContentV2);
         }
         
         return "";

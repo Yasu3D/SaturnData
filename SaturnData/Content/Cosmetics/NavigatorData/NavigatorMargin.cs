@@ -41,35 +41,31 @@ public struct NavigatorMargin : ISctSerializable
         Bottom = bottom;
     }
 
-    public string Serialize()
+    public string Serialize(ContentFormatVersion formatVersion)
     {
+        if (formatVersion != ContentFormatVersion.SatContentV2) return "";
+        
         return $"{Left.ToString(CultureInfo.InvariantCulture),-4} {Top.ToString(CultureInfo.InvariantCulture),-4} {Right.ToString(CultureInfo.InvariantCulture),-4} {Bottom.ToString(CultureInfo.InvariantCulture),-4}";
     }
 
-    public static NavigatorMargin Deserialize(string[] data)
+    public void Deserialize(string[] data, ContentFormatVersion formatVersion)
     {
-        if (data.Length != 1) return new();
+        if (formatVersion != ContentFormatVersion.SatContentV2) return;
+        if (data.Length != 1) return;
         
         string[] split = data[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (split.Length != 4) return new();
-
-        float left = 0;
-        float top = 0;
-        float right = 0;
-        float bottom = 0;
+        if (split.Length != 4) return;
         
         try
         {
-            left = Convert.ToSingle(split[0], CultureInfo.InvariantCulture);
-            top = Convert.ToSingle(split[1], CultureInfo.InvariantCulture);
-            right = Convert.ToSingle(split[2], CultureInfo.InvariantCulture);
-            bottom = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
+            Left = Convert.ToSingle(split[0], CultureInfo.InvariantCulture);
+            Top = Convert.ToSingle(split[1], CultureInfo.InvariantCulture);
+            Right = Convert.ToSingle(split[2], CultureInfo.InvariantCulture);
+            Bottom = Convert.ToSingle(split[3], CultureInfo.InvariantCulture);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-
-        return new(left, top, right, bottom);
     }
 }

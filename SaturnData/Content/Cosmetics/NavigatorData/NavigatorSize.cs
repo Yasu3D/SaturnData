@@ -27,31 +27,29 @@ public struct NavigatorSize : ISctSerializable
     /// </summary>
     public float Height;
 
-    public string Serialize()
+    public string Serialize(ContentFormatVersion formatVersion)
     {
+        if (formatVersion != ContentFormatVersion.SatContentV2) return "";
+        
         return $"{Width.ToString(CultureInfo.InvariantCulture),-4} {Height.ToString(CultureInfo.InvariantCulture),-4}";
     }
 
-    public static NavigatorSize Deserialize(string[] data)
+    public void Deserialize(string[] data, ContentFormatVersion formatVersion)
     {
-        if (data.Length != 1) return new NavigatorSize();
+        if (formatVersion != ContentFormatVersion.SatContentV2) return;
+        if (data.Length != 1) return;
             
         string[] split = data[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (split.Length != 2) return new NavigatorSize();
-
-        float width = 0;
-        float height = 0;
+        if (split.Length != 2) return;
         
         try
         {
-            width = Convert.ToSingle(split[0], CultureInfo.InvariantCulture);
-            height = Convert.ToSingle(split[1], CultureInfo.InvariantCulture);
+            Width = Convert.ToSingle(split[0], CultureInfo.InvariantCulture);
+            Height = Convert.ToSingle(split[1], CultureInfo.InvariantCulture);
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
-
-        return new NavigatorSize(width, height);
     }
 }

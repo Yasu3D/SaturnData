@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 using SaturnData.Content.Serialization;
 
 namespace SaturnData.Content.Cosmetics.NavigatorData;
@@ -7,14 +11,136 @@ public class NavigatorWriting : ISctSerializable
 {
     public Dictionary<string, NavigatorLanguage> Languages { get; set; } = [];
     
-    public string Serialize()
+    public string Serialize(ContentFormatVersion formatVersion)
     {
-        return "";
+        if (formatVersion != ContentFormatVersion.SatContentV2) return "";
+        
+        StringBuilder sb = new();
+
+        sb.AppendLine();
+        
+        foreach (KeyValuePair<string, NavigatorLanguage> language in Languages)
+        {
+            sb.AppendLine($"{language.Key.Indent()}");
+
+            foreach (KeyValuePair<string, NavigatorDialogue> dialogue in language.Value.Dialogues)
+            {
+                sb.AppendLine($"{dialogue.Key.Indent(2)}");
+                
+                foreach (NavigatorLine line in dialogue.Value.Lines)
+                {
+                    string message = $"\"{line.Message.Escape()}\"";
+                    string audio = $"\"{line.AudioPath.Escape()}\"";
+                    string duration = line.Duration.ToString("0.0", CultureInfo.InvariantCulture);
+                    string skip = line.ShowSkipButton ? "TRUE " : "FALSE";
+                    string expression = line.Expression.ToString();
+                    
+                    sb.AppendLine($"{message} {audio} {duration} {skip} {expression}".Indent(3));
+                }
+            }
+        }
+
+        return sb.ToString();
     }
 
-    public static NavigatorWriting Deserialize(string[] data)
+    public void Deserialize(string[] data, ContentFormatVersion formatVersion)
     {
-        return null;
+        if (formatVersion != ContentFormatVersion.SatContentV2) return;
+        
+        int languageIndent = -1;
+        int dialogueIndent = -1;
+        int lineIndent = -1;
+        
+        NavigatorLanguage? currentLanguage = null;
+        NavigatorDialogue? currentDialogue = null;
+
+        foreach (string line in data)
+        {
+            if (string.IsNullOrWhiteSpace(line)) continue;
+            if (line.StartsWith('#')) continue;
+            
+            int indent = line.GetSpacesAtStart();
+            
+            if (languageIndent == -1)
+            {
+                languageIndent = indent;
+            }
+            else if (dialogueIndent == -1 && indent > languageIndent)
+            {
+                dialogueIndent = indent;
+            }
+            else if (lineIndent == -1 && indent > dialogueIndent)
+            {
+                lineIndent = indent;
+            }
+
+            // Language
+            if (indent <= languageIndent)
+            {
+                string key = line.Trim();
+                
+                Languages.TryGetValue(key, out currentLanguage);
+
+                if (currentLanguage == null)
+                {
+                    currentLanguage = new();
+                    Languages[key] = currentLanguage;
+                }
+                
+                continue;
+            }
+
+            // Dialogue
+            if (indent <= dialogueIndent)
+            {
+                if (currentLanguage == null) continue;
+                string key = line.Trim();
+
+                currentLanguage.Dialogues.TryGetValue(key, out currentDialogue);
+                
+                if (currentDialogue == null)
+                {
+                    currentDialogue = new();
+                    currentLanguage.Dialogues[key] = currentDialogue;
+                }
+                
+                continue;
+            }
+            
+            // Line
+            if (indent <= lineIndent)
+            {
+                if (currentDialogue == null) continue;
+                
+                Match match = NavigatorLineRegex.Match(line);
+
+                if (!match.Success) continue;
+
+                try
+                {
+                    string message = match.Groups[1].Value.Unescape();
+                    string audioPath = match.Groups[2].Value.Unescape();
+                    float duration = Convert.ToSingle(match.Groups[3].Value, CultureInfo.InvariantCulture);
+                    bool showSkipButton = match.Groups[4].Value == "TRUE";
+                    NavigatorExpression expression = Enum.Parse<NavigatorExpression>(match.Groups[5].Value);
+
+                    NavigatorLine navigatorLine = new()
+                    {
+                        Message = message,
+                        AudioPath = audioPath,
+                        Duration = duration,
+                        ShowSkipButton = showSkipButton,
+                        Expression = expression,
+                    };
+
+                    currentDialogue.Lines.Add(navigatorLine);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+        }
     }
     
     /// <summary>
@@ -59,4 +185,6 @@ public class NavigatorWriting : ISctSerializable
 
         
     }
+    
+    private static readonly Regex NavigatorLineRegex = new(@"""(.*)""\s+""(.*)""\s+([0-9.]+)\s+(TRUE|FALSE)\s+([a-zA-Z]+)");
 }

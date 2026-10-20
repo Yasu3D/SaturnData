@@ -123,7 +123,8 @@ public static class SatContentV2Reader
                     
                     foreach (string subLine in subData)
                     {
-                        // TODO
+                        if (string.IsNullOrWhiteSpace(subLine)) continue;
+                        list.Add(subLine.TrimStart());
                     }
                 }
 
@@ -134,9 +135,7 @@ public static class SatContentV2Reader
                     
                     foreach (string subLine in subData)
                     {
-                        // TODO: filter
-                        
-                        Match subMatch = DictionaryKeyValueRegex.Match(subLine); // TODO: filtering
+                        Match subMatch = DictionaryKeyValueRegex.Match(subLine);
                         if (!subMatch.Success) continue;
                         
                         string subKey = subMatch.Groups[1].Value;
@@ -146,14 +145,13 @@ public static class SatContentV2Reader
                     }
                 }
                 
-                object? a = property.GetValue(contentItem);
-                if (a is ISctSerializable sctSerializable)
+                object? unknownProperty = property.GetValue(contentItem);
+                if (unknownProperty is ISctSerializable sctSerializable)
                 {
-                    MethodInfo? methodInfo = property.PropertyType.GetMethod("Deserialize");
-                    if (methodInfo == null) continue;
+                    MethodInfo? deserializeMethod = property.PropertyType.GetMethod("Deserialize");
+                    if (deserializeMethod == null) continue;
                     
-                    object? convertedValue = methodInfo.Invoke(sctSerializable, [ subData.ToArray() ]);
-                    property.SetValue(contentItem, convertedValue);
+                    deserializeMethod.Invoke(sctSerializable, [ subData.ToArray(), ContentFormatVersion.SatContentV2 ]);
                 }
             }
             catch (Exception ex)
@@ -170,6 +168,6 @@ public static class SatContentV2Reader
         return contentItem;
     }
     
-    public static readonly Regex SctKeyValueRegex = new(@"^@([A-Z_]+)(?:\s+(.*))?");
-    public static readonly Regex DictionaryKeyValueRegex = new(@"^\s*-?\s*([a-z_0-9]+)(?:\s+(.*))?");
+    private static readonly Regex SctKeyValueRegex = new(@"^@([A-Z_]+)(?:\s+(.*))?");
+    private static readonly Regex DictionaryKeyValueRegex = new(@"^\s*-?\s*([a-z_0-9]+)(?:\s+(.*))?");
 }

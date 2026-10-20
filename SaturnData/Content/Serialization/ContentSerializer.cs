@@ -17,6 +17,11 @@ public enum ContentFormatVersion
     /// First Saturn Content format. See <see href="https://saturn.yasu3d.art/docs/#/satcontent_format_1">Saturn Docs</see>.
     /// </summary>
     SatContentV1 = 0,
+    
+    /// <summary>
+    /// Second Saturn Content format. See <see href="https://saturn.yasu3d.art/docs/#/satcontent_format_2">Saturn Docs</see>.
+    /// </summary>
+    SatContentV2 = 1,
 }
 
 public static class ContentSerializer
