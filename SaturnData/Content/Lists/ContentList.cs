@@ -43,7 +43,7 @@ public class ContentList<T> where T : ContentItem, new()
                 {
                     try
                     {
-                        T? item = Deserialize(file);
+                        T? item = ContentSerializer.ToContentItem<T>(file);
                         if (item == null) continue;
                         
                         item.AbsoluteSourcePath = file;
@@ -61,19 +61,6 @@ public class ContentList<T> where T : ContentItem, new()
         {
             Console.WriteLine(ex);
         }
-    }
-
-    /// <summary>
-    /// Deserializes a file.
-    /// </summary>
-    /// <param name="file">The absolute path to the file to deserialize.</param>
-    /// <returns><c>T</c> if successful, <c>null</c> unsuccessful.</returns>
-    protected virtual T? Deserialize(string file)
-    {
-        if (!file.EndsWith(SaturnFileExtensionList.SaturnContentFile)) return null;
-        if (ContentSerializer.ToContentItem(file) is T item) return item;
-        
-        return null;
     }
     
     /// <summary>

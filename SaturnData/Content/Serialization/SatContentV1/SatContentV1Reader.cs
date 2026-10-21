@@ -1,4 +1,14 @@
+using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using SaturnData.Content.Cosmetics;
+using SaturnData.Content.Cosmetics.NavigatorData;
 using SaturnData.Content.Items;
+using SaturnData.Content.Localization;
+using SaturnData.Content.Music;
+using SaturnData.Content.StageUp;
+using SaturnData.Utilities;
+using ConsoleColor = SaturnData.Content.Cosmetics.ConsoleColor;
 
 namespace SaturnData.Content.Serialization.SatContentV1;
 
@@ -15,9 +25,7 @@ public static class SatContentV1Reader
     /// <returns>If unsuccessful, <c>null</c>. If successful, an instance of a class that inherits from <see cref="ContentItem"/>, depending on the defined type.</returns>
     public static ContentItem? ToContentItem(string[] lines)
     {
-        return null;
-        
-        /*// Determine type.
+        // Determine type.
         ContentItem? contentItem = null;
         foreach (string line in lines)
         {
@@ -106,8 +114,8 @@ public static class SatContentV1Reader
 
                         if (values.Length == 2)
                         {
-                            //navigator.Width = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
-                            //navigator.Height = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
+                            navigator.Size.Width = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
+                            navigator.Size.Height = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
                         }
                     }
                     
@@ -117,8 +125,8 @@ public static class SatContentV1Reader
 
                         if (values.Length == 2)
                         {
-                            //navigator.OffsetX = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
-                            //navigator.OffsetY = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
+                            navigator.Offset.Horizontal = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
+                            navigator.Offset.Vertical = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
                         }
                     }
                     
@@ -128,10 +136,10 @@ public static class SatContentV1Reader
 
                         if (values.Length == 4)
                         {
-                            //navigator.FaceMarginTop = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
-                            //navigator.FaceMarginBottom = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
-                            //navigator.FaceMarginLeft = Convert.ToSingle(values[2], CultureInfo.InvariantCulture);
-                            //navigator.FaceMarginRight = Convert.ToSingle(values[3], CultureInfo.InvariantCulture);
+                            navigator.FaceMargin.Top = Convert.ToSingle(values[0], CultureInfo.InvariantCulture);
+                            navigator.FaceMargin.Bottom = Convert.ToSingle(values[1], CultureInfo.InvariantCulture);
+                            navigator.FaceMargin.Left = Convert.ToSingle(values[2], CultureInfo.InvariantCulture);
+                            navigator.FaceMargin.Right = Convert.ToSingle(values[3], CultureInfo.InvariantCulture);
                         }
                     }
                     
@@ -273,9 +281,9 @@ public static class SatContentV1Reader
             bool readingTextures = false;
             bool readingDialogues = false;
 
-            NavigatorDialogueLanguage? currentLanguage = null;
-            NavigatorDialogueVariantCollection? currentDialogue = null;
-            NavigatorDialogue? currentVariant = null;
+            NavigatorLanguage? currentLanguage = null;
+            NavigatorDialogue? currentDialogue = null;
+            NavigatorLine? currentLine = null;
             
             for (int i = 0; i < lines.Length; i++)
             {
@@ -323,9 +331,9 @@ public static class SatContentV1Reader
                         
                         currentLanguage = new();
                         currentDialogue = null;
-                        currentVariant = null;
+                        currentLine = null;
                         
-                        navigator1.DialogueLanguages[localeKey] = currentLanguage;
+                        navigator1.Writing.Languages[localeKey] = currentLanguage;
                         continue;
                     }
                     
@@ -336,7 +344,7 @@ public static class SatContentV1Reader
                         string dialogueKey = dialogueMatch.Groups[1].Value;
 
                         currentDialogue = new();
-                        currentVariant = null;
+                        currentLine = null;
 
                         if (currentLanguage != null)
                         {
@@ -356,18 +364,18 @@ public static class SatContentV1Reader
 
                     if (key == "message")
                     {
-                        currentVariant = new() { Message = value, };
-                        currentDialogue.Variants.Add(currentVariant);
+                        currentLine = new() { Message = value, };
+                        currentDialogue.Lines.Add(currentLine);
                     }
-                    else if (currentVariant != null && key == "audio_path")
+                    else if (currentLine != null && key == "audio_path")
                     {
-                        currentVariant.AudioPath = value;
+                        currentLine.AudioPath = value;
                     }
-                    else if (currentVariant != null && key == "duration")
+                    else if (currentLine != null && key == "duration")
                     {
                         try
                         {
-                            currentVariant.Duration = Convert.ToSingle(value, CultureInfo.InvariantCulture);
+                            currentLine.Duration = Convert.ToSingle(value, CultureInfo.InvariantCulture);
                         }
                         catch (Exception ex)
                         {
@@ -375,13 +383,13 @@ public static class SatContentV1Reader
                             Console.WriteLine(ex);
                         }
                     }
-                    else if (currentVariant != null && key == "show_skip")
+                    else if (currentLine != null && key == "show_skip")
                     {
-                        currentVariant.ShowSkipButton = value == "TRUE";
+                        currentLine.ShowSkipButton = value == "TRUE";
                     }
-                    else if (currentVariant != null && key == "expression")
+                    else if (currentLine != null && key == "expression")
                     {
-                        currentVariant.Expression = value switch
+                        currentLine.Expression = value switch
                         {
                             "Neutral" => NavigatorExpression.Neutral,
                             "Amazed" => NavigatorExpression.Amazed,
@@ -478,6 +486,6 @@ public static class SatContentV1Reader
             }
         }
         
-        return contentItem;*/
+        return contentItem;
     }
 }

@@ -7,7 +7,7 @@ namespace SaturnData.Content.Cosmetics.NavigatorData;
 /// <summary>
 /// Describes the base size of a navigator.
 /// </summary>
-public struct NavigatorSize : ISctSerializable
+public class NavigatorSize : ISctSerializable
 {
     /// <param name="width">The width of the in-game UI element in pixels.</param>
     /// <param name="height">The height of the in-game UI element in pixels.</param>

@@ -7,7 +7,7 @@ namespace SaturnData.Content.Cosmetics.NavigatorData;
 /// <summary>
 /// Describes the distance from the edges of the base UI element, to the edges of the face UI element.
 /// </summary>
-public struct NavigatorMargin : ISctSerializable
+public class NavigatorMargin : ISctSerializable
 {
     /// <summary>
     /// The distance from the left edge of the main UI element to the left edge of the face UI element.

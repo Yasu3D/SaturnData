@@ -33,17 +33,22 @@ public static class ContentSerializer
     /// <remarks>
     /// This overload doesn't write any metadata. Certain format specs may not support this.
     /// </remarks>
-    public static string ToString(ContentItem contentItem)
+    public static string ToString(ContentItem contentItem, ContentFormatVersion formatVersion = ContentFormatVersion.SatContentV2)
     {
-        return SatContentV1Writer.ToString(contentItem);
+        return formatVersion switch
+        {
+            ContentFormatVersion.SatContentV1 => SatContentV1Writer.ToString(contentItem),
+            ContentFormatVersion.SatContentV2 => SatContentV2Writer.ToString(contentItem),
+            _ => "",
+        };
     }
 
     /// <summary>
     /// Writes a <see cref="ContentItem"/> to a file.
     /// </summary>
-    public static void ToFile(string path, ContentItem contentItem)
+    public static void ToFile(string path, ContentItem contentItem, ContentFormatVersion formatVersion = ContentFormatVersion.SatContentV2)
     {
-        string data = ToString(contentItem);
+        string data = ToString(contentItem, formatVersion);
         File.WriteAllText(path, data);
     }
     
@@ -51,12 +56,13 @@ public static class ContentSerializer
     /// Reads a file and converts it into a <see cref="ContentItem"/>.
     /// </summary>
     /// <param name="path">The file to open.</param>
-    public static ContentItem? ToContentItem(string path)
+    /// <typeparam name="T">The type of content item to try to read.</typeparam>
+    public static T? ToContentItem<T>(string path) where T : ContentItem, new()
     {
         try
         {
             string[] lines = File.ReadAllLines(path);
-            return ToContentItem(lines);
+            return ToContentItem<T>(lines);
         }
         catch (Exception ex)
         {
@@ -71,20 +77,20 @@ public static class ContentSerializer
     /// Reads content data and converts it into a <see cref="ContentItem"/>.
     /// </summary>
     /// <param name="lines">Content file data separated into individual lines.</param>
-    /// <returns></returns>
-    public static ContentItem? ToContentItem(string[] lines)
+    /// <typeparam name="T">The type of content item to try to read.</typeparam>
+    public static T? ToContentItem<T>(string[] lines) where T : ContentItem, new()
     {
         try
         {
-            ContentFormatVersion contentFormatVersion = DetectFormatVersion(lines);
-            ContentItem? contentItem = contentFormatVersion switch
+            ContentFormatVersion formatVersion = DetectFormatVersion(lines);
+
+            return formatVersion switch
             {
-                ContentFormatVersion.SatContentV1 => SatContentV1Reader.ToContentItem(lines),
                 ContentFormatVersion.Unknown => null,
-                _ => throw new(),
+                ContentFormatVersion.SatContentV1 => SatContentV1Reader.ToContentItem(lines) as T,
+                ContentFormatVersion.SatContentV2 => SatContentV2Reader.ToContentItem<T>(lines),
+                _ => null,
             };
-            
-            return contentItem;
         }
         catch (Exception ex)
         {
@@ -127,6 +133,7 @@ public static class ContentSerializer
                 version = value switch
                 {
                     "1" => ContentFormatVersion.SatContentV1,
+                    "2" => ContentFormatVersion.SatContentV2,
                     _ => ContentFormatVersion.Unknown,
                 };
                 break;
@@ -134,5 +141,40 @@ public static class ContentSerializer
         }
         
         return version;
+    }
+
+    public static string DetectType(string path)
+    {
+        bool isSatContent = path.EndsWith(".sct", StringComparison.OrdinalIgnoreCase);
+        bool isTxt = path.EndsWith(".txt", StringComparison.OrdinalIgnoreCase);
+
+        if (!isSatContent && !isTxt)
+        {
+            return "UNKNOWN";
+        }
+        
+        try
+        {
+            string[] lines = File.ReadAllLines(path);
+            return DetectType(lines);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return "UNKNOWN";
+        }
+    }
+
+    public static string DetectType(string[] lines)
+    {
+        foreach (string line in lines)
+        {
+            if (SerializationHelpers.ContainsKey(line, "@TYPE ", out string value))
+            {
+                return value;
+            }
+        }
+        
+        return "UNKNOWN";
     }
 }

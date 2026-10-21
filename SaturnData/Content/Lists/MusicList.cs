@@ -343,14 +343,13 @@ public class MusicList
                 try
                 {
                     string folderDataPath = Path.Combine(grouping.Key, $"folder{SaturnFileExtensionList.SaturnContentFile}");
-                    Folder folder;
+                    Folder? folder;
 
                     try
                     {
-                        ContentItem? contentItem = ContentSerializer.ToContentItem(folderDataPath);
-                        if (contentItem is Folder f)
+                        folder = ContentSerializer.ToContentItem<Folder>(folderDataPath);
+                        if (folder != null)
                         {
-                            folder = f;
                             folder.AbsoluteSourcePath = folderDataPath;
                         }
                         else

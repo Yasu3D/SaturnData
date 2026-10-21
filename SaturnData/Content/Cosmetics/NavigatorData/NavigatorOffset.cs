@@ -7,7 +7,7 @@ namespace SaturnData.Content.Cosmetics.NavigatorData;
 /// <summary>
 /// Describes the position offset of a navigator.
 /// </summary>
-public struct NavigatorOffset : ISctSerializable
+public class NavigatorOffset : ISctSerializable
 {
     /// <param name="horizontal">The horizontal offset in pixels.</param>
     /// <param name="vertical">The vertical offset in pixels.</param>

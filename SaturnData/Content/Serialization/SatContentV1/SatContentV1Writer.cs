@@ -1,4 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using SaturnData.Content.Cosmetics;
+using SaturnData.Content.Cosmetics.NavigatorData;
 using SaturnData.Content.Items;
+using SaturnData.Content.Localization;
+using SaturnData.Content.Music;
+using SaturnData.Content.StageUp;
+using ConsoleColor = SaturnData.Content.Cosmetics.ConsoleColor;
 
 namespace SaturnData.Content.Serialization.SatContentV1;
 
@@ -6,9 +16,7 @@ public static class SatContentV1Writer
 {
     public static string ToString(ContentItem contentItem)
     {
-        return "";
-        
-        /*StringBuilder sb = new();
+        StringBuilder sb = new();
 
         sb.Append($"{"@SCT_VERSION",-16}1\n");
 
@@ -76,9 +84,9 @@ public static class SatContentV1Writer
         {
             sb.Append($"{"@ARTIST",-16}{navigator.Artist}\n");
             sb.Append($"{"@VOICE",-16}{navigator.Voice}\n");
-            //sb.Append($"{"@SIZE",-16}{navigator.Width,-4} {navigator.Height,-4}\n");
-            //sb.Append($"{"@OFFSET",-16}{navigator.OffsetX,-4} {navigator.OffsetY,-4}\n");
-            //sb.Append($"{"@MARGIN",-16}{navigator.FaceMarginTop,-4} {navigator.FaceMarginBottom,-4} {navigator.FaceMarginLeft,-4} {navigator.FaceMarginRight,-4}\n");
+            sb.Append($"{"@SIZE",-16}{navigator.Size.Width,-4} {navigator.Size.Height,-4}\n");
+            sb.Append($"{"@OFFSET",-16}{navigator.Offset.Horizontal,-4} {navigator.Offset.Vertical,-4}\n");
+            sb.Append($"{"@MARGIN",-16}{navigator.FaceMargin.Top,-4} {navigator.FaceMargin.Bottom,-4} {navigator.FaceMargin.Left,-4} {navigator.FaceMargin.Right,-4}\n");
             sb.Append($"{"@BLINK_INTERVAL",-16}{navigator.BlinkAnimationInterval}\n");
             sb.Append($"{"@BLINK_DURATION",-16}{navigator.BlinkAnimationDuration}\n");
             sb.Append("@TEXTURES\n");
@@ -90,21 +98,21 @@ public static class SatContentV1Writer
             sb.Append("\n");
 
             sb.Append("@DIALOGUES\n");
-            foreach (KeyValuePair<string, NavigatorDialogueLanguage> language in navigator.DialogueLanguages)
+            foreach (KeyValuePair<string, NavigatorLanguage> language in navigator.Writing.Languages)
             {
                 sb.Append($"    {language.Key}\n");
                 
-                foreach (KeyValuePair<string, NavigatorDialogueVariantCollection> dialogue in language.Value.Dialogues)
+                foreach (KeyValuePair<string, NavigatorDialogue> dialogue in language.Value.Dialogues)
                 {
                     sb.Append($"        {dialogue.Key}\n");
                     
-                    foreach (NavigatorDialogue variant in dialogue.Value.Variants)
+                    foreach (NavigatorLine line in dialogue.Value.Lines)
                     {
-                        sb.Append($"            {"message",-11}{variant.Message}\n");
-                        sb.Append($"            {"audio_path",-11}{variant.AudioPath}\n");
-                        sb.Append($"            {"duration",-11}{variant.Duration}\n");
-                        sb.Append($"            {"show_skip",-11}{(variant.ShowSkipButton ? "TRUE" : "FALSE")}\n");
-                        sb.Append($"            {"expression",-11}{variant.Expression}\n");
+                        sb.Append($"            {"message",-11}{line.Message}\n");
+                        sb.Append($"            {"audio_path",-11}{line.AudioPath}\n");
+                        sb.Append($"            {"duration",-11}{line.Duration}\n");
+                        sb.Append($"            {"show_skip",-11}{(line.ShowSkipButton ? "TRUE" : "FALSE")}\n");
+                        sb.Append($"            {"expression",-11}{line.Expression}\n");
                         sb.Append("\n");
                     }
                 }
@@ -229,6 +237,6 @@ public static class SatContentV1Writer
             }
         }
 
-        return sb.ToString();*/
+        return sb.ToString();
     }
 }
