@@ -112,6 +112,8 @@ public static class SatContentV2Reader
                         if (string.IsNullOrWhiteSpace(subLine)) continue;
                         list.Add(subLine.TrimStart());
                     }
+
+                    continue;
                 }
 
                 if (property.PropertyType == typeof(Dictionary<string, string>))
@@ -129,6 +131,8 @@ public static class SatContentV2Reader
 
                         dictionary[subKey] = subValue;
                     }
+
+                    continue;
                 }
                 
                 object? unknownProperty = property.GetValue(source);
@@ -138,6 +142,8 @@ public static class SatContentV2Reader
                     if (deserializeMethod == null) continue;
                     
                     deserializeMethod.Invoke(sctSerializable, [ subData.ToArray(), ContentFormatVersion.SatContentV2 ]);
+
+                    continue;
                 }
 
                 if (property.PropertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
@@ -152,9 +158,10 @@ public static class SatContentV2Reader
                     
                     object? dictionary = property.GetValue(source);
                     PropertyInfo? indexerProperty = property.PropertyType.GetProperty("Item");
+                    MethodInfo? tryGetValueMethod = property.PropertyType.GetMethod("TryGetValue");
                     MethodInfo? deserializeMethod = genericArguments[1].GetMethod("Deserialize");
                     
-                    if (dictionary == null || indexerProperty == null || deserializeMethod == null) continue;
+                    if (dictionary == null || indexerProperty == null || tryGetValueMethod == null || deserializeMethod == null) continue;
 
                     foreach (string subLine in subData)
                     {
@@ -164,11 +171,15 @@ public static class SatContentV2Reader
                         string subKey = subMatch.Groups[1].Value;
                         string subValue = subMatch.Groups.Count == 3 ? subMatch.Groups[2].Value : "";
 
-                        object? convertedValue = Activator.CreateInstance(genericArguments[1]);
+                        object?[] parameters = new object?[] { subKey, null };
+                        tryGetValueMethod.Invoke(dictionary, parameters);
+
+                        object? convertedValue = parameters[1] ?? Activator.CreateInstance(genericArguments[1]);
                         deserializeMethod.Invoke(convertedValue, [ new[] { subValue }, ContentFormatVersion.SatContentV2 ]);
-                        
                         indexerProperty.SetValue(dictionary, convertedValue, [ subKey ]);
                     }
+
+                    continue;
                 }
             }
             catch (Exception ex)
@@ -215,5 +226,5 @@ public static class SatContentV2Reader
     }
     
     private static readonly Regex SctKeyValueRegex = new(@"^@([A-Z_]+)(?:\s+(.*))?");
-    private static readonly Regex DictionaryKeyValueRegex = new(@"^\s*-?\s*([a-z_0-9]+)(?:\s+(.*))?");
+    private static readonly Regex DictionaryKeyValueRegex = new(@"^\s*-?\s*([A-Za-z_0-9.]+)(?:\s+(.*))?");
 }
