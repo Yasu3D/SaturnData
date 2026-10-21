@@ -68,4 +68,16 @@ public class ContentList<T> where T : ContentItem, new()
     /// </summary>
     /// <param name="id">The Id of the <see cref="ContentItem"/> to find.</param>
     public T? TryGetItem(string id) => Items.FirstOrDefault(x => x.Id == id);
+    
+    /// <summary>
+    /// Deserializes a file.
+    /// </summary>
+    /// <param name="file">The absolute path to the file to deserialize.</param>
+    /// <returns><c>T</c> if successful, <c>null</c> unsuccessful.</returns>
+    protected virtual T? Deserialize(string file)
+    {
+        if (!file.EndsWith(SaturnFileExtensionList.SaturnContentFile)) return null;
+
+        return ContentSerializer.ToContentItem<T>(file);
+    }
 }

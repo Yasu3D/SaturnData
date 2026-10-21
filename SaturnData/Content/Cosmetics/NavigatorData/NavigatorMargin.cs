@@ -9,6 +9,26 @@ namespace SaturnData.Content.Cosmetics.NavigatorData;
 /// </summary>
 public class NavigatorMargin : ISctSerializable
 {
+    /// <param name="left">The left edge margin in pixels.</param>
+    /// <param name="top">The top edge margin in pixels.</param>
+    /// <param name="right">The right edge margin in pixels.</param>
+    /// <param name="bottom">The bottom edge margin in pixels.</param>
+    public NavigatorMargin(float left, float top, float right, float bottom)
+    {
+        Left = left;
+        Top = top;
+        Right = right;
+        Bottom = bottom;
+    }
+
+    public NavigatorMargin()
+    {
+        Left = 0;
+        Top = 0;
+        Right = 0;
+        Bottom = 0;
+    }
+    
     /// <summary>
     /// The distance from the left edge of the main UI element to the left edge of the face UI element.
     /// </summary>
@@ -28,18 +48,6 @@ public class NavigatorMargin : ISctSerializable
     /// The distance from the bottom edge of the main UI element to the bottom edge of the face UI element.
     /// </summary>
     public float Bottom;
-    
-    /// <param name="left">The left edge margin in pixels.</param>
-    /// <param name="top">The top edge margin in pixels.</param>
-    /// <param name="right">The right edge margin in pixels.</param>
-    /// <param name="bottom">The bottom edge margin in pixels.</param>
-    public NavigatorMargin(float left, float top, float right, float bottom)
-    {
-        Left = left;
-        Top = top;
-        Right = right;
-        Bottom = bottom;
-    }
 
     public string Serialize(ContentFormatVersion formatVersion)
     {

@@ -13,27 +13,10 @@ public static class SatContentV2Reader
 {
     public static T ToContentItem<T>(string[] data) where T : ContentItem, new()
     {
-        PropertyInfo[] propertyList = typeof(T).GetProperties();
         T contentItem = new();
+        Dictionary<string, (object, PropertyInfo)> propertyAliases = [];
 
-        Dictionary<string, PropertyInfo> propertyAliases = [];
-        foreach (PropertyInfo property in propertyList)
-        {
-            Attribute[] attributes = property.GetCustomAttributes().ToArray();
-            SctKeyAttribute? sctKey = (SctKeyAttribute?)attributes.FirstOrDefault(x => x is SctKeyAttribute);
-
-            if (sctKey == null || sctKey.Aliases.Length == 0)
-            {
-                string aliasName = property.Name.PascalCaseToMacroCase();
-                propertyAliases[aliasName] = property;
-                continue;
-            }
-
-            foreach (string alias in sctKey.Aliases)
-            {
-                propertyAliases[alias] = property;
-            }
-        }
+        getPropertyAliases(contentItem);
 
         for (int i = 0; i < data.Length; i++)
         {
@@ -46,49 +29,52 @@ public static class SatContentV2Reader
             string key = match.Groups[1].Value;
             string value = match.Groups.Count == 3 ? match.Groups[2].Value : "";
             
-            if (!propertyAliases.TryGetValue(key, out PropertyInfo? property)) continue;
+            if (!propertyAliases.TryGetValue(key, out (object, PropertyInfo) propertyAlias)) continue;
 
             try
             {
+                object source = propertyAlias.Item1;
+                PropertyInfo property = propertyAlias.Item2;
+                
                 // Single Line Data
                 if (property.PropertyType == typeof(bool))
                 {
                     bool convertedValue = value == "TRUE";
-                    property.SetValue(contentItem, convertedValue);
+                    property.SetValue(source, convertedValue);
                     continue;
                 }
 
                 if (property.PropertyType == typeof(int))
                 {
                     int convertedValue = Convert.ToInt32(value, CultureInfo.InvariantCulture);
-                    property.SetValue(contentItem, convertedValue);
+                    property.SetValue(source, convertedValue);
                     continue;
                 }
 
                 if (property.PropertyType == typeof(uint))
                 {
                     uint convertedValue = Convert.ToUInt32(value, 16);
-                    property.SetValue(contentItem, convertedValue);
+                    property.SetValue(source, convertedValue);
                     continue;
                 }
 
                 if (property.PropertyType == typeof(float))
                 {
                     float convertedValue = Convert.ToSingle(value, CultureInfo.InvariantCulture);
-                    property.SetValue(contentItem, convertedValue);
+                    property.SetValue(source, convertedValue);
                     continue;
                 }
 
                 if (property.PropertyType == typeof(string))
                 {
-                    property.SetValue(contentItem, value);
+                    property.SetValue(source, value);
                     continue;
                 }
 
                 if (property.PropertyType.BaseType == typeof(Enum))
                 {
                     object convertedValue = Enum.Parse(property.PropertyType, value, false);
-                    property.SetValue(contentItem, convertedValue);
+                    property.SetValue(source, convertedValue);
                     continue;
                 }
                 
@@ -118,7 +104,7 @@ public static class SatContentV2Reader
 
                 if (property.PropertyType == typeof(List<string>))
                 {
-                    List<string>? list = (List<string>?)property.GetValue(contentItem);
+                    List<string>? list = (List<string>?)property.GetValue(source);
                     if (list == null) continue;
                     
                     foreach (string subLine in subData)
@@ -130,7 +116,7 @@ public static class SatContentV2Reader
 
                 if (property.PropertyType == typeof(Dictionary<string, string>))
                 {
-                    Dictionary<string, string>? dictionary = (Dictionary<string, string>?)property.GetValue(contentItem);
+                    Dictionary<string, string>? dictionary = (Dictionary<string, string>?)property.GetValue(source);
                     if (dictionary == null) continue;
                     
                     foreach (string subLine in subData)
@@ -145,7 +131,7 @@ public static class SatContentV2Reader
                     }
                 }
                 
-                object? unknownProperty = property.GetValue(contentItem);
+                object? unknownProperty = property.GetValue(source);
                 if (unknownProperty is ISctSerializable sctSerializable)
                 {
                     MethodInfo? deserializeMethod = property.PropertyType.GetMethod("Deserialize");
@@ -153,19 +139,79 @@ public static class SatContentV2Reader
                     
                     deserializeMethod.Invoke(sctSerializable, [ subData.ToArray(), ContentFormatVersion.SatContentV2 ]);
                 }
+
+                if (property.PropertyType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                {
+                    Type[] genericArguments = property.PropertyType.GetGenericArguments();
+                    if (genericArguments.Length != 2) continue;
+                    
+                    bool keyIsString = genericArguments[0] == typeof(string);
+                    bool valueIsISctSerializable = genericArguments[1].GetInterfaces().Contains(typeof(ISctSerializable));
+
+                    if (!keyIsString || !valueIsISctSerializable) continue;
+                    
+                    object? dictionary = property.GetValue(source);
+                    PropertyInfo? indexerProperty = property.PropertyType.GetProperty("Item");
+                    MethodInfo? deserializeMethod = genericArguments[1].GetMethod("Deserialize");
+                    
+                    if (dictionary == null || indexerProperty == null || deserializeMethod == null) continue;
+
+                    foreach (string subLine in subData)
+                    {
+                        Match subMatch = DictionaryKeyValueRegex.Match(subLine);
+                        if (!subMatch.Success) continue;
+
+                        string subKey = subMatch.Groups[1].Value;
+                        string subValue = subMatch.Groups.Count == 3 ? subMatch.Groups[2].Value : "";
+
+                        object? convertedValue = Activator.CreateInstance(genericArguments[1]);
+                        deserializeMethod.Invoke(convertedValue, [ new[] { subValue }, ContentFormatVersion.SatContentV2 ]);
+                        
+                        indexerProperty.SetValue(dictionary, convertedValue, [ subKey ]);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 // TODO: cache exceptions to report them back?
                 Console.WriteLine(ex);
             }
-
-            // List<string>
-            // Dictionary<string, string>
-
         }
 
         return contentItem;
+        
+        void getPropertyAliases(object source)
+        {
+            PropertyInfo[] propertyList = source.GetType().GetProperties();
+            
+            foreach (PropertyInfo property in propertyList)
+            {
+                Attribute[] attributes = property.GetCustomAttributes().ToArray();
+                bool writeProperties = attributes.Any(x => x is SctWriteProperties);
+
+                if (writeProperties)
+                {
+                    object? value = property.GetValue(source);
+                    if (value == null) continue;
+
+                    getPropertyAliases(value);
+                    continue;
+                }
+                
+                SctKeyAttribute? sctKey = (SctKeyAttribute?)attributes.FirstOrDefault(x => x is SctKeyAttribute);
+                if (sctKey == null || sctKey.Aliases.Length == 0)
+                {
+                    string aliasName = property.Name.PascalCaseToMacroCase();
+                    propertyAliases[aliasName] = (source, property);
+                    continue;
+                }
+
+                foreach (string alias in sctKey.Aliases)
+                {
+                    propertyAliases[alias] = (source, property);
+                }
+            }
+        }
     }
     
     private static readonly Regex SctKeyValueRegex = new(@"^@([A-Z_]+)(?:\s+(.*))?");

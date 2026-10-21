@@ -16,6 +16,12 @@ public class NavigatorOffset : ISctSerializable
         Horizontal = horizontal;
         Vertical = vertical;
     }
+
+    public NavigatorOffset()
+    {
+        Horizontal = 0;
+        Vertical = 0;
+    }
     
     /// <summary>
     /// The horizontal offset to apply to the in-game UI element.

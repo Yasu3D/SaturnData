@@ -16,6 +16,12 @@ public class NavigatorSize : ISctSerializable
         Width = width;
         Height = height;
     }
+
+    public NavigatorSize()
+    {
+        Width = 1024;
+        Height = 1024;
+    }
     
     /// <summary>
     /// The width of the in-game UI element in pixels.

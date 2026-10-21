@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -18,61 +19,78 @@ public static class SatContentV2Writer
         sb.AppendLine("@SCT_VERSION  2");
         sb.AppendLine($"@TYPE         {contentItem.GetType().Name}");
         sb.AppendLine();
+        
+        write(contentItem);
 
-        PropertyInfo[] propertyList = contentItem.GetType().GetProperties();
-        propertyList = propertyList
+        return sb.ToString();
+
+        void write(object? objectToWrite)
+        {
+            if (objectToWrite == null) return;
+            
+            PropertyInfo[] propertyList = objectToWrite.GetType().GetProperties();
+            propertyList = propertyList
             .OrderByDescending(x => x.DeclaringType == typeof(ContentItem))
             .ThenByDescending(x => x.DeclaringType == typeof(CosmeticItem))
             .ToArray();
-
-        foreach (PropertyInfo property in propertyList)
-        {
-            Attribute[] attributes = property.GetCustomAttributes().ToArray();
-
-            // Don't write ignored properties.
-            if (attributes.Any(x => x is SctIgnoreAttribute)) continue;
-
-            // Insert optional line break.
-            if (attributes.Any(x => x is SctLineBreakAttribute))
+            
+            foreach (PropertyInfo property in propertyList)
             {
-                sb.AppendLine();
-            }
+                Attribute[] attributes = property.GetCustomAttributes().ToArray();
 
-            // Insert optional comment.
-            SctCommentAttribute? sctComment = (SctCommentAttribute?)attributes.FirstOrDefault(x => x is SctCommentAttribute);
-            if (sctComment != null)
-            {
-                sb.AppendLine($"# {sctComment.Message}");
-            }
+                // Don't write ignored properties.
+                if (attributes.Any(x => x is SctIgnoreAttribute)) continue;
 
-            // Insert key and value.
-            SctKeyAttribute? sctKey = (SctKeyAttribute?)attributes.FirstOrDefault(x => x is SctKeyAttribute);
-            if (sctKey == null || sctKey.Aliases.Length == 0)
-            {
-                sctKey = new(property.Name.PascalCaseToMacroCase(), 30);
-            }
+                // Insert optional line break.
+                if (attributes.Any(x => x is SctLineBreakAttribute))
+                {
+                    sb.AppendLine();
+                }
 
-            sb.AppendLine($"@{sctKey.Aliases[0].PadRight(sctKey.Padding)}  {ValueToString(property, contentItem)}");
+                // Insert optional comment.
+                SctCommentAttribute? sctComment = (SctCommentAttribute?)attributes.FirstOrDefault(x => x is SctCommentAttribute);
+                if (sctComment != null)
+                {
+                    sb.AppendLine($"# {sctComment.Message}");
+                }
+
+                // Write data from properties of a property.
+                if (attributes.Any(x => x is SctWriteProperties))
+                {
+                    object? value = property.GetValue(objectToWrite);
+                    write(value);
+                    continue;
+                }
+                
+                // Insert key and value.
+                SctKeyAttribute? sctKey = (SctKeyAttribute?)attributes.FirstOrDefault(x => x is SctKeyAttribute);
+                if (sctKey == null || sctKey.Aliases.Length == 0)
+                {
+                    sctKey = new(property.Name.PascalCaseToMacroCase(), 30);
+                }
+
+                sb.AppendLine($"@{sctKey.Aliases[0].PadRight(sctKey.Padding)}  {ValueToString(property, objectToWrite)}");
+            }
         }
-
-        return sb.ToString();
     }
 
-    public static string ValueToString(PropertyInfo property, ContentItem contentItem)
+    public static string ValueToString(PropertyInfo property, object objectToWrite)
     {
-        return ValueToString(property.GetValue(contentItem));
+        return ValueToString(property.GetValue(objectToWrite));
     }
 
     public static string ValueToString(object? value)
     {
+        if (value == null) return "";
+        
         if (value is bool boolValue)
         {
             return boolValue ? "TRUE" : "FALSE";
         }
 
-        if (value is int intVaue)
+        if (value is int intValue)
         {
-            return intVaue.ToString(CultureInfo.InvariantCulture);
+            return intValue.ToString(CultureInfo.InvariantCulture);
         }
 
         if (value is uint uintValue)
@@ -147,6 +165,31 @@ public static class SatContentV2Writer
         if (value is ISctSerializable sctSerializable)
         {
             return sctSerializable.Serialize(ContentFormatVersion.SatContentV2);
+        }
+
+        Type type = value.GetType();
+        Type genericDefinition = type.GetGenericTypeDefinition();
+        Type[] genericArguments = type.GetGenericArguments();
+
+        bool isDictionary = genericDefinition == typeof(Dictionary<,>);
+        bool keyIsString = genericArguments.Length == 2 && genericArguments[0] == typeof(string);
+        bool valueIsISctSerializable = genericArguments.Length == 2 && genericArguments[1].GetInterfaces().Contains(typeof(ISctSerializable));
+        if (isDictionary && keyIsString && valueIsISctSerializable)
+        {
+            Dictionary<string, string> stringDictionary = new();
+            
+            foreach (object item in (IEnumerable)value)
+            {
+                if (item == null) continue;
+                Type itemType = item.GetType();
+
+                string dictKey = (string)itemType.GetProperty("Key")!.GetValue(item)!;
+                ISctSerializable dictValue = (ISctSerializable)itemType.GetProperty("Value")!.GetValue(item)!;
+
+                stringDictionary[dictKey] = dictValue.Serialize(ContentFormatVersion.SatContentV2);
+            }
+
+            return ValueToString(stringDictionary);
         }
         
         return "";
