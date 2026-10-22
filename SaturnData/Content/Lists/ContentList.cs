@@ -43,7 +43,7 @@ public class ContentList<T> where T : ContentItem, new()
                 {
                     try
                     {
-                        T? item = ContentSerializer.ToContentItem<T>(file);
+                        T? item = Deserialize(file);
                         if (item == null) continue;
                         
                         item.AbsoluteSourcePath = file;
