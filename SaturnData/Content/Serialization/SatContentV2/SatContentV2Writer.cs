@@ -168,29 +168,35 @@ public static class SatContentV2Writer
         }
 
         Type type = value.GetType();
-        Type genericDefinition = type.GetGenericTypeDefinition();
-        Type[] genericArguments = type.GetGenericArguments();
 
-        bool isDictionary = genericDefinition == typeof(Dictionary<,>);
-        bool keyIsString = genericArguments.Length == 2 && genericArguments[0] == typeof(string);
-        bool valueIsISctSerializable = genericArguments.Length == 2 && genericArguments[1].GetInterfaces().Contains(typeof(ISctSerializable));
-        if (isDictionary && keyIsString && valueIsISctSerializable)
+        if (type.IsGenericType)
         {
-            Dictionary<string, string> stringDictionary = new();
-            
-            foreach (object item in (IEnumerable)value)
+            Type genericDefinition = type.GetGenericTypeDefinition();
+            Type[] genericArguments = type.GetGenericArguments();
+
+            bool isDictionary = genericDefinition == typeof(Dictionary<,>);
+            bool keyIsString = genericArguments.Length == 2 && genericArguments[0] == typeof(string);
+            bool valueIsISctSerializable = genericArguments.Length == 2 && genericArguments[1].GetInterfaces().Contains(typeof(ISctSerializable));
+            if (isDictionary && keyIsString && valueIsISctSerializable)
             {
-                if (item == null) continue;
-                Type itemType = item.GetType();
+                Dictionary<string, string> stringDictionary = new();
 
-                string dictKey = (string)itemType.GetProperty("Key")!.GetValue(item)!;
-                ISctSerializable dictValue = (ISctSerializable)itemType.GetProperty("Value")!.GetValue(item)!;
+                foreach (object item in (IEnumerable)value)
+                {
+                    if (item == null) continue;
+                    Type itemType = item.GetType();
 
-                stringDictionary[dictKey] = dictValue.Serialize(ContentFormatVersion.SatContentV2);
+                    string dictKey = (string)itemType.GetProperty("Key")!.GetValue(item)!;
+                    ISctSerializable dictValue = (ISctSerializable)itemType.GetProperty("Value")!.GetValue(item)!;
+
+                    stringDictionary[dictKey] = dictValue.Serialize(ContentFormatVersion.SatContentV2);
+                }
+
+                return ValueToString(stringDictionary);
             }
-
-            return ValueToString(stringDictionary);
         }
+        
+        
         
         return "";
     }
