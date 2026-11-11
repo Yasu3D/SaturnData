@@ -53,6 +53,8 @@ public class HoldNote : Note, IPositionable, IPlayable, ICloneable
     
     public JudgementType JudgementType { get; set; }
 
+    public float GaugeBoostDelay { get; set; }
+    
     /// <summary>
     /// The individual points defining the shape and path a hold note takes.
     /// </summary>

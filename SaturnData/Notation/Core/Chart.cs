@@ -351,15 +351,11 @@ public class Chart
                         {
                             playableNotes.Add(note);
                         }
-                    }
 
-                    if (note is SlideClockwiseNote slideClockwiseNote)
-                    {
-                        slideClockwiseNote.BonusEffectDuration = GetBonusEffectDuration(slideClockwiseNote);
-                    }
-                    else if (note is SlideCounterclockwiseNote slideCounterclockwiseNote)
-                    {
-                        slideCounterclockwiseNote.BonusEffectDuration = GetBonusEffectDuration(slideCounterclockwiseNote);
+                        if (note is SlideClockwiseNote or SlideCounterclockwiseNote)
+                        {
+                            playable.GaugeBoostDelay = GetBonusEffectDuration(note);
+                        }
                     }
                 }
             }

@@ -41,6 +41,8 @@ public sealed class SnapBackwardNote : Note, IPositionable, IPlayable, ICloneabl
     
     public JudgementType JudgementType { get; set; }
     
+    public float GaugeBoostDelay { get; set; }
+    
     public object Clone()
     {
         SnapBackwardNote clone = new(new(Timestamp), Position, Size, BonusType, JudgementType)

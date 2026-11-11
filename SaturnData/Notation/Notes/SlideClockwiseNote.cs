@@ -41,8 +41,8 @@ public sealed class SlideClockwiseNote : Note, IPositionable, IPlayable, IClonea
     
     public JudgementType JudgementType { get; set; }
 
-    public float BonusEffectDuration { get; set; }
-
+    public float GaugeBoostDelay { get; set; }
+    
     public object Clone()
     {
         SlideClockwiseNote clone = new(new(Timestamp), Position, Size, BonusType, JudgementType)

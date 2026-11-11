@@ -41,6 +41,8 @@ public sealed class ChainNote : Note, IPositionable, IPlayable, ICloneable
     
     public JudgementType JudgementType { get; set; }
     
+    public float GaugeBoostDelay { get; set; }
+
     public object Clone()
     {
         ChainNote clone = new(new(Timestamp), Position, Size, BonusType, JudgementType)

@@ -41,6 +41,8 @@ public sealed class TouchNote : Note, IPositionable, IPlayable, ICloneable
     
     public JudgementType JudgementType { get; set; }
     
+    public float GaugeBoostDelay { get; set; }
+    
     public object Clone()
     {
         TouchNote clone = new(new(Timestamp), Position, Size, BonusType, JudgementType)

@@ -40,4 +40,9 @@ public interface IPlayable
     /// Determines if an IPlayable should be judged or not.
     /// </summary>
     public JudgementType JudgementType { get; set; }
+    
+    /// <summary>
+    /// The delay from Judgement to the bonus gauge boost being applied.
+    /// </summary>
+    public float GaugeBoostDelay { get; set; }
 }

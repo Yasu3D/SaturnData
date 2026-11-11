@@ -41,7 +41,7 @@ public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable, 
     
     public JudgementType JudgementType { get; set; } 
     
-    public float BonusEffectDuration { get; set; }
+    public float GaugeBoostDelay { get; set; }
     
     public object Clone()
     {
