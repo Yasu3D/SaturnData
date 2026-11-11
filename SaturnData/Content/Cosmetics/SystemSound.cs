@@ -205,6 +205,12 @@ public class SystemSound : CosmeticItem
     public string AudioMessageAlertPath { get; set; } = "";
     
     /// <summary>
+    /// The local filepath of the "windmill switch" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    [SctKey("WINDMILL_SWITCH", 25)]
+    public string AudioWindmillSwitchPath { get; set; } = "";
+    
+    /// <summary>
     /// The absolute filepath of the "login" audio file.
     /// </summary>
     [SctIgnore]
@@ -377,4 +383,10 @@ public class SystemSound : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteAudioMessageAlertPath => AbsolutePath(AudioMessageAlertPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "windmill switch" audio file.
+    /// </summary>
+    [SctIgnore]
+    public string AbsoluteAudioWindmillSwitchPath => AbsolutePath(AudioWindmillSwitchPath);
 }

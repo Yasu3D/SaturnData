@@ -383,10 +383,6 @@ public static class SatContentV1Reader
                             Console.WriteLine(ex);
                         }
                     }
-                    else if (currentLine != null && key == "show_skip")
-                    {
-                        currentLine.ShowSkipButton = value == "TRUE";
-                    }
                     else if (currentLine != null && key == "expression")
                     {
                         currentLine.Expression = value switch

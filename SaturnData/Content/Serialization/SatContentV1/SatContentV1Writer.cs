@@ -111,7 +111,6 @@ public static class SatContentV1Writer
                         sb.Append($"            {"message",-11}{line.Message}\n");
                         sb.Append($"            {"audio_path",-11}{line.AudioPath}\n");
                         sb.Append($"            {"duration",-11}{line.Duration}\n");
-                        sb.Append($"            {"show_skip",-11}{(line.ShowSkipButton ? "TRUE" : "FALSE")}\n");
                         sb.Append($"            {"expression",-11}{line.Expression}\n");
                         sb.Append("\n");
                     }

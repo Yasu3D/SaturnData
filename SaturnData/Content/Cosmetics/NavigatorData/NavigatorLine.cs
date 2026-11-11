@@ -24,11 +24,6 @@ public class NavigatorLine
     public float Duration { get; set; } = 5000;
     
     /// <summary>
-    /// Determines if a button to skip a textbox should pop up.
-    /// </summary>
-    public bool ShowSkipButton { get; set; } = false;
-    
-    /// <summary>
     /// Determines the expression the chosen navigator will show.
     /// </summary>
     public NavigatorExpression Expression { get; set; } = NavigatorExpression.Neutral;
@@ -46,7 +41,6 @@ public class NavigatorLine
             AudioPath = "",
             Duration = 10000,
             Expression = NavigatorExpression.Neutral,
-            ShowSkipButton = false,
         };
     }
 }

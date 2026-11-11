@@ -32,10 +32,9 @@ public class NavigatorWriting : ISctSerializable
                     string message = $"\"{line.Message.Escape()}\"";
                     string audio = $"\"{line.AudioPath.Escape()}\"";
                     string duration = line.Duration.ToString("0.0", CultureInfo.InvariantCulture);
-                    string skip = line.ShowSkipButton ? "TRUE " : "FALSE";
                     string expression = line.Expression.ToString();
                     
-                    sb.AppendLine($"{message} {audio} {duration} {skip} {expression}".Indent(3));
+                    sb.AppendLine($"{message} {audio} {duration} {expression}".Indent(3));
                 }
             }
         }
@@ -129,7 +128,6 @@ public class NavigatorWriting : ISctSerializable
                         Message = message,
                         AudioPath = audioPath,
                         Duration = duration,
-                        ShowSkipButton = showSkipButton,
                         Expression = expression,
                     };
 
