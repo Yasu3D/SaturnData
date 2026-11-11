@@ -352,6 +352,15 @@ public class Chart
                             playableNotes.Add(note);
                         }
                     }
+
+                    if (note is SlideClockwiseNote slideClockwiseNote)
+                    {
+                        slideClockwiseNote.BonusEffectDuration = GetBonusEffectDuration(slideClockwiseNote);
+                    }
+                    else if (note is SlideCounterclockwiseNote slideCounterclockwiseNote)
+                    {
+                        slideCounterclockwiseNote.BonusEffectDuration = GetBonusEffectDuration(slideCounterclockwiseNote);
+                    }
                 }
             }
             
@@ -873,5 +882,14 @@ public class Chart
                 }
             }
         }
+    }
+    
+    private float GetBonusEffectDuration(ITimeable timeable)
+    {
+        float tempo = LastTempoChange(timeable.Timestamp.Time)?.Tempo ?? 120;
+        
+        if (tempo <= 100) return 60000.0f / tempo;
+        if (tempo <= 175) return 120000.0f / tempo;
+        return 240000.0f / tempo;
     }
 }

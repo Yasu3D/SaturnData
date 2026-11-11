@@ -41,6 +41,8 @@ public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable, 
     
     public JudgementType JudgementType { get; set; } 
     
+    public float BonusEffectDuration { get; set; }
+    
     public object Clone()
     {
         SlideCounterclockwiseNote clone = new(new(Timestamp), Position, Size, BonusType, JudgementType)
@@ -50,6 +52,4 @@ public sealed class SlideCounterclockwiseNote : Note, IPositionable, IPlayable, 
 
         return clone;
     }
-
-    public static float BonusEffectDuration(float tempo) => SlideClockwiseNote.BonusEffectDuration(tempo);
 }
