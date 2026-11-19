@@ -211,6 +211,12 @@ public class SystemSound : CosmeticItem
     public string AudioWindmillSwitchPath { get; set; } = "";
     
     /// <summary>
+    /// The local filepath of the "Stage-Up clear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    [SctKey("STAGEUP_CLEAR", 25)]
+    public string AudioStageUpClearPath { get; set; } = "";
+    
+    /// <summary>
     /// The absolute filepath of the "login" audio file.
     /// </summary>
     [SctIgnore]
@@ -389,4 +395,10 @@ public class SystemSound : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteAudioWindmillSwitchPath => AbsolutePath(AudioWindmillSwitchPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "Stage-Up clear" audio file.
+    /// </summary>
+    [SctIgnore]
+    public string AbsoluteAudioStageUpClearPath => AbsolutePath(AudioStageUpClearPath);
 }
