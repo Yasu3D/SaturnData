@@ -254,7 +254,7 @@ public static class SatContentV1Reader
                 
                 if (contentItem is StageUpStage stageUpStage)
                 {
-                    if      (SerializationHelpers.ContainsKey(line, "@IMAGE ",           out value)) { stageUpStage.ImagePath = value; }
+                    if      (SerializationHelpers.ContainsKey(line, "@IMAGE ",           out value)) { stageUpStage.IconImagePath = value; }
                     else if (SerializationHelpers.ContainsKey(line, "@HEALTH ",          out value)) { stageUpStage.Health = Convert.ToInt32(value, CultureInfo.InvariantCulture); }
                     else if (SerializationHelpers.ContainsKey(line, "@HEALTH_RECOVERY ", out value)) { stageUpStage.HealthRecovery = Convert.ToInt32(value, CultureInfo.InvariantCulture); }
                     else if (SerializationHelpers.ContainsKey(line, "@ERROR_THRESHOLD ", out value))

@@ -8,7 +8,7 @@ using System.Text;
 using SaturnData.Content.Items;
 using SaturnData.Content.Items.Attributes;
 
-namespace SaturnData.Content.Serialization;
+namespace SaturnData.Content.Serialization.SatContentV2;
 
 public static class SatContentV2Writer
 {

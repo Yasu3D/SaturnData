@@ -27,14 +27,20 @@ public class Icon : CosmeticItem
     /// The creator of the <see cref="Icon"/> image.
     /// </summary>
     [SctLineBreak]
-    [SctKey("ARTIST", 10)]
+    [SctKey("ARTIST", 14)]
     public string Artist { get; set; } = "";
 
     /// <summary>
     /// The local filepath of the <see cref="Icon"/> image, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
-    [SctKey("IMAGE_PATH", 10)]
+    [SctKey("IMAGE_PATH", 14)]
     public string ImagePath { get; set; } = "";
+
+    /// <summary>
+    /// Should the <see cref="Icon"/> be automatically shaded in SATURN?
+    /// </summary>
+    [SctKey("ENABLE_SHADING", 14)]
+    public bool EnableShading { get; set; } = false;
 
     /// <summary>
     /// The absolute filepath of the <see cref="Icon"/> image.

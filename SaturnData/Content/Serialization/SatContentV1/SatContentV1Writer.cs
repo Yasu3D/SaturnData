@@ -209,7 +209,7 @@ public static class SatContentV1Writer
 
         if (contentItem is StageUpStage stageUpStage)
         {
-            sb.Append($"{"@IMAGE",-17}{stageUpStage.ImagePath}\n");
+            sb.Append($"{"@IMAGE",-17}{stageUpStage.IconImagePath}\n");
             sb.Append($"{"@ERROR_THRESHOLD",-17}{stageUpStage.ErrorThreshold}\n");
             sb.Append($"{"@HEALTH",-17}{stageUpStage.Health}\n");
             sb.Append($"{"@HEALTH_RECOVERY",-17}{stageUpStage.HealthRecovery}\n");

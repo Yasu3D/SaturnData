@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using SaturnData.Content.Items;
 using SaturnData.Content.Serialization.SatContentV1;
+using SaturnData.Content.Serialization.SatContentV2;
 using SaturnData.Utilities;
 
 namespace SaturnData.Content.Serialization;

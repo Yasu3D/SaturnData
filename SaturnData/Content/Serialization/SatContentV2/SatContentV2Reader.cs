@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using SaturnData.Content.Items;
 using SaturnData.Content.Items.Attributes;
 
-namespace SaturnData.Content.Serialization;
+namespace SaturnData.Content.Serialization.SatContentV2;
 
 public static class SatContentV2Reader
 {
@@ -84,7 +84,7 @@ public static class SatContentV2Reader
                 while (j < data.Length)
                 {
                     string subLine = data[j];
-                    if (subLine.StartsWith('#'))
+                    if (subLine.StartsWith('#') || string.IsNullOrWhiteSpace(subLine))
                     {
                         j++;
                         continue;
@@ -225,6 +225,6 @@ public static class SatContentV2Reader
         }
     }
     
-    private static readonly Regex SctKeyValueRegex = new(@"^@([A-Z_]+)(?:\s+(.*))?");
+    private static readonly Regex SctKeyValueRegex = new(@"^@([A-Z_0-9]+)(?:\s+(.*))?");
     private static readonly Regex DictionaryKeyValueRegex = new(@"^\s*-?\s*([A-Za-z_0-9.]+)(?:\s+(.*))?");
 }
