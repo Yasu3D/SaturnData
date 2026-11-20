@@ -120,8 +120,7 @@ public class NavigatorWriting : ISctSerializable
                     string message = match.Groups[1].Value.Unescape();
                     string audioPath = match.Groups[2].Value.Unescape();
                     float duration = Convert.ToSingle(match.Groups[3].Value, CultureInfo.InvariantCulture);
-                    bool showSkipButton = match.Groups[4].Value == "TRUE";
-                    NavigatorExpression expression = Enum.Parse<NavigatorExpression>(match.Groups[5].Value);
+                    NavigatorExpression expression = Enum.Parse<NavigatorExpression>(match.Groups[4].Value);
 
                     NavigatorLine navigatorLine = new()
                     {

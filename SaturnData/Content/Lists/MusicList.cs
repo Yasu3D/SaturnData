@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using SaturnData.Content.Items;
 using SaturnData.Content.Music;
 using SaturnData.Content.Serialization;
 using SaturnData.Notation.Core;
