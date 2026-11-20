@@ -149,6 +149,11 @@ public class MusicList
     public readonly Dictionary<string, Entry> Entries = [];
 
     /// <summary>
+    /// All songs, listed in order of being loaded.
+    /// </summary>
+    public readonly List<Song> Songs = [];
+    
+    /// <summary>
     /// All entries, laid out in a cylinder-like mesh.
     /// </summary>
     public readonly MusicMesh Mesh;
@@ -239,6 +244,8 @@ public class MusicList
                 
                 // Build song from entries.
                 Song song = new() { ParentDirectory = Directory.GetParent(directory)?.FullName ?? "" };
+                Songs.Add(song);
+                
                 foreach (Entry entry in entries)
                 {
                     entry.Song = song;
