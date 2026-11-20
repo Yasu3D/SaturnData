@@ -104,6 +104,18 @@ public class NoteSound : CosmeticItem
     public string AudioSnapGoodPath { get; set; } = "";
     
     /// <summary>
+    /// The local filepath of the "hold marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    [SctKey("HOLD_MARVELOUS", 15)]
+    public string AudioHoldMarvelousPath { get; set; } = "";
+    
+    /// <summary>
+    /// The local filepath of the "hold good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// </summary>
+    [SctKey("HOLD_GOOD", 15)]
+    public string AudioHoldGoodPath { get; set; } = "";
+    
+    /// <summary>
     /// The local filepath of the "hold" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
     /// </summary>
     [SctKey("HOLD", 15)]
@@ -192,6 +204,18 @@ public class NoteSound : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteAudioSnapGoodPath => AbsolutePath(AudioSnapGoodPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "hold marvelous" audio file.
+    /// </summary>
+    [SctIgnore]
+    public string AbsoluteAudioHoldMarvelousPath => AbsolutePath(AudioHoldMarvelousPath);
+    
+    /// <summary>
+    /// The absolute filepath of the "hold good" audio file.
+    /// </summary>
+    [SctIgnore]
+    public string AbsoluteAudioHoldGoodPath => AbsolutePath(AudioHoldGoodPath);
     
     /// <summary>
     /// The absolute filepath of the "hold" audio file.
