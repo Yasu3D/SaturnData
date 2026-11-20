@@ -31,191 +31,197 @@ public class SystemSound : CosmeticItem
     public string Artist { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "login" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "login" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("LOGIN", 25)]
     public string AudioLoginPath { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "login card success" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "login card success" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("LOGIN_CARD_SUCCESS", 25)]
     public string AudioLoginCardSuccessPath { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "login card error" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "login card error" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("LOGIN_CARD_ERROR", 25)]
     public string AudioLoginCardErrorPath { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "cycle mode" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "cycle mode" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("CYCLE_MODE", 25)]
     public string AudioCycleModePath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "cycle folder" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "cycle folder" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("CYCLE_FOLDER", 25)]
     public string AudioCycleFolderPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "cycle song" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "cycle song" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("CYCLE_SONG", 25)]
     public string AudioCycleSongPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "cycle option" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "cycle option" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("CYCLE_OPTION", 25)]
     public string AudioCycleOptionPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select ok" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select ok" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT_OK", 25)]
     public string AudioSelectOkPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select back" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select back" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT_BACK", 25)]
     public string AudioSelectBackPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select denied" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select denied" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT_DENIED", 25)]
     public string AudioSelectDeniedPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select decide" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select decide" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT_DECIDE", 25)]
     public string AudioSelectDecidePath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select preview song" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select preview song" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT_PREVIEW_SONG", 25)]
     public string AudioSelectPreviewSongPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select start song" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select start song" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT_START_SONG", 25)]
     public string AudioSelectStartSongPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select start song alt" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select start song alt" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT_START_SONG_ALT", 25)]
     public string AudioSelectStartSongAltPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "favorite add" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "favorite add" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("FAVORITE_ADD", 25)]
     public string AudioFavoriteAddPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "favorite remove" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "favorite remove" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("FAVORITE_REMOVE", 25)]
     public string AudioFavoriteRemovePath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "level up count" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "level up count" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("LEVELUP_COUNT", 25)]
     public string AudioLevelUpCountPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "level up finished" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "level up finished" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("LEVELUP_FINISHED", 25)]
     public string AudioLevelUpFinishedPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "score count" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "score count" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RESULT_SCORE_COUNT", 25)]
     public string AudioResultScoreCountPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "score finished" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "score finished" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RESULT_SCORE_FINISHED", 25)]
     public string AudioResultScoreFinishedPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "rate bad" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "rate bad" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RESULT_RATE_BAD", 25)]
     public string AudioResultRateBadPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "rate good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "rate good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RESULT_RATE_GOOD", 25)]
     public string AudioResultRateGoodPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "ready" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "ready" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RHYTHM_GAME_READY", 25)]
     public string AudioRhythmGameReadyPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "fail" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "fail" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RHYTHM_GAME_FAIL", 25)]
     public string AudioRhythmGameFailPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "clear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "clear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RHYTHM_GAME_CLEAR", 25)]
     public string AudioRhythmGameClearPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "special clear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "special clear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RHYTHM_GAME_SPECIAL_CLEAR", 25)]
     public string AudioRhythmGameSpecialClearPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "timer warning" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "timer warning" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("TIMER_WARNING", 25)]
     public string AudioTimerWarningPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "textbox appear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "textbox appear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("TEXTBOX_APPEAR", 25)]
     public string AudioTextboxAppearPath { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "message alert" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "message alert" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("MESSAGE_ALERT", 25)]
     public string AudioMessageAlertPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "windmill switch" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "windmill switch" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("WINDMILL_SWITCH", 25)]
     public string AudioWindmillSwitchPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "Stage-Up clear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "Stage-Up clear" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("STAGEUP_CLEAR", 25)]
     public string AudioStageUpClearPath { get; set; } = "";
-    
+
+    /// <summary>
+    /// The local filepath of the "item get" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
+    /// </summary>
+    [SctKey("ITEM_GET", 25)]
+    public string AudioItemGetPath { get; set; } = "";
+
     /// <summary>
     /// The absolute filepath of the "login" audio file.
     /// </summary>
@@ -401,4 +407,10 @@ public class SystemSound : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteAudioStageUpClearPath => AbsolutePath(AudioStageUpClearPath);
+
+    /// <summary>
+    /// The absolute filepath of the "item get" audio file.
+    /// </summary>
+    [SctIgnore]
+    public string AbsoluteAudioItemGetPath => AbsolutePath(AudioItemGetPath);
 }

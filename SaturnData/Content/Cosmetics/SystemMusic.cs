@@ -31,37 +31,37 @@ public class SystemMusic : CosmeticItem
     public string Artist { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "attract bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "attract bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("ATTRACT", 15)]
     public string AudioAttractPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "select bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "select bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SELECT", 15)]
     public string AudioSelectPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "result bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "result bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RESULT", 15)]
     public string AudioResultPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "stage-up select bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "stage-up select bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("STAGE_UP_SELECT", 15)]
     public string AudioStageUpSelectPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "stage-up secret bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "stage-up secret bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("STAGE_UP_SECRET", 15)]
     public string AudioStageUpSecretPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "see-you bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "see-you bgm" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SEE_YOU", 15)]
     public string AudioSeeYouPath { get; set; } = "";

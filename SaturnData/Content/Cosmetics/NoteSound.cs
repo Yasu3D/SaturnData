@@ -55,104 +55,104 @@ public class NoteSound : CosmeticItem
     public float ReHoldLoopEndTime { get; set; } = 0;
 
     /// <summary>
-    /// The local filepath of the "click" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "click" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctLineBreak]
     [SctKey("CLICK", 15)]
     public string AudioClickPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "guide" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "guide" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("GUIDE", 15)]
     public string AudioGuidePath { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "touch marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "touch marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("TOUCH_MARVELOUS", 15)]
     public string AudioTouchMarvelousPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "touch good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "touch good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("TOUCH_GOOD", 15)]
     public string AudioTouchGoodPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "slide marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "slide marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SLIDE_MARVELOUS", 15)]
     public string AudioSlideMarvelousPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "slide good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "slide good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SLIDE_GOOD", 15)]
     public string AudioSlideGoodPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "snap marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "snap marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SNAP_MARVELOUS", 15)]
     public string AudioSnapMarvelousPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "snap good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "snap good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("SNAP_GOOD", 15)]
     public string AudioSnapGoodPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "hold marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "hold marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("HOLD_MARVELOUS", 15)]
     public string AudioHoldMarvelousPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "hold good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "hold good" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("HOLD_GOOD", 15)]
     public string AudioHoldGoodPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "hold" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "hold" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("HOLD", 15)]
     public string AudioHoldPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "re-hold" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "re-hold" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("RE_HOLD", 15)]
     public string AudioReHoldPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "chain" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "chain" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("CHAIN", 15)]
     public string AudioChainPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "bonus marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "bonus marvelous" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("BONUS_MARVELOUS", 15)]
     public string AudioBonusMarvelousPath { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "bonus great" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "bonus great" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("BONUS_GREAT", 15)]
     public string AudioBonusGreatPath { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the "r" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "r" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("R", 15)]
     public string AudioRPath { get; set; } = "";
     
     /// <summary>
-    /// The local filepath of the "damage" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the "damage" audio file, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("DAMAGE", 15)]
     public string AudioDamagePath { get; set; } = "";

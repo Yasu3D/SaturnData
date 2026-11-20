@@ -8,7 +8,7 @@ namespace SaturnData.Content.Cosmetics;
 public class JudgementLineColor : CosmeticItem
 {
     /// <summary>
-    /// The local filepath of the <see cref="JudgementLineColor"/> gradient image, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the <see cref="JudgementLineColor"/> gradient image, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctLineBreak]
     [SctKey("IMAGE_PATH", 10)]

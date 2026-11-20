@@ -31,7 +31,7 @@ public class Icon : CosmeticItem
     public string Artist { get; set; } = "";
 
     /// <summary>
-    /// The local filepath of the <see cref="Icon"/> image, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepath of the <see cref="Icon"/> image, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctKey("IMAGE_PATH", 14)]
     public string ImagePath { get; set; } = "";

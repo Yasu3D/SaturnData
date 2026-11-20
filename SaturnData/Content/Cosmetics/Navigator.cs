@@ -90,7 +90,7 @@ public class Navigator : CosmeticItem
     public float BlinkAnimationDuration { get; set; } = 250;
 
     /// <summary>
-    /// The local filepaths of the <see cref="Navigator"/> artwork images, relative to the <see cref="ContentItem.AbsoluteSourcePath"/>.
+    /// The local filepaths of the <see cref="Navigator"/> artwork images, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctLineBreak]
     [SctKey("TEXTURES", 0)]
