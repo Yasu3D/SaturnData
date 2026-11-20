@@ -38,6 +38,15 @@ public abstract class CosmeticItem : ContentItem
     public int Rarity { get; set; } = 0;
 
     /// <summary>
+    /// Should this cosmetic be unlocked for all players by default?
+    /// </summary>
+    /// <remarks>
+    /// Currently to be used with <see cref="Content.Cosmetics.Title">Titles</see>, <see cref="Content.Cosmetics.Icon">Icons</see> and <see cref="Content.Cosmetics.Emblem">Emblems</see> that are unlocked through gameplay in SATURN.
+    /// </remarks>
+    [SctIgnore]
+    public bool IsUnlockedDefault { get; set; } = true;
+
+    /// <summary>
     /// A string listing all contributors of a <see cref="CosmeticItem"/>.
     /// </summary>
     [SctIgnore]
