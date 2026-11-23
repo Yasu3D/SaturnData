@@ -97,6 +97,18 @@ public class Entry
     /// <summary>
     /// The kana reading of the title.
     /// </summary>
+    /// <remarks>
+    /// Internal string used for sorting consistently.<br/>
+    /// <b>Conversion rules:</b><br/>
+    /// - Kanji shall be written as their kana readings.<br/>
+    /// - Katakana shall be converted to Hiragana.<br/>
+    /// - Non-japanese scripts shall be converted to latin script or kana, whichever is more fitting.<br/>
+    /// <b>Valid characters:</b><br/>
+    /// - Full width uppercase latin characters (ＡＢＣ)<br/>
+    /// - Full width numbers (１２３)<br/>
+    /// - Hiragana (あかさたな).<br/>
+    /// Any other characters (including spaces) are omitted.
+    /// </remarks>
     public string Reading
     {
         get => reading;

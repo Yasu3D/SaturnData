@@ -90,6 +90,12 @@ public class Navigator : CosmeticItem
     public float BlinkAnimationDuration { get; set; } = 250;
 
     /// <summary>
+    /// Makes voice lines more frequent, and makes the Navigator circumvent any attempt to shut them up.
+    /// </summary>
+    [SctKey("NOISY", 14)]
+    public bool IsNoisy { get; set; } = false;
+
+    /// <summary>
     /// The local filepaths of the <see cref="Navigator"/> artwork images, relative to the <see cref="ContentItem.AbsoluteSourcePath">AbsoluteSourcePath</see>.
     /// </summary>
     [SctLineBreak]
