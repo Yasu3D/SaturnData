@@ -62,6 +62,7 @@ public class Navigator : CosmeticItem
     /// <summary>
     /// The width and height of the in-game base UI element in pixels.
     /// </summary>
+    [SctLineBreak]
     [SctKey("SIZE", 14)]
     public NavigatorSize Size { get; set; } = new(1024, 1024);
 
@@ -80,6 +81,7 @@ public class Navigator : CosmeticItem
     /// <summary>
     /// The time between blinks in milliseconds.
     /// </summary>
+    [SctLineBreak]
     [SctKey("BLINK_INTERVAL", 14)]
     public float BlinkAnimationInterval { get; set; } = 5000;
     
@@ -92,6 +94,7 @@ public class Navigator : CosmeticItem
     /// <summary>
     /// Makes voice lines more frequent, and makes the Navigator circumvent any attempt to shut them up.
     /// </summary>
+    [SctLineBreak]
     [SctKey("NOISY", 14)]
     public bool IsNoisy { get; set; } = false;
 
