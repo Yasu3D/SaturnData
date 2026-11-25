@@ -71,4 +71,13 @@ public abstract class ContentItem
         string directory = Path.GetDirectoryName(AbsoluteSourcePath) ?? "";
         return Path.Combine(directory, localPath);
     }
+
+    /// <summary>
+    /// Returns an array of all <b>absolute</b> file paths to external files the content item references.
+    /// </summary>
+    /// <remarks>
+    /// 1. This <b>shouldn't</b> include <see cref="AbsoluteSourcePath"/> itself, only external files.<br/>
+    /// 2. It doesn't matter if a path is empty, the resulting absolute path should still be listed.
+    /// </remarks>
+    public abstract string[] GetAllExternalFilePaths();
 }

@@ -71,9 +71,9 @@ public static class SatV2Writer
         sb.Append($"{"@PREVIEW_START",-16}{(entry.PreviewBegin.Time / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
         sb.Append($"{"@PREVIEW_TIME",-16}{(entry.PreviewEnd.Time / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
         sb.Append('\n');
-        sb.Append($"{"@JACKET",-16}{entry.JacketFile}\n");
-        sb.Append($"{"@BGM",-16}{entry.AudioFile}\n");
-        sb.Append($"{"@BGA",-16}{entry.VideoFile}\n");
+        sb.Append($"{"@JACKET",-16}{entry.JacketPath}\n");
+        sb.Append($"{"@BGM",-16}{entry.AudioPath}\n");
+        sb.Append($"{"@BGA",-16}{entry.VideoPath}\n");
         sb.Append($"{"@BGM_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
         sb.Append($"{"@BGA_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
         sb.Append('\n');

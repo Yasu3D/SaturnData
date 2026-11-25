@@ -101,4 +101,17 @@ public class SystemMusic : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteAudioSeeYouPath => AbsolutePath(AudioSeeYouPath);
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return
+        [
+            AbsoluteAudioAttractPath,
+            AbsoluteAudioSelectPath,
+            AbsoluteAudioResultPath,
+            AbsoluteAudioStageUpSelectPath,
+            AbsoluteAudioStageUpSecretPath,
+            AbsoluteAudioSeeYouPath,
+        ];
+    }
 }

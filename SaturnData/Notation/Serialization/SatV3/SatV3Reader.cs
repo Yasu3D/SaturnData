@@ -665,7 +665,7 @@ internal static class SatV3Reader
         {
             ChartFormatVersion = ChartFormatVersion.SatV3,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
-            ChartFile = Path.GetFileName(path),
+            ChartPath = Path.GetFileName(path),
         };
         exceptions = [];
 
@@ -709,9 +709,9 @@ internal static class SatV3Reader
                 }
                 if (SerializationHelpers.ContainsKey(line, "@BACKGROUND ",     out value)) { entry.Background = string2BackgroundOption(value); }
 
-                if (SerializationHelpers.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketFile = value; }
-                if (SerializationHelpers.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioFile  = value; }
-                if (SerializationHelpers.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoFile  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@JACKET ",         out value)) { entry.JacketPath = value; }
+                if (SerializationHelpers.ContainsKey(line, "@AUDIO ",          out value)) { entry.AudioPath  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@VIDEO ",          out value)) { entry.VideoPath  = value; }
                 if (SerializationHelpers.ContainsKey(line, "@AUDIO_OFFSET ",   out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (SerializationHelpers.ContainsKey(line, "@VIDEO_OFFSET ",   out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 

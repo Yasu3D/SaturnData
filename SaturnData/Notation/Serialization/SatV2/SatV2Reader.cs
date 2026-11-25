@@ -586,7 +586,7 @@ internal static class SatV2Reader
         {
             ChartFormatVersion = ChartFormatVersion.SatV2,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
-            ChartFile = Path.GetFileName(path),
+            ChartPath = Path.GetFileName(path),
         };
         exceptions = [];
 
@@ -617,9 +617,9 @@ internal static class SatV2Reader
                 if (SerializationHelpers.ContainsKey(line, "@PREVIEW_START ", out value)) { entry.PreviewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (SerializationHelpers.ContainsKey(line, "@PREVIEW_TIME ",  out value)) { entry.PreviewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 
-                if (SerializationHelpers.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketFile = value; }
-                if (SerializationHelpers.ContainsKey(line, "@BGM ",        out value)) { entry.AudioFile  = value; }
-                if (SerializationHelpers.ContainsKey(line, "@BGA ",        out value)) { entry.VideoFile  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@JACKET ",     out value)) { entry.JacketPath = value; }
+                if (SerializationHelpers.ContainsKey(line, "@BGM ",        out value)) { entry.AudioPath  = value; }
+                if (SerializationHelpers.ContainsKey(line, "@BGA ",        out value)) { entry.VideoPath  = value; }
                 if (SerializationHelpers.ContainsKey(line, "@BGM_OFFSET ", out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                 if (SerializationHelpers.ContainsKey(line, "@BGA_OFFSET ", out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
 

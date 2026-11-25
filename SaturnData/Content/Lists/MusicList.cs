@@ -287,9 +287,9 @@ public class MusicList
                             BpmMessage = source.BpmMessage,
                             Difficulty = difficulty,
                             RootDirectory = source.RootDirectory,
-                            JacketFile = source.JacketFile,
-                            AudioFile = source.AudioFile,
-                            VideoFile = source.VideoFile,
+                            JacketPath = source.JacketPath,
+                            AudioPath = source.AudioPath,
+                            VideoPath = source.VideoPath,
                             Song = source.Song,
                         };
                     }

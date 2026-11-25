@@ -9,4 +9,9 @@ public class Locale : ContentItem
     /// A collection of localized strings.
     /// </summary>
     public Dictionary<string, string> Strings { get; set; } = new();
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return [];
+    }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SaturnData.Content.Cosmetics.NavigatorData;
 using SaturnData.Content.Items;
 using SaturnData.Content.Items.Attributes;
@@ -128,4 +129,23 @@ public class Navigator : CosmeticItem
     /// <param name="line">The <see cref="NavigatorLine"/> to take the audio path from.</param>
     /// <returns></returns>
     public string AbsoluteAudioPath(NavigatorLine line) => AbsolutePath(line.AudioPath);
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        HashSet<string> files = new();
+
+        foreach (string path in TexturePaths.Values)
+        {
+            files.Add(AbsolutePath(path));
+        }
+        
+        foreach (NavigatorLanguage language in Writing.Languages.Values)
+        foreach (NavigatorDialogue dialogue in language.Dialogues.Values)
+        foreach (NavigatorLine line in dialogue.Lines)
+        {
+            files.Add(AbsolutePath(line.AudioPath));
+        }
+
+        return files.ToArray();
+    }
 }

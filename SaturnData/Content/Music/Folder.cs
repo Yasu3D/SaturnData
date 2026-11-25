@@ -261,4 +261,12 @@ public class Folder : ContentItem
             _ => throw new ArgumentOutOfRangeException(nameof(difficulty), difficulty, null),
         };
     }
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return
+        [
+            AbsoluteImagePath,
+        ];
+    }
 }

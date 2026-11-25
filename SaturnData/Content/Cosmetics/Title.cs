@@ -14,4 +14,9 @@ public class Title : CosmeticItem
     [SctLineBreak]
     [SctKey("MESSAGE", 7)]
     public string Message { get; set; } = "";
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return [];
+    }
 }

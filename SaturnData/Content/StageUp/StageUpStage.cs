@@ -140,4 +140,16 @@ public class StageUpStage : ContentItem
 
         return Song1;
     }
+
+    public override string[] GetAllExternalFilePaths()
+    {
+        return
+        [
+            AbsoluteIconImagePath,
+            AbsoluteEmblemBlueImagePath,
+            AbsoluteEmblemSilverImagePath,
+            AbsoluteEmblemGoldImagePath,
+            AbsoluteEmblemRainbowImagePath,
+        ];
+    }
 }

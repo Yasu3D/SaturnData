@@ -258,4 +258,28 @@ public class NoteSound : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteAudioDamagePath => AbsolutePath(AudioDamagePath);
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return
+        [
+            AbsoluteAudioClickPath,
+            AbsoluteAudioGuidePath,
+            AbsoluteAudioTouchMarvelousPath,
+            AbsoluteAudioTouchGoodPath,
+            AbsoluteAudioSlideMarvelousPath,
+            AbsoluteAudioSlideGoodPath,
+            AbsoluteAudioSnapMarvelousPath,
+            AbsoluteAudioSnapGoodPath,
+            AbsoluteAudioHoldMarvelousPath,
+            AbsoluteAudioHoldGoodPath,
+            AbsoluteAudioHoldPath,
+            AbsoluteAudioReHoldPath,
+            AbsoluteAudioChainPath,
+            AbsoluteAudioBonusMarvelousPath,
+            AbsoluteAudioBonusGreatPath,
+            AbsoluteAudioRPath,
+            AbsoluteAudioDamagePath,
+        ];
+    }
 }

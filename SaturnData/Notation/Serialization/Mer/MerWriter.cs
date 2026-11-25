@@ -95,11 +95,11 @@ public static class MerWriter
                 break;
 
             case WriteMusicFilePathOption.NoExtension:
-                sb.Append($"#MUSIC_FILE_PATH {Path.GetFileNameWithoutExtension(entry.AudioFile)}\n");
+                sb.Append($"#MUSIC_FILE_PATH {Path.GetFileNameWithoutExtension(entry.AudioPath)}\n");
                 break;
 
             case WriteMusicFilePathOption.WithExtension:
-                sb.Append($"#MUSIC_FILE_PATH {Path.GetFileName(entry.AudioFile)}\n");
+                sb.Append($"#MUSIC_FILE_PATH {Path.GetFileName(entry.AudioPath)}\n");
                 break;
         }
 

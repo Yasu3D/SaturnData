@@ -73,9 +73,9 @@ internal static class SatV3Writer
             sb.Append($"{"@PREVIEW_END",-16}{entry.PreviewEnd.Measure,-4}{entry.PreviewEnd.Tick,-4}\n");
             sb.Append($"{"@BACKGROUND",-16}{background2String(entry.Background)}\n");
             sb.Append('\n');
-            sb.Append($"{"@JACKET",-16}{entry.JacketFile}\n");
-            sb.Append($"{"@AUDIO",-16}{entry.AudioFile}\n");
-            sb.Append($"{"@VIDEO",-16}{entry.VideoFile}\n");
+            sb.Append($"{"@JACKET",-16}{entry.JacketPath}\n");
+            sb.Append($"{"@AUDIO",-16}{entry.AudioPath}\n");
+            sb.Append($"{"@VIDEO",-16}{entry.VideoPath}\n");
             sb.Append($"{"@AUDIO_OFFSET",-16}{(entry.AudioOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
             sb.Append($"{"@VIDEO_OFFSET",-16}{(entry.VideoOffset / 1000).ToString("0.000000", CultureInfo.InvariantCulture)}\n");
             sb.Append('\n');

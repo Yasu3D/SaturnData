@@ -413,4 +413,43 @@ public class SystemSound : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteAudioItemGetPath => AbsolutePath(AudioItemGetPath);
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return
+        [
+            AbsoluteAudioLoginPath,
+            AbsoluteAudioLoginCardSuccessPath,
+            AbsoluteAudioLoginCardErrorPath,
+            AbsoluteAudioCycleModePath,
+            AbsoluteAudioCycleFolderPath,
+            AbsoluteAudioCycleSongPath,
+            AbsoluteAudioCycleOptionPath,
+            AbsoluteAudioSelectOkPath,
+            AbsoluteAudioSelectBackPath,
+            AbsoluteAudioSelectDeniedPath,
+            AbsoluteAudioSelectDecidePath,
+            AbsoluteAudioSelectPreviewSongPath,
+            AbsoluteAudioSelectStartSongPath,
+            AbsoluteAudioSelectStartSongAltPath,
+            AbsoluteAudioFavoriteAddPath,
+            AbsoluteAudioFavoriteRemovePath,
+            AbsoluteAudioLevelUpCountPath,
+            AbsoluteAudioLevelUpFinishedPath,
+            AbsoluteAudioResultScoreCountPath,
+            AbsoluteAudioResultScoreFinishedPath,
+            AbsoluteAudioResultRateBadPath,
+            AbsoluteAudioResultRateGoodPath,
+            AbsoluteAudioRhythmGameReadyPath,
+            AbsoluteAudioRhythmGameFailPath,
+            AbsoluteAudioRhythmGameClearPath,
+            AbsoluteAudioRhythmGameSpecialClearPath,
+            AbsoluteAudioTimerWarningPath,
+            AbsoluteAudioTextboxAppearPath,
+            AbsoluteAudioMessageAlertPath,
+            AbsoluteAudioWindmillSwitchPath,
+            AbsoluteAudioStageUpClearPath,
+            AbsoluteAudioItemGetPath,
+        ];
+    }
 }

@@ -44,4 +44,9 @@ public class ConsoleColor : CosmeticItem
     /// </summary>
     [SctKey("LED_C", 7)]
     public uint LedC { get; set; } = 0xFF000080;
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return [];
+    }
 }

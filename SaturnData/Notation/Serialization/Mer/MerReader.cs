@@ -364,7 +364,7 @@ public static class MerReader
         {
             ChartFormatVersion = ChartFormatVersion.Mer,
             RootDirectory = Path.GetDirectoryName(path) ?? "",
-            ChartFile = Path.GetFileName(path),
+            ChartPath = Path.GetFileName(path),
         };
         exceptions = [];
 
@@ -380,9 +380,9 @@ public static class MerReader
                     string value;
                 
                     // BAKKA COMPATIBILITY
-                    if (SerializationHelpers.ContainsKey(line, "#X_BAKKA_MUSIC_FILENAME ", out value)) { entry.AudioFile = value; }
+                    if (SerializationHelpers.ContainsKey(line, "#X_BAKKA_MUSIC_FILENAME ", out value)) { entry.AudioPath = value; }
                 
-                    if (SerializationHelpers.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioFile = value; }
+                    if (SerializationHelpers.ContainsKey(line, "#EDITOR_AUDIO ",           out value)) { entry.AudioPath = value; }
                     if (SerializationHelpers.ContainsKey(line, "#EDITOR_LEVEL ",           out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                     if (SerializationHelpers.ContainsKey(line, "#EDITOR_AUTHOR ",          out value)) { entry.NotesDesigner = value; }
                     if (SerializationHelpers.ContainsKey(line, "#EDITOR_PREVIEW_TIME ",    out value)) { entry.PreviewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
@@ -392,7 +392,7 @@ public static class MerReader
             
                     // WACK COMPATIBILITY
                     if (SerializationHelpers.ContainsKey(line, "#LEVEL ",          out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
-                    if (SerializationHelpers.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioFile = value; }
+                    if (SerializationHelpers.ContainsKey(line, "#AUDIO ",          out value)) { entry.AudioPath = value; }
                     if (SerializationHelpers.ContainsKey(line, "#AUTHOR ",         out value)) { entry.NotesDesigner = value; }
                     if (SerializationHelpers.ContainsKey(line, "#PREVIEW_TIME ",   out value)) { entry.PreviewBeginTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                     if (SerializationHelpers.ContainsKey(line, "#PREVIEW_LENGTH ", out value)) { entry.PreviewLengthTime = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
@@ -401,8 +401,8 @@ public static class MerReader
                     if (SerializationHelpers.ContainsKey(line, "#MUSIC_FILE_PATH ", out value))
                     {
                         // Only write path from MER format if nothing else exists.
-                        if (!string.IsNullOrEmpty(entry.AudioFile)) continue;
-                        entry.AudioFile = value;
+                        if (!string.IsNullOrEmpty(entry.AudioPath)) continue;
+                        entry.AudioPath = value;
                     }
                     if (SerializationHelpers.ContainsKey(line, "#OFFSET ",          out value)) { entry.AudioOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
                     if (SerializationHelpers.ContainsKey(line, "#MOVIEOFFSET ",     out value)) { entry.VideoOffset = Convert.ToSingle(value, CultureInfo.InvariantCulture) * 1000; }
@@ -412,7 +412,7 @@ public static class MerReader
                     if (SerializationHelpers.ContainsKey(line, "#MUSIC_NAME_RUBY @JPN ",          out value)) { entry.Reading = value; }
                     if (SerializationHelpers.ContainsKey(line, "#ARTIST_NAME @JPN ",              out value)) { entry.Artist = value; }
                     if (SerializationHelpers.ContainsKey(line, "#MUSIC_SCORE_CREATOR_NAME @JPN ", out value)) { entry.NotesDesigner = value; }
-                    if (SerializationHelpers.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketFile = value; }
+                    if (SerializationHelpers.ContainsKey(line, "#JACKET_IMAGE_PATH ",             out value)) { entry.JacketPath = value; }
                     if (SerializationHelpers.ContainsKey(line, "#DIFFICULTY ",                    out value)) { entry.Level = Convert.ToSingle(value, CultureInfo.InvariantCulture); }
                     if (SerializationHelpers.ContainsKey(line, "#DISPLAY_BPM ",                   out value)) { entry.BpmMessage = value; }
                     if (SerializationHelpers.ContainsKey(line, "#CREAR_NORMA_RATE ",              out value)) { entry.ClearThreshold = Convert.ToSingle(value, CultureInfo.InvariantCulture); } // CREAR is correct.

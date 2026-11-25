@@ -131,4 +131,12 @@ public class Plate : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteImagePath => AbsolutePath(ImagePath);
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return
+        [
+            AbsoluteImagePath,
+        ];
+    }
 }

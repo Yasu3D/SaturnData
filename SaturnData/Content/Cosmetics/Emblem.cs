@@ -41,4 +41,12 @@ public class Emblem : CosmeticItem
     /// </summary>
     [SctIgnore]
     public string AbsoluteImagePath => AbsolutePath(ImagePath);
+    
+    public override string[] GetAllExternalFilePaths()
+    {
+        return
+        [
+            AbsoluteImagePath,
+        ];
+    }
 }

@@ -50,7 +50,7 @@ public class Entry
     /// <summary>
     /// Does a chart file exist for this entry?
     /// </summary>
-    public bool Exists => File.Exists(ChartPath);
+    public bool Exists => File.Exists(AbsoluteChartPath);
     
     /// <summary>
     /// The song containing this entry.
@@ -318,30 +318,30 @@ public class Entry
     /// <summary>
     /// File name of the chart file that defined this entry.
     /// </summary>
-    public string ChartFile
+    public string ChartPath
     {
-        get => chartFile;
+        get => chartPath;
         set
         {
-            if (chartFile == value) return;
+            if (chartPath == value) return;
             
-            chartFile = value;
+            chartPath = value;
             EntryChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private string chartFile = "";
+    private string chartPath = "";
     
     /// <summary>
-    /// File name of the background audio file.
+    /// The local filepath of the background audio file.
     /// </summary>
-    public string AudioFile
+    public string AudioPath
     {
-        get => audioFile;
+        get => audioPath;
         set
         {
-            if (audioFile != value)
+            if (audioPath != value)
             {
-                audioFile = value;
+                audioPath = value;
                 EntryChanged?.Invoke(null, EventArgs.Empty);
             }
             
@@ -349,19 +349,19 @@ public class Entry
             AudioChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private string audioFile = "";
+    private string audioPath = "";
 
     /// <summary>
-    /// File name of the background video file.
+    /// The local filepath of the background video file.
     /// </summary>
-    public string VideoFile
+    public string VideoPath
     {
-        get => videoFile;
+        get => videoPath;
         set
         {
-            if (videoFile != value)
+            if (videoPath != value)
             {
-                videoFile = value;
+                videoPath = value;
                 EntryChanged?.Invoke(null, EventArgs.Empty);
             }
 
@@ -369,19 +369,19 @@ public class Entry
             VideoChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private string videoFile = "";
+    private string videoPath = "";
 
     /// <summary>
-    /// File name of the jacket image file.
+    /// The local filepath of the jacket image file.
     /// </summary>
-    public string JacketFile
+    public string JacketPath
     {
-        get => jacketFile;
+        get => jacketPath;
         set
         {
-            if (jacketFile != value)
+            if (jacketPath != value)
             {
-                jacketFile = value;
+                jacketPath = value;
                 EntryChanged?.Invoke(null, EventArgs.Empty);
             }
             
@@ -389,27 +389,27 @@ public class Entry
             JacketChanged?.Invoke(null, EventArgs.Empty);
         }
     }
-    private string jacketFile = "";
+    private string jacketPath = "";
     
     /// <summary>
     /// Absolute file path to the chart file that defined this entry.
     /// </summary>
-    public string ChartPath => Path.Combine(RootDirectory, ChartFile);
+    public string AbsoluteChartPath => Path.Combine(RootDirectory, ChartPath);
 
     /// <summary>
     /// Absolute file path to the background audio file.
     /// </summary>
-    public string AudioPath => Path.Combine(RootDirectory, AudioFile);
+    public string AbsoluteAudioPath => Path.Combine(RootDirectory, AudioPath);
 
     /// <summary>
     /// Absolute file path to the background video file.
     /// </summary>
-    public string VideoPath => Path.Combine(RootDirectory, VideoFile);
+    public string AbsoluteVideoPath => Path.Combine(RootDirectory, VideoPath);
 
     /// <summary>
     /// Absolute file path to the jacket image file.
     /// </summary>
-    public string JacketPath => Path.Combine(RootDirectory, JacketFile);
+    public string AbsoluteJacketPath => Path.Combine(RootDirectory, JacketPath);
 
     /// <summary>
     /// Audio offset <b>in milliseconds</b>
@@ -546,7 +546,7 @@ public class Entry
     /// <summary>
     /// Does a file exist at <c>VideoPath</c>?
     /// </summary>
-    public bool VideoExists => File.Exists(VideoPath);
+    public bool VideoExists => File.Exists(AbsoluteVideoPath);
     
     /// <summary>
     /// Returns the integer part of the <see cref="Level"/>, and adds a + if the decimal part is >= 0.7.<br/>
